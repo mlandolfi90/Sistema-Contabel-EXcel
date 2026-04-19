@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "c-1713567890000",
+    "title": "Marcar visualmente los lotes con spread alto en el mayor",
+    "note": "Agregar columna \"Spread_Aplicado\" a tb_mayor (Double, 4 decimales). GuardarLote la escribe por línea. Formato condicional en LIBRO_MAYOR: fondo amarillo suave si |spread| entre 1% y 3%, rojo si > 3%. Backfill de lotes viejos: calcular post-hoc contra tb_tasas_historial.",
+    "status": "listo",
+    "anchors": [
+      {"id": "GuardarLote", "type": "macro"},
+      {"id": "LIBRO_MAYOR", "type": "hoja"},
+      {"id": "tb_mayor", "type": "tabla"},
+      {"id": "AlertaSpread", "type": "regla"}
+    ],
+    "created": 1713567890000
+  }
+]
