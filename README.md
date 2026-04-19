@@ -2,29 +2,91 @@
 
 Herramienta visual para iterar ideas de cambio sobre el libro Excel `Sistema_Contable_Automatico.xlsm` antes de ejecutarlas en VBA.
 
-## Abrir el panel
+## Dos versiones disponibles
 
-**[→ https://mlandolfi90.github.io/Sistema-Contabel-EXcel/](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/)**
+| Versión | URL | Almacenamiento | Sincroniza entre dispositivos |
+|---|---|---|---|
+| **v1** (legacy) | [→ panel v1](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/) | `localStorage` del navegador | No (manual via Export/Import JSON) |
+| **v2** (recomendada) | [→ panel v2](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/v2/) | GitHub Issues del repo | Sí, automático |
 
-Disponible desde cualquier dispositivo (PC, tablet, celular). Las tarjetas que creás se guardan en el `localStorage` del navegador donde abras el panel.
+Ambas comparten la misma UI (Flujo · Estructura · Kanban). La v2 usa los Issues del repo como fuente de verdad en lugar del `localStorage`.
+
+---
+
+## v2 — Panel sincronizado con GitHub Issues
+
+### Qué cambia respecto de v1
+
+- Cada tarjeta del Kanban **es un Issue del repo**.
+- Las columnas se modelan con labels: `idea`, `diseño`, `listo`.
+- Las anclas (macro/hoja/tabla/rango/regla) se modelan con labels tipo `macro:GuardarLote`, `hoja:REGISTRO_RAPIDO`, etc.
+- Al abrir la v2, lee los Issues y los muestra como tarjetas.
+- Crear / mover / cerrar tarjetas desde el HTML actualiza los Issues vía API REST de GitHub.
+- Sincroniza automáticamente entre todos los dispositivos y con Claude (que ve los mismos Issues).
+
+### Cómo habilitarla (primera vez)
+
+1. Entrá a **[→ panel v2](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/v2/)**. Sin token, ya ves las tarjetas en modo lectura.
+2. Para crear/mover tarjetas necesitás un **Personal Access Token** de GitHub:
+   - Ir a https://github.com/settings/tokens?type=beta
+   - *Generate new token* (fine-grained)
+   - Nombre: `Panel Contable`
+   - Expiración: 1 año (o la que prefieras)
+   - Repository access: *Only select repositories* → `Sistema-Contabel-EXcel`
+   - Permissions → Repository → **Issues: Read and write**
+   - Generar y copiar el token
+3. Pegá el token en el campo de la barra superior del panel y pulsá **Guardar token**.
+4. El token queda en `localStorage` de ese navegador (nunca se sube a ningún lado).
+5. Ya podés crear, mover y cerrar tarjetas directamente desde la UI.
+
+### Uso diario
+
+1. Abrí la v2 desde cualquier dispositivo (una sola vez por dispositivo tenés que pegar el token).
+2. En **Ideas de cambio**: título + nota + estado + anclas → **Crear Issue**.
+3. Para avanzar el estado de una tarjeta: clic en la flecha `→` de la tarjeta.
+4. Para cerrar una idea implementada: clic en la `×` (cierra el Issue, no lo borra).
+5. **Copiar prompt VBA** arma el prompt con todas las tarjetas en estado `listo` para pegar en Claude.
+
+### Modo solo lectura (sin token)
+
+Si entrás sin pegar token, ves todas las tarjetas existentes pero no podés modificarlas. Útil para compartir el panel con alguien que solo necesite consultar.
+
+---
+
+## v1 — Panel original (localStorage)
+
+### Uso rápido
+
+1. Abrir el [panel v1](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/)
+2. Capturar una idea en la pestaña **Ideas de cambio** con su título, notas y anclas
+3. Moverla entre columnas: *Idea → En diseño → Listo para implementar*
+4. Cuando esté lista, usar el botón **Copiar prompt VBA**
+5. Pegar en un chat con Claude → recibir el código VBA
+
+### Sincronización manual (solo v1)
+
+`localStorage` no sincroniza solo:
+
+1. **Exportar JSON** en el dispositivo origen (descarga `data.json`)
+2. Subir ese archivo al repo reemplazando el existente
+3. En el otro dispositivo → **Importar JSON** pegando el contenido
+
+Si necesitás sincronización real entre dispositivos, conviene usar directamente la **v2**.
+
+---
 
 ## Qué contiene el repo
 
 | Archivo | Función |
 |---|---|
-| `index.html` | Panel completo con 3 vistas sincronizadas (Flujo, Estructura, Kanban) |
-| `data.json` | Respaldo versionado de las tarjetas de pre-diseño |
+| `index.html` | Panel v1 (localStorage) — versión original |
+| `v2/index.html` | Panel v2 (sincronizado con GitHub Issues) |
+| `data.json` | Respaldo versionado de las tarjetas de v1 |
 | `README.md` | Este archivo |
-| `.gitignore` | Exclusiones de Git para archivos del sistema |
+| `.gitignore` | Exclusiones de Git |
 | `LICENSE` | Licencia del proyecto |
 
-## Uso rápido
-
-1. Abrir [el panel](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/)
-2. Capturar una idea en la pestaña **Ideas de cambio** con su título, notas y anclas (qué macro, hoja o tabla afecta)
-3. Moverla entre columnas: *Idea → En diseño → Listo para implementar*
-4. Cuando esté lista, usar el botón **Copiar prompt VBA**
-5. Pegar en un chat con Claude → recibir el código VBA
+---
 
 ## Flujo de trabajo
 
@@ -37,22 +99,6 @@ Idea/por pensar  →   En diseño      →   Listo implementar  →  Claude
                                     Código VBA para pegar
                                          en Excel
 ```
-
-## Sincronización entre dispositivos
-
-`localStorage` no sincroniza solo. Dos maneras de hacerlo:
-
-### Manual (cualquier plan)
-1. **Exportar JSON** en el dispositivo origen (descarga `data.json`)
-2. Subir ese archivo al repo reemplazando el existente (via GitHub web o via Claude con conector GitHub)
-3. En el otro dispositivo → **Importar JSON** pegando el contenido
-
-### Asistida por Claude (con conector GitHub activo)
-Pedile a Claude:
-- *"Leé el data.json del repo y generá el VBA de las ideas listas"*
-- *"Commiteá mis ideas al repo con el data.json que te paso"*
-
-Claude usa las herramientas de GitHub para leer y escribir `data.json` directamente.
 
 ## Catálogo de nodos precargados
 
@@ -68,15 +114,21 @@ El panel tiene hardcodeados los elementos reales del sistema contable:
 
 Los estados indican madurez, no prioridad:
 
-| Estado | Qué significa |
-|---|---|
-| **Idea / por pensar** | Se me ocurrió algo. Todavía no sé si es buena idea ni qué impacto tiene. |
-| **En diseño** | Empecé a pensarlo en serio. Estoy definiendo alcance, riesgos, cómo se hace. |
-| **Listo para implementar** | Decidí hacerlo. Tengo claro qué cambio en qué lugar. Falta el código. |
+| Estado | Label en GitHub (v2) | Qué significa |
+|---|---|---|
+| **Idea / por pensar** | `idea` | Se me ocurrió algo. Todavía no sé si es buena idea ni qué impacto tiene. |
+| **En diseño** | `diseño` | Empecé a pensarlo en serio. Estoy definiendo alcance, riesgos, cómo se hace. |
+| **Listo para implementar** | `listo` | Decidí hacerlo. Tengo claro qué cambio en qué lugar. Falta el código. |
 
-## Issues del repo como backup externo
+## Integración con Claude
 
-Además del `data.json`, podés usar **GitHub Issues** como espejo externo de ideas maduras. Cada issue con label `listo` es una tarjeta que se puede generar como VBA. Útil si querés discutir una idea con alguien antes de ejecutarla.
+Con el conector GitHub activo, pedile a Claude cosas como:
+
+- *"Leé los Issues con label `listo` y generá el VBA correspondiente"*
+- *"Creá un Issue con esta idea y etiquetalo `diseño` + `macro:GuardarLote`"*
+- *"Mové el Issue #5 a `listo` si ya está definido el alcance"*
+
+Claude lee y escribe los mismos Issues que ves en el panel v2, en tiempo real.
 
 ## Arquitectura de referencia
 
