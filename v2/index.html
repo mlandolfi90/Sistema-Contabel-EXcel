@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel v2 — Sincronizado con GitHub Issues</title>
+<style>
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f4ee;
+  --bg-tertiary: #faf9f5;
+  --text-primary: #1a1a17;
+  --text-secondary: #5f5e5a;
+  --text-tertiary: #888780;
+  --text-info: #185FA5;
+  --border-tertiary: rgba(0,0,0,0.08);
+  --border-secondary: rgba(0,0,0,0.15);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1f1e1b;
+    --bg-secondary: #2a2927;
+    --bg-tertiary: #18171600;
+    --text-primary: #f0efea;
+    --text-secondary: #b4b2a9;
+    --text-tertiary: #888780;
+    --text-info: #85B7EB;
+    --border-tertiary: rgba(255,255,255,0.08);
+    --border-secondary: rgba(255,255,255,0.15);
+  }
+}
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 24px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+.container { max-width: 1200px; margin: 0 auto; }
+h1 { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+.subtitle { color: var(--text-secondary); font-size: 13px; margin: 0 0 16px; }
+.auth-bar {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 12px;
+}
+.auth-bar input {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-tertiary);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  flex: 1;
+  min-width: 200px;
+}
+.auth-bar .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #c33; display: inline-block; }
+.auth-bar .status-dot.ok { background: #0a0; }
+.panel { padding: 0.5rem 0 1rem; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border-tertiary); margin-bottom: 16px; }
+.tab {
+  padding: 8px 14px; font-size: 13px; font-weight: 500;
+  color: var(--text-secondary); cursor: pointer; border: none;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  background: transparent; font-family: inherit;
+}
+.tab.active { color: var(--text-primary); border-bottom-color: var(--text-info); }
+.tab:hover { color: var(--text-primary); }
+.view { display: none; }
+.view.active { display: block; }
+.legend {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  font-size: 11px; color: var(--text-secondary);
+  margin-bottom: 10px; align-items: center;
+}
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.hint { font-size: 12px; color: var(--text-tertiary); margin: 6px 0 12px; }
+.kanban { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+@media (max-width: 800px) { .kanban { grid-template-columns: 1fr; } }
+.col { background: var(--bg-secondary); border-radius: var(--radius-lg); padding: 12px; min-height: 220px; }
+.col h3 {
+  margin: 0 0 10px; font-size: 13px; font-weight: 500;
+  color: var(--text-secondary); display: flex;
+  justify-content: space-between; align-items: center;
+}
+.col h3 .count { background: var(--bg-primary); border-radius: 10px; padding: 1px 8px; font-size: 11px; color: var(--text-secondary); }
+.card {
+  background: var(--bg-primary); border: 1px solid var(--border-tertiary);
+  border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 8px; position: relative;
+}
+.card p.title { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; padding-right: 80px; }
+.card p.title a { color: inherit; text-decoration: none; }
+.card p.title a:hover { text-decoration: underline; }
+.card p.note { margin: 0 0 6px; font-size: 12px; color: var(--text-secondary); line-height: 1.5; padding-right: 80px; white-space: pre-wrap; max-height: 80px; overflow: hidden; }
+.card .issue-num { font-size: 10px; color: var(--text-tertiary); font-weight: normal; }
+.card .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.card .actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 2px; }
+.card .actions button {
+  padding: 3px 6px; font-size: 11px; background: transparent;
+  border: 1px solid var(--border-tertiary); border-radius: 4px;
+  cursor: pointer; color: var(--text-secondary); min-width: 24px; font-family: inherit;
+}
+.card .actions button:hover { background: var(--bg-secondary); color: var(--text-primary); }
+.tag { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
+.tag-macro { background: #EEEDFE; color: #26215C; }
+.tag-hoja { background: #E1F5EE; color: #04342C; }
+.tag-tabla { background: #FAECE7; color: #4A1B0C; }
+.tag-rango { background: #FAEEDA; color: #412402; }
+.tag-regla { background: #FCEBEB; color: #501313; }
+.composer { background: var(--bg-secondary); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 16px; }
+.composer-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.composer-row label { font-size: 12px; color: var(--text-secondary); min-width: 60px; }
+.composer textarea, .composer input[type=text] {
+  width: 100%; font-family: inherit; font-size: 13px; padding: 8px 10px;
+  border: 1px solid var(--border-tertiary); border-radius: var(--radius-md);
+  background: var(--bg-primary); color: var(--text-primary); resize: vertical; box-sizing: border-box;
+}
+.composer textarea { min-height: 56px; }
+.composer select {
+  font-family: inherit; font-size: 12px; padding: 5px 8px;
+  border: 1px solid var(--border-tertiary); border-radius: var(--radius-md);
+  background: var(--bg-primary); color: var(--text-primary);
+}
+.composer-anchors { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.chip {
+  font-size: 11px; padding: 3px 8px; border-radius: 10px;
+  background: var(--bg-primary); border: 1px solid var(--border-tertiary);
+  cursor: pointer; color: var(--text-secondary); font-family: inherit;
+}
+.chip.on { border-color: transparent; }
+.chip.on.tag-macro { background: #EEEDFE; color: #26215C; }
+.chip.on.tag-hoja { background: #E1F5EE; color: #04342C; }
+.chip.on.tag-tabla { background: #FAECE7; color: #4A1B0C; }
+.chip.on.tag-rango { background: #FAEEDA; color: #412402; }
+.chip.on.tag-regla { background: #FCEBEB; color: #501313; }
+.toolbar { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; }
+.toolbar-left { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.filter-chip {
+  font-size: 11px; padding: 3px 10px; border-radius: 10px;
+  background: var(--bg-secondary); border: 1px solid transparent;
+  cursor: pointer; color: var(--text-secondary); font-family: inherit;
+}
+.filter-chip.on { background: var(--bg-primary); border-color: var(--border-secondary); color: var(--text-primary); }
+.empty { font-size: 12px; color: var(--text-tertiary); font-style: italic; padding: 8px 4px; }
+.node-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.node-card {
+  background: var(--bg-primary); border: 1px solid var(--border-tertiary);
+  border-radius: var(--radius-md); padding: 10px 12px; cursor: pointer; transition: border-color 0.15s;
+}
+.node-card:hover { border-color: var(--border-secondary); }
+.node-card.has-notes { border-left: 3px solid #7F77DD; }
+.node-card .nt { font-size: 13px; font-weight: 500; color: var(--text-primary); margin: 0 0 2px; line-height: 1.3; }
+.node-card .ns { font-size: 11px; color: var(--text-secondary); margin: 0; }
+.node-card .nb { display: inline-block; margin-top: 6px; font-size: 10px; padding: 1px 7px; border-radius: 10px; background: #EEEDFE; color: #26215C; }
+.section-title { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin: 14px 0 6px; }
+.btn-primary {
+  background: var(--text-info); color: white; border: none;
+  padding: 7px 14px; font-size: 12px; font-weight: 500;
+  border-radius: var(--radius-md); cursor: pointer; font-family: inherit;
+}
+.btn-primary:hover { opacity: 0.9; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-small {
+  font-size: 11px; padding: 4px 10px; background: transparent;
+  border: 1px solid var(--border-tertiary); border-radius: var(--radius-md);
+  color: var(--text-secondary); cursor: pointer; font-family: inherit;
+}
+.btn-small:hover { background: var(--bg-secondary); color: var(--text-primary); }
+.selected-anchor-preview { font-size: 11px; color: var(--text-secondary); }
+.flow-svg { width: 100%; height: auto; }
+.flow-svg g[data-node] { cursor: pointer; }
+.flow-svg g[data-node]:hover rect { stroke-width: 1.5; }
+.flow-svg g[data-node].has-notes rect { stroke-width: 1.5; stroke: #7F77DD; }
+.flow-svg .t { font-size: 14px; font-weight: 500; }
+.flow-svg .ts { font-size: 12px; }
+.flow-svg .th { font-size: 14px; font-weight: 500; }
+.c-purple rect { fill: #EEEDFE; stroke: #534AB7; }
+.c-purple .th { fill: #26215C; } .c-purple .ts { fill: #534AB7; }
+.c-teal rect { fill: #E1F5EE; stroke: #0F6E56; }
+.c-teal .th { fill: #04342C; } .c-teal .ts { fill: #0F6E56; }
+.c-amber rect { fill: #FAEEDA; stroke: #854F0B; }
+.c-amber .th { fill: #412402; } .c-amber .ts { fill: #854F0B; }
+.c-gray rect { fill: #F1EFE8; stroke: #5F5E5A; }
+.c-gray .ts { fill: #444441; }
+@media (prefers-color-scheme: dark) {
+  .c-purple rect { fill: #3C3489; stroke: #AFA9EC; }
+  .c-purple .th { fill: #CECBF6; } .c-purple .ts { fill: #AFA9EC; }
+  .c-teal rect { fill: #085041; stroke: #5DCAA5; }
+  .c-teal .th { fill: #9FE1CB; } .c-teal .ts { fill: #5DCAA5; }
+  .c-amber rect { fill: #633806; stroke: #EF9F27; }
+  .c-amber .th { fill: #FAC775; } .c-amber .ts { fill: #EF9F27; }
+  .c-gray rect { fill: #444441; stroke: #B4B2A9; }
+  .c-gray .ts { fill: #D3D1C7; }
+}
+#ideas-count { background: #EEEDFE; color: #26215C; font-size: 10px; padding: 1px 6px; border-radius: 8px; margin-left: 4px; font-weight: 500; }
+.save-status { font-size: 11px; color: var(--text-tertiary); margin-left: 8px; }
+.banner {
+  background: #FFF4D6; color: #5a3e00;
+  padding: 10px 14px; border-radius: var(--radius-md);
+  font-size: 12px; margin-bottom: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  .banner { background: #4a3a10; color: #fae9b8; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Panel de pre-diseño v2 <span style="font-size:11px; background:#0a0; color:white; padding:2px 7px; border-radius:10px; vertical-align:middle;">sync GitHub</span></h1>
+<p class="subtitle">Las tarjetas viven como Issues del repo. Se sincronizan entre todos tus dispositivos.</p>
+
+<div class="auth-bar">
+  <span class="status-dot" id="auth-dot"></span>
+  <span id="auth-status">Sin token</span>
+  <input type="password" id="token-input" placeholder="Pegá tu GitHub Personal Access Token">
+  <button class="btn-small" onclick="saveToken()">Guardar token</button>
+  <button class="btn-small" onclick="clearToken()">Olvidar</button>
+  <button class="btn-small" onclick="reload()">⟳ Recargar</button>
+</div>
+
+<div class="panel">
+  <div class="tabs">
+    <button class="tab active" data-view="flujo" onclick="switchView('flujo')">Flujo de macros</button>
+    <button class="tab" data-view="estructura" onclick="switchView('estructura')">Estructura del libro</button>
+    <button class="tab" data-view="ideas" onclick="switchView('ideas')">Ideas de cambio <span id="ideas-count">0</span></button>
+  </div>
+
+  <div id="view-flujo" class="view active">
+    <div class="legend">
+      <span><span class="dot" style="background:#EEEDFE;"></span>Macro</span>
+      <span><span class="dot" style="background:#E1F5EE;"></span>Hoja</span>
+      <span><span class="dot" style="background:#FAEEDA;"></span>Regla</span>
+      <span><span class="dot" style="background:#7F77DD;border-radius:50%;"></span>Con notas</span>
+    </div>
+    <p class="hint">Clic en cualquier nodo para abrir el editor de notas anclado a ese elemento.</p>
+    <svg class="flow-svg" viewBox="0 0 680 820" role="img">
+      <defs><marker id="arrow-fl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      <g data-node="REGISTRO_RAPIDO" class="c-teal" onclick="openNode('REGISTRO_RAPIDO','hoja')"><rect x="240" y="20" width="200" height="52" rx="8" stroke-width="1"/><text class="th" x="340" y="42" text-anchor="middle" dominant-baseline="central">REGISTRO_RAPIDO</text><text class="ts" x="340" y="58" text-anchor="middle" dominant-baseline="central">Formulario de captura</text></g>
+      <line x1="340" y1="72" x2="140" y2="110" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <line x1="340" y1="72" x2="340" y2="110" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <line x1="340" y1="72" x2="540" y2="110" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <g data-node="GuardarLote" class="c-purple" onclick="openNode('GuardarLote','macro')"><rect x="50" y="110" width="180" height="52" rx="8" stroke-width="1"/><text class="th" x="140" y="132" text-anchor="middle" dominant-baseline="central">GuardarLote</text><text class="ts" x="140" y="148" text-anchor="middle" dominant-baseline="central">Valida y graba</text></g>
+      <g data-node="LimpiarRegistro" class="c-purple" onclick="openNode('LimpiarRegistro','macro')"><rect x="240" y="110" width="200" height="52" rx="8" stroke-width="1"/><text class="th" x="340" y="132" text-anchor="middle" dominant-baseline="central">LimpiarRegistro</text><text class="ts" x="340" y="148" text-anchor="middle" dominant-baseline="central">Limpia formulario</text></g>
+      <g data-node="GenerarAsientoPacto" class="c-purple" onclick="openNode('GenerarAsientoPacto','macro')"><rect x="450" y="110" width="180" height="52" rx="8" stroke-width="1"/><text class="th" x="540" y="132" text-anchor="middle" dominant-baseline="central">GenerarAsientoPacto</text><text class="ts" x="540" y="148" text-anchor="middle" dominant-baseline="central">Distribución socios</text></g>
+      <line x1="140" y1="162" x2="140" y2="200" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <line x1="140" y1="162" x2="340" y2="200" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <line x1="140" y1="162" x2="540" y2="200" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <g data-node="LIBRO_MAYOR" class="c-teal" onclick="openNode('LIBRO_MAYOR','hoja')"><rect x="50" y="200" width="180" height="52" rx="8" stroke-width="1"/><text class="th" x="140" y="222" text-anchor="middle" dominant-baseline="central">LIBRO_MAYOR</text><text class="ts" x="140" y="238" text-anchor="middle" dominant-baseline="central">Escribe líneas</text></g>
+      <g data-node="TASAS" class="c-teal" onclick="openNode('TASAS','hoja')"><rect x="240" y="200" width="200" height="52" rx="8" stroke-width="1"/><text class="th" x="340" y="222" text-anchor="middle" dominant-baseline="central">TASAS</text><text class="ts" x="340" y="238" text-anchor="middle" dominant-baseline="central">Historial tasas aplicadas</text></g>
+      <g data-node="AlertaSpread" class="c-amber" onclick="openNode('AlertaSpread','regla')"><rect x="450" y="200" width="180" height="52" rx="8" stroke-width="1"/><text class="th" x="540" y="222" text-anchor="middle" dominant-baseline="central">Alerta spread</text><text class="ts" x="540" y="238" text-anchor="middle" dominant-baseline="central">Si mayor a 3%</text></g>
+      <line x1="540" y1="252" x2="540" y2="300" stroke="#BA7517" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <g data-node="ActualizarTasaVigente" class="c-purple" onclick="openNode('ActualizarTasaVigente','macro')"><rect x="450" y="300" width="180" height="52" rx="8" stroke-width="1"/><text class="th" x="540" y="322" text-anchor="middle" dominant-baseline="central">ActualizarTasa</text><text class="ts" x="540" y="338" text-anchor="middle" dominant-baseline="central">Vigente (diálogo)</text></g>
+      <line x1="540" y1="352" x2="540" y2="400" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <g data-node="ActualizarTasaVigenteDesde" class="c-purple" onclick="openNode('ActualizarTasaVigenteDesde','macro')"><rect x="450" y="400" width="180" height="52" rx="8" stroke-width="1"/><text class="th" x="540" y="422" text-anchor="middle" dominant-baseline="central">ActualizarTasa</text><text class="ts" x="540" y="438" text-anchor="middle" dominant-baseline="central">VigenteDesde(args)</text></g>
+      <g data-node="AUDITOR_LOTES" class="c-teal" onclick="openNode('AUDITOR_LOTES','hoja')"><rect x="50" y="500" width="180" height="52" rx="8" stroke-width="1"/><text class="th" x="140" y="522" text-anchor="middle" dominant-baseline="central">AUDITOR_LOTES</text><text class="ts" x="140" y="538" text-anchor="middle" dominant-baseline="central">Navegación lotes</text></g>
+      <line x1="140" y1="552" x2="140" y2="590" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <line x1="140" y1="552" x2="340" y2="590" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <line x1="140" y1="552" x2="540" y2="590" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <g data-node="LoteAnterior" class="c-purple" onclick="openNode('LoteAnterior','macro')"><rect x="50" y="590" width="180" height="52" rx="8" stroke-width="1"/><text class="th" x="140" y="612" text-anchor="middle" dominant-baseline="central">LoteAnterior</text><text class="ts" x="140" y="628" text-anchor="middle" dominant-baseline="central">Navega atrás</text></g>
+      <g data-node="LoteSiguiente" class="c-purple" onclick="openNode('LoteSiguiente','macro')"><rect x="240" y="590" width="200" height="52" rx="8" stroke-width="1"/><text class="th" x="340" y="612" text-anchor="middle" dominant-baseline="central">LoteSiguiente</text><text class="ts" x="340" y="628" text-anchor="middle" dominant-baseline="central">Navega adelante</text></g>
+      <g data-node="AccionSobreLoteVisible" class="c-purple" onclick="openNode('AccionSobreLoteVisible','macro')"><rect x="450" y="590" width="180" height="52" rx="8" stroke-width="1"/><text class="th" x="540" y="612" text-anchor="middle" dominant-baseline="central">Acción sobre lote</text><text class="ts" x="540" y="628" text-anchor="middle" dominant-baseline="central">Corrige o duplica</text></g>
+      <line x1="540" y1="642" x2="440" y2="680" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <line x1="540" y1="642" x2="640" y2="680" stroke="#888780" stroke-width="1" marker-end="url(#arrow-fl)"/>
+      <g data-node="CorregirLoteConID" class="c-purple" onclick="openNode('CorregirLoteConID','macro')"><rect x="340" y="680" width="200" height="52" rx="8" stroke-width="1"/><text class="th" x="440" y="702" text-anchor="middle" dominant-baseline="central">CorregirLoteConID</text><text class="ts" x="440" y="718" text-anchor="middle" dominant-baseline="central">Anula y recarga</text></g>
+      <g data-node="DuplicarLoteConID" class="c-purple" onclick="openNode('DuplicarLoteConID','macro')"><rect x="560" y="680" width="110" height="52" rx="8" stroke-width="1"/><text class="th" x="615" y="702" text-anchor="middle" dominant-baseline="central">Duplicar</text><text class="ts" x="615" y="718" text-anchor="middle" dominant-baseline="central">LoteConID</text></g>
+      <g data-node="RevalorizarCuenta" class="c-purple" onclick="openNode('RevalorizarCuenta','macro')"><rect x="50" y="680" width="200" height="52" rx="8" stroke-width="1"/><text class="th" x="150" y="702" text-anchor="middle" dominant-baseline="central">RevalorizarCuenta</text><text class="ts" x="150" y="718" text-anchor="middle" dominant-baseline="central">Ganancia latente</text></g>
+      <g data-node="SALDOS_Y_ENTIDADES" class="c-teal" onclick="openNode('SALDOS_Y_ENTIDADES','hoja')"><rect x="50" y="760" width="200" height="44" rx="8" stroke-width="1"/><text class="ts" x="150" y="782" text-anchor="middle" dominant-baseline="central">SALDOS_Y_ENTIDADES</text></g>
+      <g data-node="REPORTE_BARRIDO" class="c-teal" onclick="openNode('REPORTE_BARRIDO','hoja')"><rect x="270" y="760" width="180" height="44" rx="8" stroke-width="1"/><text class="ts" x="360" y="782" text-anchor="middle" dominant-baseline="central">REPORTE_BARRIDO</text></g>
+      <g data-node="Helpers" class="c-gray" onclick="openNode('Helpers','macro')"><rect x="470" y="760" width="200" height="44" rx="8" stroke-width="1"/><text class="ts" x="570" y="782" text-anchor="middle" dominant-baseline="central">colIdx + EscribirLinea</text></g>
+    </svg>
+  </div>
+
+  <div id="view-estructura" class="view">
+    <p class="hint">Cada nodo es clicable. Los que tienen notas muestran una banda morada a la izquierda.</p>
+    <p class="section-title">Hojas operativas</p>
+    <div class="node-grid" id="grid-hojas"></div>
+    <p class="section-title">Tablas estructuradas (ListObjects)</p>
+    <div class="node-grid" id="grid-tablas"></div>
+    <p class="section-title">Rangos con nombre clave</p>
+    <div class="node-grid" id="grid-rangos"></div>
+  </div>
+
+  <div id="view-ideas" class="view">
+    <div id="no-token-banner" class="banner" style="display:none;">
+      ⚠ Sin token de GitHub no podés crear ni mover tarjetas. <a href="https://github.com/settings/tokens?type=beta" target="_blank">Crear token fine-grained</a> con permisos <b>Issues: Read & Write</b> sobre el repo <code>Sistema-Contabel-EXcel</code>.
+    </div>
+    <div class="composer">
+      <div class="composer-row"><input type="text" id="new-title" placeholder="Título de la idea"></div>
+      <div class="composer-row"><textarea id="new-note" placeholder="Notas de pre-diseño: qué cambia, por qué, qué impacto..."></textarea></div>
+      <div class="composer-row">
+        <label>Estado</label>
+        <select id="new-status">
+          <option value="idea">Idea / por pensar</option>
+          <option value="diseño">En diseño</option>
+          <option value="listo">Listo para implementar</option>
+        </select>
+        <label style="margin-left:12px;">Anclas</label>
+        <span class="selected-anchor-preview" id="anchor-preview">ninguna</span>
+        <button class="btn-small" onclick="toggleAnchorPicker()">Seleccionar</button>
+      </div>
+      <div id="anchor-picker" style="display:none; background: var(--bg-primary); border-radius: var(--radius-md); padding: 10px; margin-top:6px;">
+        <p style="font-size:11px; color:var(--text-secondary); margin:0 0 6px;">Macros</p>
+        <div class="composer-anchors" id="pick-macro"></div>
+        <p style="font-size:11px; color:var(--text-secondary); margin:10px 0 6px;">Hojas</p>
+        <div class="composer-anchors" id="pick-hoja"></div>
+        <p style="font-size:11px; color:var(--text-secondary); margin:10px 0 6px;">Tablas</p>
+        <div class="composer-anchors" id="pick-tabla"></div>
+        <p style="font-size:11px; color:var(--text-secondary); margin:10px 0 6px;">Rangos con nombre</p>
+        <div class="composer-anchors" id="pick-rango"></div>
+        <p style="font-size:11px; color:var(--text-secondary); margin:10px 0 6px;">Reglas</p>
+        <div class="composer-anchors" id="pick-regla"></div>
+      </div>
+      <div class="composer-row" style="justify-content:flex-end; margin-top:10px;">
+        <span class="save-status" id="save-status"></span>
+        <button class="btn-small" onclick="resetComposer()">Limpiar</button>
+        <button class="btn-primary" id="save-btn" onclick="saveCard()">Crear Issue</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <span style="font-size:12px; color:var(--text-secondary);">Filtrar:</span>
+        <button class="filter-chip on" data-filter="all" onclick="setFilter('all')">Todas</button>
+        <button class="filter-chip" data-filter="macro" onclick="setFilter('macro')">Por macro</button>
+        <button class="filter-chip" data-filter="hoja" onclick="setFilter('hoja')">Por hoja</button>
+        <button class="filter-chip" data-filter="tabla" onclick="setFilter('tabla')">Por tabla</button>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn-small" onclick="copyVBAPrompt()">Copiar prompt VBA</button>
+      </div>
+    </div>
+    <div class="kanban">
+      <div class="col"><h3>Idea / por pensar <span class="count" id="c-idea">0</span></h3><div id="col-idea"></div></div>
+      <div class="col"><h3>En diseño <span class="count" id="c-diseño">0</span></h3><div id="col-diseño"></div></div>
+      <div class="col"><h3>Listo para implementar <span class="count" id="c-listo">0</span></h3><div id="col-listo"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-backdrop" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:100;padding:16px;" onclick="if(event.target===this)closeModal()">
+  <div style="background:var(--bg-primary);border-radius:var(--radius-lg);padding:20px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;">
+    <h3 id="modal-title" style="margin:0 0 12px;font-size:16px;font-weight:500;">Prompt</h3>
+    <textarea id="modal-textarea" style="width:100%;min-height:300px;font-family:ui-monospace,monospace;font-size:11px;padding:8px;border:1px solid var(--border-tertiary);border-radius:var(--radius-md);background:var(--bg-secondary);color:var(--text-primary);resize:vertical;box-sizing:border-box;"></textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+      <button class="btn-small" onclick="closeModal()">Cerrar</button>
+      <button class="btn-primary" onclick="copyModal()">Copiar</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+const OWNER = 'mlandolfi90';
+const REPO = 'Sistema-Contabel-EXcel';
+const API = 'https://api.github.com/repos/' + OWNER + '/' + REPO;
+
+const CATALOG = {
+  macro: [
+    {id:'GuardarLote', desc:'Graba lote validado al mayor'},
+    {id:'LimpiarRegistro', desc:'Resetea formulario de entrada'},
+    {id:'ActualizarTasaVigente', desc:'Diálogo para cambiar tasa'},
+    {id:'ActualizarTasaVigenteDesde', desc:'Actualiza tasa parametrizada'},
+    {id:'GenerarAsientoPacto', desc:'Prellena asiento de pacto'},
+    {id:'RevalorizarCuenta', desc:'Prellena revalorización'},
+    {id:'LoteAnterior', desc:'Navega al lote previo'},
+    {id:'LoteSiguiente', desc:'Navega al lote siguiente'},
+    {id:'AccionSobreLoteVisible', desc:'Corrige o duplica según estado'},
+    {id:'CorregirLoteConID', desc:'Anula original y precarga nuevo'},
+    {id:'DuplicarLoteConID', desc:'Clona lote al formulario'},
+    {id:'Helpers', desc:'colIdx + EscribirLinea'},
+  ],
+  hoja: [
+    {id:'REGISTRO_RAPIDO', desc:'Formulario de captura'},
+    {id:'LIBRO_MAYOR', desc:'Almacén acumulativo de asientos'},
+    {id:'TASAS', desc:'Tasas vigentes + historial'},
+    {id:'AUDITOR_LOTES', desc:'Navegación de lotes'},
+    {id:'REPORTE_BARRIDO', desc:'Reparto de utilidades'},
+    {id:'SALDOS_Y_ENTIDADES', desc:'Saldos y ganancia latente'},
+  ],
+  tabla: [
+    {id:'tb_registro_rapido', desc:'9 columnas - entrada del lote'},
+    {id:'tb_mayor', desc:'19 columnas - asientos definitivos'},
+    {id:'tb_tasas_vigentes', desc:'Tasas actuales por divisa'},
+    {id:'tb_tasas_historial', desc:'Bitácora de tasas aplicadas'},
+    {id:'tb_cuentas', desc:'Catálogo de cuentas contables'},
+    {id:'tb_entidades', desc:'Catálogo de entidades'},
+    {id:'tb_divisas', desc:'Catálogo de divisas'},
+    {id:'tb_categorias', desc:'Catálogo de categorías'},
+    {id:'tb_segmentos', desc:'Catálogo de segmentos'},
+    {id:'tb_clase_cuenta', desc:'Catálogo de clases'},
+  ],
+  rango: [
+    {id:'IDs_Unicos', desc:'Lista ordenada desc de lotes'},
+    {id:'ListaCuentaActiva', desc:'Cuentas activas (derrame)'},
+    {id:'ListaDivisaActiva', desc:'Divisas activas (derrame)'},
+    {id:'ListaSocios', desc:'Socios del negocio'},
+    {id:'ListaSegmentoActiva', desc:'Segmentos activos (derrame)'},
+  ],
+  regla: [ {id:'AlertaSpread', desc:'Umbral de desviación de tasa'} ]
+};
+
+const STATUS_LABELS = ['idea', 'diseño', 'listo'];
+const TOKEN_KEY = 'gh-token-panel-v2';
+let token = localStorage.getItem(TOKEN_KEY) || '';
+let cards = [];
+let composerAnchors = [];
+let currentFilter = 'all';
+
+function headers() {
+  const h = { 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
+  if (token) h['Authorization'] = 'Bearer ' + token;
+  return h;
+}
+
+async function apiGet(path) {
+  const r = await fetch(API + path, { headers: headers() });
+  if (!r.ok) throw new Error('GET ' + path + ' → ' + r.status);
+  return r.json();
+}
+async function apiPost(path, body) {
+  const r = await fetch(API + path, { method: 'POST', headers: headers(), body: JSON.stringify(body) });
+  if (!r.ok) throw new Error('POST ' + path + ' → ' + r.status + ' ' + await r.text());
+  return r.json();
+}
+async function apiPatch(path, body) {
+  const r = await fetch(API + path, { method: 'PATCH', headers: headers(), body: JSON.stringify(body) });
+  if (!r.ok) throw new Error('PATCH ' + path + ' → ' + r.status + ' ' + await r.text());
+  return r.json();
+}
+
+function saveToken() {
+  const v = document.getElementById('token-input').value.trim();
+  if (!v) return;
+  token = v;
+  localStorage.setItem(TOKEN_KEY, v);
+  document.getElementById('token-input').value = '';
+  updateAuthUI();
+  loadIssues();
+}
+function clearToken() {
+  token = '';
+  localStorage.removeItem(TOKEN_KEY);
+  updateAuthUI();
+}
+function updateAuthUI() {
+  const dot = document.getElementById('auth-dot');
+  const st = document.getElementById('auth-status');
+  const banner = document.getElementById('no-token-banner');
+  const saveBtn = document.getElementById('save-btn');
+  if (token) {
+    dot.classList.add('ok');
+    st.textContent = 'Token OK — escritura habilitada';
+    banner.style.display = 'none';
+    saveBtn.disabled = false;
+  } else {
+    dot.classList.remove('ok');
+    st.textContent = 'Sin token — solo lectura';
+    banner.style.display = 'block';
+    saveBtn.disabled = true;
+  }
+}
+
+function issueToCard(issue) {
+  const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
+  let status = 'idea';
+  for (const s of STATUS_LABELS) if (labels.includes(s)) { status = s; break; }
+  const anchors = [];
+  labels.forEach(l => {
+    const m = l.match(/^(macro|hoja|tabla|rango|regla):(.+)$/);
+    if (m) anchors.push({ type: m[1], id: m[2] });
+  });
+  return {
+    id: issue.number,
+    number: issue.number,
+    title: issue.title,
+    note: issue.body || '',
+    status,
+    anchors,
+    labels,
+    url: issue.html_url,
+  };
+}
+
+function cardToLabels(status, anchors, existingLabels) {
+  const out = (existingLabels || []).filter(l => {
+    if (STATUS_LABELS.includes(l)) return false;
+    if (/^(macro|hoja|tabla|rango|regla):/.test(l)) return false;
+    return true;
+  });
+  out.push(status);
+  anchors.forEach(a => out.push(a.type + ':' + a.id));
+  return out;
+}
+
+async function loadIssues() {
+  try {
+    showSaveStatus('Cargando issues...');
+    const issues = await apiGet('/issues?state=open&per_page=100');
+    cards = issues.filter(i => !i.pull_request).map(issueToCard);
+    renderAll();
+    showSaveStatus('Cargadas ' + cards.length + ' ideas');
+  } catch (e) {
+    showSaveStatus('Error: ' + e.message);
+  }
+}
+
+function reload() { loadIssues(); }
+
+function showSaveStatus(msg) {
+  const el = document.getElementById('save-status');
+  if (el) { el.textContent = msg; setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 3000); }
+}
+
+function switchView(v) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === v));
+  document.querySelectorAll('.view').forEach(el => el.classList.toggle('active', el.id === 'view-' + v));
+}
+
+function openNode(id, type) {
+  switchView('ideas');
+  composerAnchors = [{id, type}];
+  updateAnchorPreview();
+  document.getElementById('new-title').focus();
+  if (document.getElementById('anchor-picker').style.display === 'block') renderPicker();
+}
+
+function toggleAnchorPicker() {
+  const p = document.getElementById('anchor-picker');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+  if (p.style.display === 'block') renderPicker();
+}
+
+function renderPicker() {
+  ['macro','hoja','tabla','rango','regla'].forEach(type => {
+    const container = document.getElementById('pick-' + type);
+    if (!container) return;
+    const tagClass = 'tag-' + type;
+    container.innerHTML = CATALOG[type].map(n => {
+      const on = composerAnchors.some(a => a.id === n.id);
+      return '<span class="chip ' + (on ? 'on ' + tagClass : '') + '" onclick="toggleAnchor(\'' + n.id + '\',\'' + type + '\')">' + n.id + '</span>';
+    }).join('');
+  });
+}
+
+function toggleAnchor(id, type) {
+  const i = composerAnchors.findIndex(a => a.id === id);
+  if (i >= 0) composerAnchors.splice(i, 1);
+  else composerAnchors.push({id, type});
+  updateAnchorPreview();
+  renderPicker();
+}
+
+function updateAnchorPreview() {
+  const el = document.getElementById('anchor-preview');
+  el.textContent = composerAnchors.length === 0 ? 'ninguna' : composerAnchors.map(a => a.id).join(', ');
+}
+
+function resetComposer() {
+  document.getElementById('new-title').value = '';
+  document.getElementById('new-note').value = '';
+  document.getElementById('new-status').value = 'idea';
+  composerAnchors = [];
+  updateAnchorPreview();
+}
+
+async function saveCard() {
+  if (!token) { alert('Necesitás un token para crear tarjetas'); return; }
+  const title = document.getElementById('new-title').value.trim();
+  if (!title) { document.getElementById('new-title').focus(); return; }
+  const note = document.getElementById('new-note').value.trim();
+  const status = document.getElementById('new-status').value;
+  const labels = cardToLabels(status, composerAnchors, []);
+  try {
+    showSaveStatus('Creando issue...');
+    await apiPost('/issues', { title, body: note, labels });
+    resetComposer();
+    await loadIssues();
+    showSaveStatus('Issue creado ✓');
+  } catch (e) {
+    showSaveStatus('Error: ' + e.message);
+  }
+}
+
+async function moveCard(number, newStatus) {
+  if (!token) { alert('Necesitás un token para mover tarjetas'); return; }
+  const c = cards.find(x => x.number === number);
+  if (!c) return;
+  const newLabels = cardToLabels(newStatus, c.anchors, c.labels);
+  try {
+    showSaveStatus('Moviendo...');
+    await apiPatch('/issues/' + number, { labels: newLabels });
+    await loadIssues();
+  } catch (e) {
+    showSaveStatus('Error: ' + e.message);
+  }
+}
+
+async function deleteCard(number) {
+  if (!token) { alert('Necesitás un token'); return; }
+  if (!confirm('¿Cerrar este issue? (no se borra, solo se cierra)')) return;
+  try {
+    showSaveStatus('Cerrando...');
+    await apiPatch('/issues/' + number, { state: 'closed' });
+    await loadIssues();
+  } catch (e) {
+    showSaveStatus('Error: ' + e.message);
+  }
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('on', c.dataset.filter === f));
+  renderKanban();
+}
+
+function renderKanban() {
+  const visible = cards.filter(c => currentFilter === 'all' || c.anchors.some(a => a.type === currentFilter));
+  const cols = { idea: [], 'diseño': [], listo: [] };
+  visible.forEach(c => { if (cols[c.status]) cols[c.status].push(c); });
+  Object.keys(cols).forEach(k => {
+    const el = document.getElementById('col-' + k);
+    document.getElementById('c-' + k).textContent = cols[k].length;
+    if (cols[k].length === 0) { el.innerHTML = '<p class="empty">Sin tarjetas</p>'; return; }
+    el.innerHTML = cols[k].map(c => renderCard(c)).join('');
+  });
+  document.getElementById('ideas-count').textContent = cards.length;
+}
+
+function renderCard(c) {
+  const tags = c.anchors.map(a => '<span class="tag tag-' + a.type + '">' + esc(a.id) + '</span>').join('');
+  const nextStatus = { idea: 'diseño', 'diseño': 'listo', listo: 'idea' }[c.status];
+  const nextLabel = { idea: '→', 'diseño': '→', listo: '↻' }[c.status];
+  const preview = (c.note || '').slice(0, 200);
+  return '<div class="card">' +
+    '<div class="actions">' +
+      '<button onclick="moveCard(' + c.number + ',\'' + nextStatus + '\')" title="Mover">' + nextLabel + '</button>' +
+      '<button onclick="deleteCard(' + c.number + ')" title="Cerrar">×</button>' +
+    '</div>' +
+    '<p class="title"><a href="' + c.url + '" target="_blank">' + esc(c.title) + '</a> <span class="issue-num">#' + c.number + '</span></p>' +
+    (preview ? '<p class="note">' + esc(preview) + (c.note.length > 200 ? '...' : '') + '</p>' : '') +
+    '<div class="tags">' + tags + '</div>' +
+  '</div>';
+}
+
+function esc(s) { return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function renderStructure() {
+  [['grid-hojas','hoja'],['grid-tablas','tabla'],['grid-rangos','rango']].forEach(([gridId, type]) => {
+    const container = document.getElementById(gridId);
+    if (!container) return;
+    container.innerHTML = CATALOG[type].map(n => {
+      const count = cards.filter(c => c.anchors.some(a => a.id === n.id)).length;
+      return '<div class="node-card ' + (count > 0 ? 'has-notes' : '') + '" onclick="openNode(\'' + n.id + '\',\'' + type + '\')">' +
+        '<p class="nt">' + n.id + '</p>' +
+        '<p class="ns">' + n.desc + '</p>' +
+        (count > 0 ? '<span class="nb">' + count + ' nota' + (count > 1 ? 's' : '') + '</span>' : '') +
+      '</div>';
+    }).join('');
+  });
+}
+
+function renderFlow() {
+  const nodesWithNotes = new Set();
+  cards.forEach(c => c.anchors.forEach(a => nodesWithNotes.add(a.id)));
+  document.querySelectorAll('.flow-svg g[data-node]').forEach(g => {
+    g.classList.toggle('has-notes', nodesWithNotes.has(g.dataset.node));
+  });
+}
+
+function renderAll() { renderKanban(); renderStructure(); renderFlow(); }
+
+function closeModal() { document.getElementById('modal-backdrop').style.display = 'none'; }
+function copyModal() {
+  const text = document.getElementById('modal-textarea').value;
+  navigator.clipboard.writeText(text).then(() => { showSaveStatus('Copiado'); closeModal(); })
+    .catch(() => { document.getElementById('modal-textarea').select(); document.execCommand('copy'); closeModal(); });
+}
+
+function copyVBAPrompt() {
+  const listas = cards.filter(c => c.status === 'listo');
+  if (listas.length === 0) { alert('No hay ideas en "Listo" todavía'); return; }
+  let txt = 'Convertí estas ideas de mi Kanban en instrucciones VBA concretas. Por cada una dame: (a) macro afectada, (b) diff de código, (c) validaciones nuevas.\n\n';
+  listas.forEach((c, i) => {
+    txt += (i+1) + '. ' + c.title + ' (Issue #' + c.number + ')\n';
+    if (c.note) txt += '   Nota: ' + c.note.slice(0,500) + '\n';
+    if (c.anchors.length) txt += '   Anclas: ' + c.anchors.map(a => a.id + ' (' + a.type + ')').join(', ') + '\n';
+    txt += '\n';
+  });
+  document.getElementById('modal-title').textContent = 'Prompt listo para Claude';
+  document.getElementById('modal-textarea').value = txt;
+  document.getElementById('modal-backdrop').style.display = 'flex';
+}
+
+updateAuthUI();
+loadIssues();
+</script>
+</body>
+</html>
