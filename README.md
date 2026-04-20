@@ -54,6 +54,24 @@ URL: https://mlandolfi90.github.io/Sistema-Contabel-EXcel/v2/mapa.html
 
 Grafo interactivo con todos los nodos del sistema (hojas, macros, tablas, reglas, cuentas/socios) + los Issues flotando conectados a su ancla.
 
+### Cómo agregar o editar nodos/relaciones del schema
+
+El archivo `v2/schema.json` es la fuente de verdad del mapa. Se puede editar por dos vías:
+
+**Vía recomendada (desde la UI):**
+1. Abrir `v2/mapa.html`.
+2. Usar las acciones del panel para añadir, editar o eliminar nodos/aristas. Los cambios quedan guardados en `v2/draft.json` como borrador.
+3. Pulsar "Aplicar al schema" en el mapa → consolida el borrador dentro de `schema.json` y vacía `draft.json` (un solo commit atómico).
+
+**Vía directa (edición de JSON + push):**
+1. Editar `v2/schema.json`. Cada nodo requiere `id` (único), `type` (uno de los definidos en `nodeTypes`: hoja, macro, tabla, rango, regla, socio, cuenta), `label` y `desc`. Cada relación requiere `from`, `to` y opcionalmente `label`.
+2. Pushear. El mapa lee automáticamente el nuevo schema en el próximo refresh.
+
+**Convenciones:**
+- `id` sin espacios ni acentos (ej. `PyL_POR_SEGMENTO`, no `PyL Por Segmento`). Los caracteres `!` deben evitarse en el id (usar `CACHE` en vez de `!CACHE!`); el `label` sí admite el nombre real.
+- Mantener los socios como `Socio01/02/03` por privacidad (convención del repo).
+- Un push único que toca `schema.json` solamente genera diffs pequeños. Si el archivo crece mucho, considerar la reestructura en `schema/nodes/` y `schema/relations/` para que cada edición afecte solo un archivo pequeño (no implementada aún).
+
 ---
 
 ## Qué contiene el repo
@@ -111,14 +129,15 @@ Capturar idea     Madurarla      Definir impacto    Generar VBA      Resultado
 | **✓ Implementada** | `implementada` | Ya se aplicó al libro Excel. Queda como historial. |
 | **✕ Rechazada** | `rechazada` | Se descartó. El motivo queda como comentario del Issue. |
 
-## Catálogo de nodos precargados
+## Catálogo de nodos precargados (schema.json v2)
 
 El sistema arranca con estos nodos cargados en `schema.json`:
 
-- **11 macros operativas** — `GuardarLote`, `LimpiarRegistro`, `ActualizarTasaVigente`, `ActualizarTasaVigenteDesde`, `GenerarAsientoPacto`, `RevalorizarCuenta`, `LoteAnterior`, `LoteSiguiente`, `AccionSobreLoteVisible`, `CorregirLoteConID`, `DuplicarLoteConID`, más `Helpers`.
-- **6 hojas** — `REGISTRO_RAPIDO`, `LIBRO_MAYOR`, `TASAS`, `AUDITOR_LOTES`, `REPORTE_BARRIDO`, `SALDOS_Y_ENTIDADES`.
-- **10 tablas estructuradas** — `tb_registro_rapido`, `tb_mayor`, `tb_tasas_vigentes`, `tb_tasas_historial`, `tb_cuentas`, `tb_entidades`, `tb_divisas`, `tb_categorias`, `tb_segmentos`, `tb_clase_cuenta`.
-- **3 socios** — Socio01, Socio02, Socio03 (sus `Cta. Corriente` son contrapartida en asientos de pacto).
-- **6 cuentas clave** — `Utilidad Distribuible`, `Cta. Corriente Socio01/Socio02/Socio03`, `Ganancia por Revalorización`, `Pérdida por Revalorización`.
+- **12 macros operativas** — `GuardarLote`, `LimpiarRegistro`, `ActualizarTasaVigente`, `ActualizarTasaVigenteDesde`, `GenerarAsientoPacto`, `RevalorizarCuenta`, `LoteAnterior`, `LoteSiguiente`, `AccionSobreLoteVisible`, `CorregirLoteConID`, `DuplicarLoteConID`, `Helpers`.
+- **14 hojas** — 6 operativas (`REGISTRO_RAPIDO`, `LIBRO_MAYOR`, `TASAS`, `AUDITOR_LOTES`, `REPORTE_BARRIDO`, `SALDOS_Y_ENTIDADES`), 2 de configuración (`CONFIG`, `CONFIG_AUX`), 5 de reporte (`BALANCE`, `PyL`, `FLUJO_CAJA`, `PyL_POR_SEGMENTO`, `DASHBOARD`) y 1 utilitaria (`!CACHE!`).
+- **13 tablas estructuradas** — `tb_registro_rapido`, `tb_mayor`, `tb_tasas_vigentes`, `tb_tasas_historial`, `tb_cuentas`, `tb_entidades`, `tb_divisas`, `tb_categorias`, `tb_segmentos`, `tb_clase_cuenta`, `tb_tipo_divisa`, `tb_tipo_entidad`, `tb_naturaleza`.
+- **6 rangos con nombre** — `IDs_Unicos`, `ListaCuentaActiva`, `ListaDivisaActiva`, `ListaSegmentoActiva`, `ListaSocios`, `CuentasPyL`.
+- **3 reglas de negocio** — `AlertaSpread` (umbral 3%), `LoteBalanceado` (cuadre antes de guardar), `CuadreBalance` (Activo = Pasivo + Patrimonio + Resultado).
+- **3 socios** — `Socio01`, `Socio02`, `Socio03` (sus `Cta. Corriente` son contrapartida en asientos de pacto).
+- **6 cuentas clave** — `Utilidad Distribuible`, `Cta. Corriente Socio01/02/03`, `Ganancia por Revalorización`, `Pérdida por Revalorización`.
 - **5 divisas** — USD (base), USDT, Bs, Oro, EUR.
-- **1 regla** — `AlertaSpread` (umbral 3%).
