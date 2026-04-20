@@ -17,7 +17,7 @@ Antes el código VBA vivía embebido en bloques markdown dentro de los `docs/*.m
 |---|---|---|---|---|
 | `Modulo1.bas` | Módulo estándar (`Type=1`) | Módulo1 | — | ✅ Extraído |
 | `Modulo2.bas` | Módulo estándar (`Type=1`) | Módulo2 | — | ✅ Extraído (incluye fix #11) |
-| `Modulo3.bas` | Módulo estándar (`Type=1`) | Módulo3 | — | ⏳ Pendiente — [issue #12](https://github.com/mlandolfi90/sistema-contabel-excel/issues/12) |
+| `Modulo3.bas` | Módulo estándar (`Type=1`) | Módulo3 | — | ⏳ Pendiente — [issue #18](https://github.com/mlandolfi90/Sistema-Contabel-EXcel/issues/18) |
 | `Hoja3.cls` | Código de hoja (`Type=100`) | Hoja3 | REGISTRO_RAPIDO | ✅ Extraído |
 
 ## Workflow de sincronización con el `.xlsm`
@@ -57,7 +57,7 @@ Alternativa más limpia: usar la opción `Importar archivo` solo si antes elimin
 
 | Constante | Módulo | Valor | Regla de negocio |
 |---|---|---|---|
-| `MAX_LINEAS_LOTE` | `Modulo2.bas` | `20` | Tope duro de líneas por lote. Sincronizar con capacidad física de `tb_registro_rapido` si se cambia. Ver [issue #11](https://github.com/mlandolfi90/sistema-contabel-excel/issues/11). |
+| `MAX_LINEAS_LOTE` | `Modulo2.bas` | `20` | Tope duro de líneas por lote. Sincronizar con capacidad física de `tb_registro_rapido` si se cambia. Ver [issue #11](https://github.com/mlandolfi90/Sistema-Contabel-EXcel/issues/11). |
 
 ## Funciones públicas compartidas
 
@@ -68,6 +68,6 @@ Alternativa más limpia: usar la opción `Importar archivo` solo si antes elimin
 
 ## Trazabilidad de cambios
 
-- `Modulo2.bas` — refactor + fix [issue #11](https://github.com/mlandolfi90/sistema-contabel-excel/issues/11): tope duro de 20 líneas, helper `ContarFilasLote` extraído de duplicación entre macros.
+- `Modulo2.bas` — refactor + fix [issue #11](https://github.com/mlandolfi90/Sistema-Contabel-EXcel/issues/11): tope duro de 20 líneas, helper `ContarFilasLote` extraído de duplicación entre macros.
 - `Modulo1.bas`, `Hoja3.cls` — extracción inicial sin cambios funcionales (source of truth movido de `.md` a `.bas`/`.cls`).
-- `Modulo3.bas` — pendiente de aporte manual (ver [issue #12](https://github.com/mlandolfi90/sistema-contabel-excel/issues/12)).
+- `Modulo3.bas` — pendiente de aporte manual (ver [issue #18](https://github.com/mlandolfi90/Sistema-Contabel-EXcel/issues/18)).
