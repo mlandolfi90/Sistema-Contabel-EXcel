@@ -1,6 +1,6 @@
 # Panel de pre-diseño — Sistema Contable Multidivisa
 
-Herramienta visual para iterar ideas de cambio sobre el libro Excel `Sistema_Contable_Automatico.xlsm` antes de ejecutarlas en VBA.
+Herramienta visual para iterar ideas de cambio sobre el libro Excel `Sistema_Contable_Automatico.xlsm` antes de ejecutarlas en el entorno correspondiente.
 
 ## Dos versiones disponibles
 
