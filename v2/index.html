@@ -4,47 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel v2 — Sistema Contable</title>
-<link rel="stylesheet" href="./js/styles.css">
-<style>
-  /* Estilos específicos del panel */
-  .container { max-width: 1200px; margin: 0 auto; }
-  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border-tertiary); margin-bottom: 16px; }
-  .tab { padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; background: transparent; font-family: inherit; }
-  .tab.active { color: var(--text-primary); border-bottom-color: var(--text-info); }
-  .view { display: none; } .view.active { display: block; }
-  .composer { background: var(--bg-secondary); border-radius: var(--radius-lg); padding: 14px; margin-bottom: 16px; }
-  .composer-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
-  .composer-row label { font-size: 12px; color: var(--text-secondary); min-width: 60px; }
-  .composer textarea, .composer input[type=text] { width: 100%; font-family: inherit; font-size: 13px; padding: 8px 10px; border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary); resize: vertical; box-sizing: border-box; }
-  .composer textarea { min-height: 56px; }
-  .composer select { font-family: inherit; font-size: 12px; padding: 5px 8px; border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary); }
-  .composer-anchors { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-  .chip { font-size: 11px; padding: 3px 8px; border-radius: 10px; background: var(--bg-primary); border: 1px solid var(--border-tertiary); cursor: pointer; color: var(--text-secondary); font-family: inherit; }
-  .chip.on { border-color: transparent; }
-  .chip.on.tag-macro { background: #EEEDFE; color: #26215C; }
-  .chip.on.tag-hoja { background: #E1F5EE; color: #04342C; }
-  .chip.on.tag-tabla { background: #FAECE7; color: #4A1B0C; }
-  .chip.on.tag-rango { background: #FAEEDA; color: #412402; }
-  .chip.on.tag-regla { background: #FCEBEB; color: #501313; }
-  .chip.on.tag-socio { background: #DCE7FA; color: #0F2458; }
-  .chip.on.tag-cuenta { background: #EFE1FA; color: #35154E; }
-  .filter-chip { font-size: 11px; padding: 3px 10px; border-radius: 10px; background: var(--bg-secondary); border: 1px solid transparent; cursor: pointer; color: var(--text-secondary); font-family: inherit; }
-  .filter-chip.on { background: var(--bg-primary); border-color: var(--border-secondary); color: var(--text-primary); }
-  .node-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-bottom: 12px; }
-  .node-card { background: var(--bg-primary); border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); padding: 10px 12px; cursor: pointer; }
-  .node-card:hover { border-color: var(--border-secondary); }
-  .node-card.has-notes { border-left: 3px solid #7F77DD; }
-  .node-card .nt { font-size: 13px; font-weight: 500; margin: 0 0 2px; }
-  .node-card .ns { font-size: 11px; color: var(--text-secondary); margin: 0; }
-  .node-card .nb { display: inline-block; margin-top: 6px; font-size: 10px; padding: 1px 7px; border-radius: 10px; background: #EEEDFE; color: #26215C; }
-  .section-title { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin: 14px 0 6px; }
-  #ideas-count { background: #EEEDFE; color: #26215C; font-size: 10px; padding: 1px 6px; border-radius: 8px; margin-left: 4px; font-weight: 500; }
-  .save-status { font-size: 11px; color: var(--text-tertiary); margin-left: 8px; }
-</style>
+<link rel="stylesheet" href="./css/base.css">
+<link rel="stylesheet" href="./css/tags.css">
+<link rel="stylesheet" href="./css/panel.css">
 </head>
 <body>
 <div class="container">
-<h1>Panel de pre-diseño v2 <span style="font-size:11px; background:#0a0; color:white; padding:2px 7px; border-radius:10px; vertical-align:middle;">sync GitHub</span></h1>
+<h1>Panel de pre-diseño v2 <span class="sync-badge">sync GitHub</span></h1>
 <p class="subtitle">Las tarjetas viven como Issues. El catálogo se lee de <code>schema.json</code>. <a href="./mapa.html">→ Abrir mapa interactivo</a></p>
 
 <div class="auth-bar">
@@ -63,7 +29,7 @@
 
 <div id="view-ideas" class="view active">
   <div id="no-token-banner" class="banner" style="display:none;">
-    ⚠ Sin token de GitHub no podés crear ni mover tarjetas. <a href="https://github.com/settings/tokens?type=beta" target="_blank">Crear token</a> con permisos <b>Issues: Read & Write</b> y <b>Contents: Read & Write</b>.
+    ⚠ Sin token no podés crear ni mover tarjetas. <a href="https://github.com/settings/tokens?type=beta" target="_blank">Crear token</a> con <b>Issues: Read & Write</b> y <b>Contents: Read & Write</b>.
   </div>
   <div class="composer">
     <div class="composer-row"><input type="text" id="new-title" placeholder="Título de la idea"></div>
@@ -76,10 +42,10 @@
         <option value="listo">Listo para implementar</option>
       </select>
       <label style="margin-left:12px;">Anclas</label>
-      <span id="anchor-preview" style="font-size:11px;color:var(--text-secondary);">ninguna</span>
+      <span class="anchor-preview" id="anchor-preview">ninguna</span>
       <button class="btn" onclick="toggleAnchorPicker()">Seleccionar</button>
     </div>
-    <div id="anchor-picker" style="display:none; background: var(--bg-primary); border-radius: var(--radius-md); padding: 10px; margin-top:6px;">
+    <div id="anchor-picker" class="anchor-picker">
       <div id="anchor-picker-content"></div>
     </div>
     <div class="composer-row" style="justify-content:flex-end; margin-top:10px;">

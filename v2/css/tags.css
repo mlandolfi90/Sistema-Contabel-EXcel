@@ -1,0 +1,19 @@
+/* v2/css/tags.css — colores de tags por tipo (usado por panel y chips) */
+.tag { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
+.tag-macro { background: #EEEDFE; color: #26215C; }
+.tag-hoja { background: #E1F5EE; color: #04342C; }
+.tag-tabla { background: #FAECE7; color: #4A1B0C; }
+.tag-rango { background: #FAEEDA; color: #412402; }
+.tag-regla { background: #FCEBEB; color: #501313; }
+.tag-socio { background: #DCE7FA; color: #0F2458; }
+.tag-cuenta { background: #EFE1FA; color: #35154E; }
+
+.chip { font-size: 11px; padding: 3px 8px; border-radius: 10px; background: var(--bg-primary); border: 1px solid var(--border-tertiary); cursor: pointer; color: var(--text-secondary); font-family: inherit; }
+.chip.on { border-color: transparent; }
+.chip.on.tag-macro { background: #EEEDFE; color: #26215C; }
+.chip.on.tag-hoja { background: #E1F5EE; color: #04342C; }
+.chip.on.tag-tabla { background: #FAECE7; color: #4A1B0C; }
+.chip.on.tag-rango { background: #FAEEDA; color: #412402; }
+.chip.on.tag-regla { background: #FCEBEB; color: #501313; }
+.chip.on.tag-socio { background: #DCE7FA; color: #0F2458; }
+.chip.on.tag-cuenta { background: #EFE1FA; color: #35154E; }

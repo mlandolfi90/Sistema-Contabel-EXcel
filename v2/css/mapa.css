@@ -1,0 +1,2 @@
+/* v2/css/mapa.css — específico del mapa interactivo */
+#graph { width: 100%; height: calc(100vh - 280px); min-height: 480px; background: var(--bg-primary); border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); }
