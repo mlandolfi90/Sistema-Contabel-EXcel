@@ -1,0 +1,14 @@
+[
+  { "id": "GuardarLote", "type": "macro", "label": "GuardarLote", "desc": "Graba lote validado" },
+  { "id": "LimpiarRegistro", "type": "macro", "label": "LimpiarRegistro", "desc": "Resetea formulario" },
+  { "id": "ActualizarTasaVigente", "type": "macro", "label": "ActualizarTasaVigente", "desc": "Diálogo cambio tasa" },
+  { "id": "ActualizarTasaVigenteDesde", "type": "macro", "label": "ActualizarTasaVigenteDesde", "desc": "Tasa parametrizada" },
+  { "id": "GenerarAsientoPacto", "type": "macro", "label": "GenerarAsientoPacto", "desc": "Asiento de pacto" },
+  { "id": "RevalorizarCuenta", "type": "macro", "label": "RevalorizarCuenta", "desc": "Ganancia latente" },
+  { "id": "LoteAnterior", "type": "macro", "label": "LoteAnterior", "desc": "Navega atrás" },
+  { "id": "LoteSiguiente", "type": "macro", "label": "LoteSiguiente", "desc": "Navega adelante" },
+  { "id": "AccionSobreLoteVisible", "type": "macro", "label": "AccionSobreLoteVisible", "desc": "Corrige o duplica" },
+  { "id": "CorregirLoteConID", "type": "macro", "label": "CorregirLoteConID", "desc": "Anula y recarga" },
+  { "id": "DuplicarLoteConID", "type": "macro", "label": "DuplicarLoteConID", "desc": "Clona al formulario" },
+  { "id": "Helpers", "type": "macro", "label": "Helpers", "desc": "colIdx + EscribirLinea" }
+]

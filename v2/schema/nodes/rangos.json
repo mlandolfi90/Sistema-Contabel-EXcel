@@ -1,0 +1,8 @@
+[
+  { "id": "IDs_Unicos", "type": "rango", "label": "IDs_Unicos", "desc": "Lista ordenada de lotes (AUDITOR_LOTES)" },
+  { "id": "ListaCuentaActiva", "type": "rango", "label": "ListaCuentaActiva", "desc": "Cuentas activas (derrame)" },
+  { "id": "ListaDivisaActiva", "type": "rango", "label": "ListaDivisaActiva", "desc": "Divisas activas (derrame)" },
+  { "id": "ListaSocios", "type": "rango", "label": "ListaSocios", "desc": "Socios del negocio" },
+  { "id": "ListaSegmentoActiva", "type": "rango", "label": "ListaSegmentoActiva", "desc": "Segmentos activos (derrame)" },
+  { "id": "CuentasPyL", "type": "rango", "label": "CuentasPyL", "desc": "Derrame Ingreso+Gasto (CONFIG_AUX!I2#)" }
+]

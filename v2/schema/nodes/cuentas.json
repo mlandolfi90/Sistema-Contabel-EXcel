@@ -1,0 +1,8 @@
+[
+  { "id": "Utilidad_Distribuible", "type": "cuenta", "label": "Utilidad Distribuible", "desc": "Débito único en asiento de pacto" },
+  { "id": "Cta_Corriente_Socio01", "type": "cuenta", "label": "Cta. Corriente Socio01", "desc": "Crédito en pacto a Socio01" },
+  { "id": "Cta_Corriente_Socio02", "type": "cuenta", "label": "Cta. Corriente Socio02", "desc": "Crédito en pacto a Socio02" },
+  { "id": "Cta_Corriente_Socio03", "type": "cuenta", "label": "Cta. Corriente Socio03", "desc": "Crédito en pacto a Socio03" },
+  { "id": "Ganancia_por_Revalorizacion", "type": "cuenta", "label": "Ganancia por Revalorización", "desc": "Crédito en revaluación (+)" },
+  { "id": "Perdida_por_Revalorizacion", "type": "cuenta", "label": "Pérdida por Revalorización", "desc": "Débito en revaluación (−)" }
+]

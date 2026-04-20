@@ -1,0 +1,7 @@
+[
+  { "from": "TASAS", "to": "AlertaSpread", "label": "evalúa" },
+  { "from": "AlertaSpread", "to": "ActualizarTasaVigente", "label": "sugiere" },
+  { "from": "ActualizarTasaVigente", "to": "ActualizarTasaVigenteDesde", "label": "delega en" },
+  { "from": "ActualizarTasaVigenteDesde", "to": "tb_tasas_vigentes", "label": "actualiza" },
+  { "from": "ActualizarTasaVigenteDesde", "to": "tb_tasas_historial", "label": "registra" }
+]

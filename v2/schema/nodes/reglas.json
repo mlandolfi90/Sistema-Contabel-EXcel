@@ -1,0 +1,5 @@
+[
+  { "id": "AlertaSpread", "type": "regla", "label": "AlertaSpread", "desc": "Umbral 3% spread" },
+  { "id": "CuadreBalance", "type": "regla", "label": "CuadreBalance", "desc": "Activo = Pasivo + Patrimonio + Resultado" },
+  { "id": "LoteBalanceado", "type": "regla", "label": "LoteBalanceado", "desc": "SUM(Debe_USD) = SUM(Haber_USD) antes de guardar" }
+]

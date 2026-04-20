@@ -1,0 +1,15 @@
+[
+  { "id": "tb_registro_rapido", "type": "tabla", "label": "tb_registro_rapido", "desc": "9 cols - entrada" },
+  { "id": "tb_mayor", "type": "tabla", "label": "tb_mayor", "desc": "19 cols - asientos" },
+  { "id": "tb_tasas_vigentes", "type": "tabla", "label": "tb_tasas_vigentes", "desc": "Tasas actuales" },
+  { "id": "tb_tasas_historial", "type": "tabla", "label": "tb_tasas_historial", "desc": "Bitácora tasas" },
+  { "id": "tb_cuentas", "type": "tabla", "label": "tb_cuentas", "desc": "Catálogo cuentas" },
+  { "id": "tb_entidades", "type": "tabla", "label": "tb_entidades", "desc": "Catálogo entidades" },
+  { "id": "tb_divisas", "type": "tabla", "label": "tb_divisas", "desc": "Catálogo divisas" },
+  { "id": "tb_categorias", "type": "tabla", "label": "tb_categorias", "desc": "Catálogo categorías" },
+  { "id": "tb_segmentos", "type": "tabla", "label": "tb_segmentos", "desc": "Catálogo segmentos" },
+  { "id": "tb_clase_cuenta", "type": "tabla", "label": "tb_clase_cuenta", "desc": "Catálogo clases" },
+  { "id": "tb_tipo_divisa", "type": "tabla", "label": "tb_tipo_divisa", "desc": "Tipos de divisa (fiat/cripto)" },
+  { "id": "tb_tipo_entidad", "type": "tabla", "label": "tb_tipo_entidad", "desc": "Tipos de entidad" },
+  { "id": "tb_naturaleza", "type": "tabla", "label": "tb_naturaleza", "desc": "Naturaleza contable (deudora/acreedora)" }
+]

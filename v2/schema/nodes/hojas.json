@@ -1,0 +1,16 @@
+[
+  { "id": "REGISTRO_RAPIDO", "type": "hoja", "label": "REGISTRO_RAPIDO", "desc": "Formulario de captura" },
+  { "id": "LIBRO_MAYOR", "type": "hoja", "label": "LIBRO_MAYOR", "desc": "Almacén acumulativo" },
+  { "id": "TASAS", "type": "hoja", "label": "TASAS", "desc": "Tasas vigentes + historial" },
+  { "id": "AUDITOR_LOTES", "type": "hoja", "label": "AUDITOR_LOTES", "desc": "Navegación de lotes" },
+  { "id": "REPORTE_BARRIDO", "type": "hoja", "label": "REPORTE_BARRIDO", "desc": "Reparto de utilidades" },
+  { "id": "SALDOS_Y_ENTIDADES", "type": "hoja", "label": "SALDOS_Y_ENTIDADES", "desc": "Saldos y ganancia latente" },
+  { "id": "CONFIG", "type": "hoja", "label": "CONFIG", "desc": "11 catálogos maestros" },
+  { "id": "CONFIG_AUX", "type": "hoja", "label": "CONFIG_AUX", "desc": "Listas derivadas (derrames)" },
+  { "id": "BALANCE", "type": "hoja", "label": "BALANCE", "desc": "Estado de situación financiera" },
+  { "id": "PyL", "type": "hoja", "label": "PyL", "desc": "Estado de resultados del período" },
+  { "id": "FLUJO_CAJA", "type": "hoja", "label": "FLUJO_CAJA", "desc": "Flujo de caja (USD)" },
+  { "id": "PyL_POR_SEGMENTO", "type": "hoja", "label": "PyL_POR_SEGMENTO", "desc": "Estado de resultados por segmento" },
+  { "id": "DASHBOARD", "type": "hoja", "label": "DASHBOARD", "desc": "Panel ejecutivo (KPIs + alertas)" },
+  { "id": "CACHE", "type": "hoja", "label": "!CACHE!", "desc": "Hoja utilitaria de verificación" }
+]

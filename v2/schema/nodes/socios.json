@@ -1,0 +1,5 @@
+[
+  { "id": "Socio01", "type": "socio", "label": "Socio01", "desc": "Socio del negocio" },
+  { "id": "Socio02", "type": "socio", "label": "Socio02", "desc": "Socio del negocio" },
+  { "id": "Socio03", "type": "socio", "label": "Socio03", "desc": "Socio del negocio" }
+]

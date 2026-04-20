@@ -1,0 +1,47 @@
+{
+  "version": 3,
+  "format": "granular",
+  "description": "Índice del schema granular. Archivos de nodos y relaciones listados aquí son ensamblados en memoria por schema-loader.js para formar el schema completo. Editar un archivo granular genera un diff mínimo.",
+  "nodeTypes": {
+    "hoja": { "bg": "#E1F5EE", "border": "#0F6E56", "text": "#04342C", "shape": "round-rectangle" },
+    "macro": { "bg": "#EEEDFE", "border": "#534AB7", "text": "#26215C", "shape": "round-rectangle" },
+    "tabla": { "bg": "#FAECE7", "border": "#C34416", "text": "#4A1B0C", "shape": "round-rectangle" },
+    "rango": { "bg": "#FAEEDA", "border": "#854F0B", "text": "#412402", "shape": "round-rectangle" },
+    "regla": { "bg": "#FAEEDA", "border": "#854F0B", "text": "#412402", "shape": "round-rectangle" },
+    "socio": { "bg": "#DCE7FA", "border": "#1E47AE", "text": "#0F2458", "shape": "ellipse" },
+    "cuenta": { "bg": "#EFE1FA", "border": "#6B2E9B", "text": "#35154E", "shape": "round-rectangle" }
+  },
+  "files": {
+    "nodes": [
+      "nodes/hojas.json",
+      "nodes/macros.json",
+      "nodes/tablas.json",
+      "nodes/rangos.json",
+      "nodes/reglas.json",
+      "nodes/socios.json",
+      "nodes/cuentas.json"
+    ],
+    "relations": [
+      "relations/flujo-captura.json",
+      "relations/flujo-auditor.json",
+      "relations/flujo-tasas.json",
+      "relations/flujo-catalogos.json",
+      "relations/flujo-reportes.json",
+      "relations/flujo-pacto.json"
+    ]
+  },
+  "writeRouting": {
+    "nodes": {
+      "hoja": "nodes/hojas.json",
+      "macro": "nodes/macros.json",
+      "tabla": "nodes/tablas.json",
+      "rango": "nodes/rangos.json",
+      "regla": "nodes/reglas.json",
+      "socio": "nodes/socios.json",
+      "cuenta": "nodes/cuentas.json"
+    },
+    "relations": {
+      "_default": "relations/flujo-captura.json"
+    }
+  }
+}

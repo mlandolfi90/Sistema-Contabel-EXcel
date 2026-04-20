@@ -1,0 +1,17 @@
+[
+  { "from": "REPORTE_BARRIDO", "to": "LIBRO_MAYOR", "label": "lee de" },
+  { "from": "SALDOS_Y_ENTIDADES", "to": "tb_mayor", "label": "agrupa" },
+  { "from": "BALANCE", "to": "tb_mayor", "label": "lee de" },
+  { "from": "BALANCE", "to": "SALDOS_Y_ENTIDADES", "label": "lee de" },
+  { "from": "BALANCE", "to": "CuadreBalance", "label": "evalúa" },
+  { "from": "PyL", "to": "tb_mayor", "label": "lee de" },
+  { "from": "FLUJO_CAJA", "to": "tb_mayor", "label": "lee de" },
+  { "from": "FLUJO_CAJA", "to": "tb_cuentas", "label": "lee de" },
+  { "from": "PyL_POR_SEGMENTO", "to": "tb_mayor", "label": "lee de" },
+  { "from": "PyL_POR_SEGMENTO", "to": "CuentasPyL", "label": "lee de" },
+  { "from": "PyL_POR_SEGMENTO", "to": "ListaSegmentoActiva", "label": "lee de" },
+  { "from": "DASHBOARD", "to": "SALDOS_Y_ENTIDADES", "label": "lee de" },
+  { "from": "DASHBOARD", "to": "PyL", "label": "lee de" },
+  { "from": "DASHBOARD", "to": "tb_mayor", "label": "lee de" },
+  { "from": "CACHE", "to": "tb_mayor", "label": "verifica" }
+]

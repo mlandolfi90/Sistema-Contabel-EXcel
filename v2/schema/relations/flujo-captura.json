@@ -1,0 +1,13 @@
+[
+  { "from": "REGISTRO_RAPIDO", "to": "GuardarLote", "label": "dispara" },
+  { "from": "REGISTRO_RAPIDO", "to": "LimpiarRegistro", "label": "dispara" },
+  { "from": "REGISTRO_RAPIDO", "to": "GenerarAsientoPacto", "label": "dispara" },
+  { "from": "REGISTRO_RAPIDO", "to": "RevalorizarCuenta", "label": "dispara" },
+  { "from": "REGISTRO_RAPIDO", "to": "tb_registro_rapido", "label": "lee/escribe" },
+  { "from": "REGISTRO_RAPIDO", "to": "LoteBalanceado", "label": "evalúa" },
+  { "from": "GuardarLote", "to": "LIBRO_MAYOR", "label": "escribe" },
+  { "from": "GuardarLote", "to": "TASAS", "label": "registra" },
+  { "from": "GuardarLote", "to": "tb_mayor", "label": "inserta filas" },
+  { "from": "GuardarLote", "to": "Helpers", "label": "usa" },
+  { "from": "GuardarLote", "to": "LoteBalanceado", "label": "valida" }
+]
