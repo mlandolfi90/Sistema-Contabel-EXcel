@@ -89,7 +89,10 @@ export async function cardToLabels(status, anchors, existingLabels, config) {
 
 export async function loadIssues() {
   const config = await loadConfig();
-  const issues = await apiGet('/issues?state=open&per_page=100');
+  // state=all para traer también cerrados (implementadas, rechazadas archivadas).
+  // Sin esto, un issue cerrado en GitHub no aparece en el panel ni puede ser
+  // resaltado por ?issue=N desde el mapa.
+  const issues = await apiGet('/issues?state=all&per_page=100');
   return Promise.all(issues.filter(i => !i.pull_request).map(i => issueToCard(i, config)));
 }
 

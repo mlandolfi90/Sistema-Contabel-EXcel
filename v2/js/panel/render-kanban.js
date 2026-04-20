@@ -1,7 +1,7 @@
 // v2/js/panel/render-kanban.js — Columnas + filtros + búsqueda + highlight
 
 import { state } from './state.js';
-import { $, esc } from './utils.js';
+import { $, esc, setStatus } from './utils.js';
 import { renderCard } from './render-card.js';
 import { moveCard, rejectCard, backCard, deleteCard } from './actions.js';
 
@@ -94,13 +94,46 @@ export function renderKanban() {
   if (state.focusIssue) {
     const num = state.focusIssue;
     state.focusIssue = null;
-    requestAnimationFrame(() => {
-      const card = document.querySelector(`[data-number="${num}"]`)?.closest('.card');
-      if (!card) return;
-      card.classList.add('card-highlight');
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setTimeout(() => card.classList.remove('card-highlight'), 3000);
-    });
+
+    // ¿El issue existe en cards?
+    const cardData = cards.find(c => c.number === num);
+    if (!cardData) {
+      setStatus(`⚠ Issue #${num} no encontrado (puede estar cerrado o no existir)`);
+      return;
+    }
+    // ¿Está visible con filtros actuales?
+    const isVisible = visible.some(c => c.number === num);
+    if (!isVisible) {
+      // Limpiar filtros y re-renderizar
+      state.currentFilter = 'all';
+      state.currentSearch = '';
+      const si = $('search-input'); if (si) si.value = '';
+      const sc = $('search-clear'); if (sc) sc.style.display = 'none';
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('on', c.dataset.filter === 'all'));
+      state.focusIssue = num; // re-intenta en el próximo render
+      renderKanban();
+      return;
+    }
+
+    // Busca el DOM node con retry (hasta 500ms)
+    let attempts = 0;
+    const tryHighlight = () => {
+      const btn = document.querySelector(`[data-number="${num}"]`);
+      const cardEl = btn ? btn.closest('.card') : null;
+      if (!cardEl && attempts++ < 10) {
+        setTimeout(tryHighlight, 50);
+        return;
+      }
+      if (!cardEl) {
+        setStatus(`⚠ No pude resaltar la tarjeta #${num} (DOM no la encontró)`);
+        return;
+      }
+      cardEl.classList.add('card-highlight');
+      cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setStatus(`→ Card #${num} resaltada`);
+      setTimeout(() => cardEl.classList.remove('card-highlight'), 3000);
+    };
+    requestAnimationFrame(tryHighlight);
   }
 }
 
