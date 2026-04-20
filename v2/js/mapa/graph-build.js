@@ -6,6 +6,7 @@ import { getEffectiveNodes, getEffectiveRelations } from '../schema-loader.js';
 import { loadIssues } from '../github.js';
 import { editFromEvent } from './actions-nodes.js';
 import { onLinkModeTap, toggleLinkMode } from './actions-edges.js';
+import { fillMissingPositions } from './layout-seed.js';
 
 export async function loadIssuesForGraph() { return loadIssues(); }
 
@@ -39,13 +40,16 @@ export function buildGraphData(issues) {
         }
       });
     });
+  // 1) Aplicar posiciones guardadas desde layout.json
   nodes.forEach(n => { if (layout.positions[n.data.id]) n.position = layout.positions[n.data.id]; });
+  // 2) Rellenar las que faltan con un grid determinista por hash del id
+  //    -> evita que nodos nuevos/issues sin layout caigan apilados en (0,0)
+  fillMissingPositions(nodes);
   return { nodes, edges };
 }
 
 export function initGraph(nodes, edges) {
   const { schema, layout } = state;
-  const hasPositions = Object.keys(layout.positions).length > 0;
   const nodeTypes = schema.nodeTypes || {};
 
   state.graph = cytoscape({
@@ -90,7 +94,9 @@ export function initGraph(nodes, edges) {
       }},
       { selector: ':selected', style: { 'border-width': 3, 'border-color': '#185FA5', 'line-color': '#185FA5' }},
     ],
-    layout: hasPositions ? { name: 'preset' } : { name: 'cose', animate: false, nodeRepulsion: 8000, idealEdgeLength: 120, padding: 30 },
+    // Ahora todos los nodos tienen posicion (guardada o sembrada) -> preset siempre.
+    // Esto elimina el apilamiento y hace el render inicial estable entre sesiones.
+    layout: { name: 'preset' },
     wheelSensitivity: 0.2, minZoom: 0.2, maxZoom: 2.5,
   });
 
