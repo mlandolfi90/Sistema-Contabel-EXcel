@@ -10,16 +10,15 @@
 
 ## Estructura visual
 
-- Fila 1: encabezados (nombres lógicos de listas).
+- Fila 1: encabezados.
 - Fila 2: fórmulas derramadas (**dynamic arrays**).
-- Filas 3-21: derrame de resultados (solo visibles, no contienen fórmulas).
+- Filas 3-21: derrame de resultados.
 - Orden: posición 5.
-- Color de pestaña: ninguno.
 - Visible, no protegida.
 
 ## Propósito
 
-Las fórmulas `FILTER` no pueden usarse directamente dentro de Validación de Datos en Excel. Por eso se derraman acá, y los named ranges apuntan al rango derramado con la notación `#` (ej: `=CONFIG_AUX!$A$2#`).
+Las fórmulas `FILTER` no pueden usarse directamente dentro de Validación de Datos en Excel. Por eso se derraman acá, y los named ranges apuntan al rango derramado con la notación `#`.
 
 ## Celdas estáticas (solo encabezados)
 
@@ -69,19 +68,9 @@ Las fórmulas `FILTER` no pueden usarse directamente dentro de Validación de Da
 | `ListaDivisaActiva` | `=CONFIG_AUX!$E$2#` | DV de moneda operativa |
 | `ListaSegmentoActiva` | `=CONFIG_AUX!$F$2#` | DV de segmento |
 
-Las columnas G/H (Cuentas Ingreso/Gasto) derraman pero actualmente no hay named range público que las referencie; podrían usarse en reportes PyL.
-
 ## Validaciones de datos
 
 Ninguna. CONFIG_AUX es **origen** de validaciones, no consumidor.
-
-## Formato condicional
-
-Ninguno.
-
-## Dropdowns
-
-Ninguno (la hoja alimenta dropdowns en otras hojas via named ranges).
 
 ## Protección
 

@@ -46,20 +46,14 @@
 |---|---|---|
 | D (Codigo_Cuenta) | `=IF([@Cuenta]="","",IFERROR(XLOOKUP([@Cuenta],tb_cuentas[nombre_cuenta],tb_cuentas[codigo]),"N/A"))` | Código de la cuenta |
 | E (Clase) | `=IF([@Cuenta]="","",IFERROR(XLOOKUP([@Cuenta],tb_cuentas[nombre_cuenta],tb_cuentas[clase]),"N/A"))` | Clase contable |
-| M (Debe_USD) | `=IF([@[Debe_Original]]=0,0,LET(op,IFERROR(XLOOKUP([@Moneda],tb_tasas_vigentes[divisa],tb_tasas_vigentes[operacion]),"Error"),IF(op="Base",[@[Debe_Original]],IF(op="Multiplicar",[@[Debe_Original]]*[@Tasa],IF(op="Dividir",[@[Debe_Original]]/[@Tasa],0)))))` | Conversión a USD |
-| N (Haber_USD) | Simétrica a M para `Haber_Original` | Conversión a USD |
-
-Distribución: 15 fórmulas por columna × 4 columnas = 60 fórmulas.
+| M (Debe_USD) | LET con operacion Base/Multiplicar/Dividir | Conversión a USD |
+| N (Haber_USD) | Simétrica a M | Conversión a USD |
 
 ## Validaciones de datos
 
-Ninguna. Los registros se insertan via macro desde `REGISTRO_RAPIDO` (que sí tiene validaciones).
+Ninguna.
 
 ## Formato condicional
-
-Ninguno.
-
-## Dropdowns
 
 Ninguno.
 
@@ -71,4 +65,4 @@ Hoja **NO protegida**.
 
 - `Debe_USD` y `Haber_USD` son fórmulas auto-heredadas (no se escriben por macro).
 - `Codigo_Cuenta` y `Clase` son fórmulas auto-heredadas.
-- El resto de columnas (ID_Lote, Fecha, Cuenta, Entidad, etc.) se escriben directamente por `Módulo1.GuardarLote`.
+- El resto de columnas se escriben directamente por `Módulo1.GuardarLote`.

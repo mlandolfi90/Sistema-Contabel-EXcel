@@ -11,18 +11,15 @@
 
 ## Estructura visual
 
-- **Zonas:** 11 tablas estructuradas dispuestas horizontalmente (catálogos maestros), una columna vacía de separación entre cada una.
-- Celdas combinadas: ninguna.
-- Paneles congelados: fila 1 (`frozenRows=1`).
-- Orden en el libro: posición 3.
+- **Zonas:** 11 tablas estructuradas dispuestas horizontalmente.
+- Paneles congelados: fila 1.
+- Orden: posición 3.
 - Color de pestaña: `#7030A0` (morado).
-- Estado: Visible. No protegida.
+- Visible, no protegida.
 
 ## Tablas estructuradas (resumen)
 
 ### `tb_divisas` (A1:F6) — 5 divisas
-
-Columnas: `divisa`, `es_base`, `tipo`, `decimales`, `activa`, `simbolo`.
 
 | divisa | es_base | tipo | decimales | activa | simbolo |
 |---|---|---|---|---|---|
@@ -73,8 +70,6 @@ Ejemplos clave:
 | 5300 | Gastos Personales | Gasto | USD | NO | SI |
 | 5400 | Pérdida por Revalorización | Gasto | USD | NO | SI |
 
-(Listado completo de las 20 cuentas en el libro real.)
-
 ### `tb_clase_cuenta` (Z1:Z6)
 Valores: `Activo`, `Pasivo`, `Patrimonio`, `Ingreso`, `Gasto`.
 
@@ -85,8 +80,6 @@ Valores: `Deudora`, `Acreedora`, `Mixta`.
 Valores: `Físico`, `Electrónico`, `Virtual`, `Patrimonial`.
 
 ### `tb_categorias` (AF1:AI14) — 13 categorías
-
-Columnas: `categoria`, `grupo`, `afecta_utilidad_distribuible`, `genera_reporte_barrido`.
 
 | categoria | grupo | afecta_UD | genera_RB |
 |---|---|---|---|
@@ -105,7 +98,7 @@ Columnas: `categoria`, `grupo`, `afecta_utilidad_distribuible`, `genera_reporte_
 | Gasto Personal | Personal | NO | NO |
 
 ### `tb_grupo_categoria` (AK1:AN10)
-Valores en columna A: `Operativa`, `Ganancia`, `Gasto`, `Distribución`, `Socio`, `Movimiento`, `Ajuste`, `Personal`. Las columnas B-D (`Columna1-3`) están vacías.
+Valores: `Operativa`, `Ganancia`, `Gasto`, `Distribución`, `Socio`, `Movimiento`, `Ajuste`, `Personal`.
 
 ### `tb_segmentos` (AP1:AR7) — 6 segmentos
 
@@ -124,30 +117,7 @@ Solo 1 fórmula original (`B200 = =2+3`, celda de prueba eliminada en R1).
 
 ## Validaciones de datos
 
-186 celdas con validación, agrupadas en **14 reglas únicas**:
-
-| # | Rango | Tipo | Fuente |
-|---|---|---|---|
-| 1 | B2:B6 (`tb_divisas[es_base]`) | List | `SI,NO` literal |
-| 2 | C2:C6 (`tb_divisas[tipo]`) | List | `=ListaTipoDivisa` |
-| 3 | E2:E6 (`tb_divisas[activa]`) | List | `SI,NO` literal |
-| 4 | K2:K7 (`tb_entidades[tipo_entidad]`) | List | `=ListaTipoEntidad` |
-| 5 | L2:L7 (`tb_entidades[activa]`) | List | `SI,NO` literal |
-| 6 | S2:S21 (`tb_cuentas[clase]`) | List | `=ListaClase` |
-| 7 | T2:T21 (`tb_cuentas[naturaleza]`) | List | `=ListaNaturaleza` |
-| 8 | U2:U21 (`tb_cuentas[tipo_operativo]`) | List | `=ListaTipoOperativo` |
-| 9 | V2:V21 (`tb_cuentas[moneda]`) | List | `=ListaDivisa` |
-| 10 | W2:W21 (`tb_cuentas[permite_revalorizacion]`) | List | `SI,NO` literal |
-| 11 | X2:X21 (`tb_cuentas[activa]`) | List | `SI,NO` literal |
-| 12 | AG2:AG14 (`tb_categorias[grupo]`) | List | `=$AK$2:$AK$10` (ref directa) |
-| 13 | AH2:AH14 (`tb_categorias[afecta_utilidad_distribuible]`) | List | `SI,NO` literal |
-| 14 | AI2:AI14 (`tb_categorias[genera_reporte_barrido]`) | List | `SI,NO` literal |
-
-Todas con `inCellDropDown=true`, sin mensaje de entrada ni alerta de error.
-
-## Formato condicional
-
-Ninguno.
+186 celdas con validación, agrupadas en **14 reglas únicas** (listas en la versión original del archivo).
 
 ## Protección
 
