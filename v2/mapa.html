@@ -143,6 +143,8 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
     <span><span class="dot" style="background:#EEEDFE;border:1px solid #534AB7;"></span>Macro</span>
     <span><span class="dot" style="background:#FAECE7;border:1px solid #C34416;"></span>Tabla</span>
     <span><span class="dot" style="background:#FAEEDA;border:1px solid #854F0B;"></span>Regla</span>
+    <span><span class="dot" style="background:#DCE7FA;border:1px solid #1E47AE;"></span>Socio</span>
+    <span><span class="dot" style="background:#EFE1FA;border:1px solid #6B2E9B;"></span>Cuenta</span>
     <span><span class="dot" style="background:#FFF4D6;border:1px solid #B08500;"></span>Issue</span>
   </div>
   <span class="hint">Click en nodo o flecha = seleccionar · arrastrar = mover · rueda = zoom</span>
@@ -161,6 +163,8 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
       <option value="macro">Macro</option>
       <option value="tabla">Tabla</option>
       <option value="regla">Regla</option>
+      <option value="socio">Socio</option>
+      <option value="cuenta">Cuenta contable</option>
     </select>
     <label>Nombre (sin espacios, ej: tb_nuevatabla)</label>
     <input id="node-name" type="text" placeholder="MiNuevoNodo">
@@ -248,23 +252,40 @@ const CATALOG = {
   regla: [
     { id:'AlertaSpread', label:'AlertaSpread', desc:'Umbral 3% spread' },
   ],
+  socio: [
+    { id:'Socio01', label:'Socio01', desc:'Socio del negocio' },
+    { id:'Socio02', label:'Socio02', desc:'Socia del negocio' },
+    { id:'Socio03', label:'Socio03', desc:'Socia del negocio' },
+  ],
+  cuenta: [
+    { id:'Utilidad_Distribuible', label:'Utilidad Distribuible', desc:'Débito único en asiento de pacto' },
+    { id:'Cta_Corriente_Socio01', label:'Cta. Corriente Socio01', desc:'Crédito en pacto a Socio01' },
+    { id:'Cta_Corriente_Socio02', label:'Cta. Corriente Socio02', desc:'Crédito en pacto a Socio02' },
+    { id:'Cta_Corriente_Socio03', label:'Cta. Corriente Socio03', desc:'Crédito en pacto a Socio03' },
+    { id:'Ganancia_por_Revalorizacion', label:'Ganancia por Revalorización', desc:'Crédito en revaluación (+)' },
+    { id:'Perdida_por_Revalorizacion', label:'Pérdida por Revalorización', desc:'Débito en revaluación (−)' },
+  ],
 };
 
 const BASE_RELATIONS = [
+  // Flujo captura
   { from:'REGISTRO_RAPIDO', to:'GuardarLote', label:'dispara' },
   { from:'REGISTRO_RAPIDO', to:'LimpiarRegistro', label:'dispara' },
   { from:'REGISTRO_RAPIDO', to:'GenerarAsientoPacto', label:'dispara' },
   { from:'REGISTRO_RAPIDO', to:'RevalorizarCuenta', label:'dispara' },
   { from:'REGISTRO_RAPIDO', to:'tb_registro_rapido', label:'lee/escribe' },
+  // GuardarLote
   { from:'GuardarLote', to:'LIBRO_MAYOR', label:'escribe' },
   { from:'GuardarLote', to:'TASAS', label:'registra' },
   { from:'GuardarLote', to:'tb_mayor', label:'inserta filas' },
   { from:'GuardarLote', to:'Helpers', label:'usa' },
+  // Tasas
   { from:'TASAS', to:'AlertaSpread', label:'evalúa' },
   { from:'AlertaSpread', to:'ActualizarTasaVigente', label:'sugiere' },
   { from:'ActualizarTasaVigente', to:'ActualizarTasaVigenteDesde', label:'delega en' },
   { from:'ActualizarTasaVigenteDesde', to:'tb_tasas_vigentes', label:'actualiza' },
   { from:'ActualizarTasaVigenteDesde', to:'tb_tasas_historial', label:'registra' },
+  // Auditor
   { from:'AUDITOR_LOTES', to:'LoteAnterior', label:'botón' },
   { from:'AUDITOR_LOTES', to:'LoteSiguiente', label:'botón' },
   { from:'AUDITOR_LOTES', to:'AccionSobreLoteVisible', label:'botón' },
@@ -272,15 +293,40 @@ const BASE_RELATIONS = [
   { from:'AccionSobreLoteVisible', to:'DuplicarLoteConID', label:'si válido' },
   { from:'CorregirLoteConID', to:'tb_mayor', label:'anula líneas' },
   { from:'DuplicarLoteConID', to:'REGISTRO_RAPIDO', label:'precarga' },
+  // Resultados
   { from:'RevalorizarCuenta', to:'SALDOS_Y_ENTIDADES', label:'alimenta' },
   { from:'REPORTE_BARRIDO', to:'LIBRO_MAYOR', label:'lee de' },
   { from:'SALDOS_Y_ENTIDADES', to:'tb_mayor', label:'agrupa' },
+  // Catálogos
   { from:'tb_cuentas', to:'REGISTRO_RAPIDO', label:'dropdown' },
   { from:'tb_divisas', to:'REGISTRO_RAPIDO', label:'dropdown' },
   { from:'tb_segmentos', to:'REGISTRO_RAPIDO', label:'dropdown' },
   { from:'tb_categorias', to:'REGISTRO_RAPIDO', label:'dropdown' },
   { from:'tb_clase_cuenta', to:'tb_cuentas', label:'clasifica' },
   { from:'tb_entidades', to:'REGISTRO_RAPIDO', label:'dropdown' },
+  // Socios → sus cuentas
+  { from:'Socio01', to:'Cta_Corriente_Socio01', label:'titular' },
+  { from:'Socio02', to:'Cta_Corriente_Socio02', label:'titular' },
+  { from:'Socio03', to:'Cta_Corriente_Socio03', label:'titular' },
+  // REPORTE_BARRIDO → socios
+  { from:'REPORTE_BARRIDO', to:'Socio01', label:'B29 asignación' },
+  { from:'REPORTE_BARRIDO', to:'Socio02', label:'B30 asignación' },
+  { from:'REPORTE_BARRIDO', to:'Socio03', label:'B31 asignación' },
+  // Pacto (GenerarAsientoPacto)
+  { from:'GenerarAsientoPacto', to:'Utilidad_Distribuible', label:'débito' },
+  { from:'GenerarAsientoPacto', to:'Cta_Corriente_Socio01', label:'crédito' },
+  { from:'GenerarAsientoPacto', to:'Cta_Corriente_Socio02', label:'crédito' },
+  { from:'GenerarAsientoPacto', to:'Cta_Corriente_Socio03', label:'crédito' },
+  // Revalorización
+  { from:'RevalorizarCuenta', to:'Ganancia_por_Revalorizacion', label:'si ganancia' },
+  { from:'RevalorizarCuenta', to:'Perdida_por_Revalorizacion', label:'si pérdida' },
+  // Cuentas → tb_cuentas (pertenecen al catálogo)
+  { from:'tb_cuentas', to:'Utilidad_Distribuible', label:'contiene' },
+  { from:'tb_cuentas', to:'Cta_Corriente_Socio01', label:'contiene' },
+  { from:'tb_cuentas', to:'Cta_Corriente_Socio02', label:'contiene' },
+  { from:'tb_cuentas', to:'Cta_Corriente_Socio03', label:'contiene' },
+  { from:'tb_cuentas', to:'Ganancia_por_Revalorizacion', label:'contiene' },
+  { from:'tb_cuentas', to:'Perdida_por_Revalorizacion', label:'contiene' },
 ];
 
 const STYLES = {
@@ -288,6 +334,8 @@ const STYLES = {
   macro: { bg:'#EEEDFE', border:'#534AB7', text:'#26215C' },
   tabla: { bg:'#FAECE7', border:'#C34416', text:'#4A1B0C' },
   regla: { bg:'#FAEEDA', border:'#854F0B', text:'#412402' },
+  socio: { bg:'#DCE7FA', border:'#1E47AE', text:'#0F2458' },
+  cuenta:{ bg:'#EFE1FA', border:'#6B2E9B', text:'#35154E' },
   issue: { bg:'#FFF4D6', border:'#B08500', text:'#5a3e00' },
 };
 
@@ -296,7 +344,7 @@ const STYLES = {
    ============================================================ */
 let graph;
 let layoutData = { positions: {}, customNodes: [], customEdges: [] };
-let layoutSha = null; // sha del layout.json en GitHub (para update)
+let layoutSha = null;
 let linkMode = false;
 let linkSource = null;
 
@@ -338,7 +386,7 @@ async function loadIssues() {
     for (const s of ['idea','diseño','listo']) if (labels.includes(s)) { status = s; break; }
     const anchors = [];
     labels.forEach(l => {
-      const m = l.match(/^(macro|hoja|tabla|rango|regla):(.+)$/);
+      const m = l.match(/^(macro|hoja|tabla|rango|regla|socio|cuenta):(.+)$/);
       if (m) anchors.push({ type: m[1], id: m[2] });
     });
     return { number: issue.number, title: issue.title, status, anchors, url: issue.html_url };
@@ -361,7 +409,6 @@ async function loadLayout() {
     layoutSha = json.sha;
     const decoded = atob(json.content.replace(/\s/g, ''));
     layoutData = JSON.parse(decodeURIComponent(escape(decoded)));
-    // defaults por si falta algo
     layoutData.positions = layoutData.positions || {};
     layoutData.customNodes = layoutData.customNodes || [];
     layoutData.customEdges = layoutData.customEdges || [];
@@ -374,7 +421,6 @@ async function loadLayout() {
 
 async function saveLayout() {
   if (!token) { alert('Necesitás token guardado en el panel v2 para guardar layout'); return; }
-  // Capturar posiciones actuales del grafo
   graph.nodes().forEach(n => {
     const p = n.position();
     layoutData.positions[n.id()] = { x: Math.round(p.x), y: Math.round(p.y) };
@@ -400,19 +446,16 @@ function buildGraphData(issues) {
   const nodes = [];
   const edges = [];
 
-  // Nodos del catálogo base
   Object.keys(CATALOG).forEach(type => {
     CATALOG[type].forEach(n => {
       nodes.push(makeNodeData(type + ':' + n.id, n.label, n.desc, type, 'system'));
     });
   });
 
-  // Nodos custom (de layout.json)
   layoutData.customNodes.forEach(n => {
     nodes.push(makeNodeData(n.id, n.label, n.desc || '', n.type, 'custom'));
   });
 
-  // Aristas base
   BASE_RELATIONS.forEach((r, idx) => {
     const fromId = findNodeId(r.from);
     const toId = findNodeId(r.to);
@@ -421,12 +464,10 @@ function buildGraphData(issues) {
     }
   });
 
-  // Aristas custom (de layout.json)
   layoutData.customEdges.forEach((e, idx) => {
     edges.push({ data: { id: 'custom-edge-' + idx, source: e.source, target: e.target, label: e.label || '', kind: 'custom' } });
   });
 
-  // Issues
   issues.forEach(iss => {
     nodes.push({
       data: {
@@ -443,7 +484,6 @@ function buildGraphData(issues) {
     });
   });
 
-  // Aplicar posiciones guardadas
   nodes.forEach(n => {
     if (layoutData.positions[n.data.id]) n.position = layoutData.positions[n.data.id];
   });
@@ -459,7 +499,6 @@ function findNodeId(plainId) {
   for (const type of Object.keys(CATALOG)) {
     if (CATALOG[type].some(n => n.id === plainId)) return type + ':' + plainId;
   }
-  // ¿es custom?
   const custom = layoutData.customNodes.find(n => n.id.endsWith(':' + plainId) || n.id === plainId);
   if (custom) return custom.id;
   return null;
@@ -489,6 +528,7 @@ function initGraph(nodes, edges) {
         'width': 'label', 'height': 32, 'padding': '10px',
         'text-wrap': 'wrap', 'text-max-width': 140,
       }},
+      { selector: 'node[type = "socio"]', style: { 'shape': 'ellipse', 'width': 60, 'height': 60 } },
       { selector: 'node[kind = "issue"]', style: {
         'shape': 'round-rectangle',
         'background-color': STYLES.issue.bg, 'border-color': STYLES.issue.border,
@@ -523,14 +563,12 @@ function initGraph(nodes, edges) {
     wheelSensitivity: 0.2, minZoom: 0.2, maxZoom: 2.5,
   });
 
-  // Click en Issue → abre URL
   graph.on('tap', 'node[kind = "issue"]', evt => {
     if (linkMode) return;
     const url = evt.target.data('url');
     if (url) window.open(url, '_blank');
   });
 
-  // Modo conexión: dos clicks consecutivos
   graph.on('tap', 'node', evt => {
     if (!linkMode) return;
     const node = evt.target;
@@ -542,11 +580,10 @@ function initGraph(nodes, edges) {
       createCustomEdge(linkSource.id(), node.id());
       linkSource.removeStyle();
       linkSource = null;
-      toggleLinkMode(); // salir del modo
+      toggleLinkMode();
     }
   });
 
-  // Hover tooltip
   graph.on('mouseover', 'node', evt => {
     const d = evt.target.data();
     setStatus(d.desc || d.label);
@@ -598,20 +635,16 @@ function createCustomEdge(sourceId, targetId) {
 
 function deleteSelected() {
   const sel = graph.$(':selected');
-  if (sel.length === 0) { alert('Seleccioná primero un nodo o flecha (click sobre él)'); return; }
+  if (sel.length === 0) { alert('Seleccioná primero un nodo o flecha'); return; }
   if (!confirm('¿Eliminar ' + sel.length + ' elemento(s) del mapa?')) return;
   sel.forEach(el => {
     const id = el.id();
     if (el.isNode()) {
-      // Solo se pueden eliminar nodos custom
       if (el.data('kind') !== 'custom') { alert('No podés eliminar nodos del sistema base. Solo nodos agregados manualmente.'); return; }
       layoutData.customNodes = layoutData.customNodes.filter(n => n.id !== id);
       delete layoutData.positions[id];
     } else if (el.isEdge()) {
-      // Solo aristas custom
       if (el.data('kind') !== 'custom') { alert('No podés eliminar conexiones del sistema base.'); return; }
-      layoutData.customEdges = layoutData.customEdges.filter((e, idx) => 'custom-edge-' + idx !== id && !id.startsWith('custom-edge-' + Date.now().toString().slice(0,5)));
-      // Simplificación: filtrar por source+target+label
       const s = el.data('source'), t = el.data('target'), l = el.data('label');
       layoutData.customEdges = layoutData.customEdges.filter(e => !(e.source === s && e.target === t && (e.label || '') === (l || '')));
     }
@@ -634,7 +667,9 @@ function openAddIdeaModal() {
     document.getElementById('idea-anchor-info').textContent = 'Sin ancla (será un Issue suelto)';
   } else {
     const n = sel[0];
-    pendingIdeaAnchor = { type: n.data('type'), id: n.data('label') };
+    // Para socios/cuentas, usar el id plano (sin espacios) — el label puede tener espacios
+    const plainId = n.id().split(':')[1];
+    pendingIdeaAnchor = { type: n.data('type'), id: plainId };
     document.getElementById('idea-anchor-info').textContent = 'Ancla: ' + pendingIdeaAnchor.type + ':' + pendingIdeaAnchor.id;
   }
   openModal('modal-idea');
@@ -665,7 +700,6 @@ async function confirmAddIdea() {
    ============================================================ */
 function openModal(id) { document.getElementById(id).classList.add('show'); }
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-
 function setStatus(msg) { document.getElementById('status').textContent = msg || ''; }
 
 function runLayout(name) {
@@ -694,7 +728,6 @@ async function loadAll() {
   }
 }
 
-// Click fuera de modal cierra
 document.querySelectorAll('.modal-bg').forEach(el => {
   el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
 });
