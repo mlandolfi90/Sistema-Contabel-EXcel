@@ -1,4 +1,4 @@
-// v2/js/panel/actions.js — Mover / rechazar / archivar tarjetas
+// v2/js/panel/actions.js — Mover / rechazar / retroceder / archivar tarjetas
 
 import { state } from './state.js';
 import { setStatus } from './utils.js';
@@ -30,6 +30,15 @@ export async function moveCard(number, newStatus, reloadCallback) {
 
 export async function rejectCard(number, reloadCallback) {
   return moveCard(number, 'rechazada', reloadCallback);
+}
+
+// Retroceder al estado anterior (según prev del workflow)
+export async function backCard(number, reloadCallback) {
+  const c = state.cards.find(x => x.number === number);
+  if (!c) return;
+  const currentState = getState(state.config, c.status);
+  if (!currentState.prev) return alert('Esta tarjeta ya está en el estado inicial, no se puede retroceder más.');
+  return moveCard(number, currentState.prev, reloadCallback);
 }
 
 export async function deleteCard(number, reloadCallback) {

@@ -3,7 +3,7 @@
 import { state } from './state.js';
 import { $, esc } from './utils.js';
 import { renderCard } from './render-card.js';
-import { moveCard, rejectCard, deleteCard } from './actions.js';
+import { moveCard, rejectCard, backCard, deleteCard } from './actions.js';
 
 /* Render inicial (sólo primera vez) del HTML estático dinámico */
 export function renderStatusSelect() {
@@ -40,7 +40,7 @@ export function setFilter(f) {
   renderKanban();
 }
 
-export function renderKanban(reloadCallback) {
+export function renderKanban() {
   const { cards, config, currentFilter } = state;
   const visible = cards.filter(c => currentFilter === 'all' || c.anchors.some(a => a.type === currentFilter));
   const cols = Object.fromEntries(config.stateIds.map(id => [id, []]));
@@ -55,9 +55,10 @@ export function renderKanban(reloadCallback) {
   });
   $('ideas-count').textContent = cards.length;
 
-  // bind botones (reloadCallback se inyecta desde main)
+  // bind botones (reloadCallback inyectado desde main.js en state._reloadCallback)
   const rcb = state._reloadCallback;
   document.querySelectorAll('[data-move]').forEach(b => b.addEventListener('click', () => moveCard(parseInt(b.dataset.number), b.dataset.move, rcb)));
   document.querySelectorAll('[data-reject]').forEach(b => b.addEventListener('click', () => rejectCard(parseInt(b.dataset.number), rcb)));
+  document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => backCard(parseInt(b.dataset.number), rcb)));
   document.querySelectorAll('[data-delete]').forEach(b => b.addEventListener('click', () => deleteCard(parseInt(b.dataset.number), rcb)));
 }
