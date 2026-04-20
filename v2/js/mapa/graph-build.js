@@ -9,6 +9,10 @@ import { onLinkModeTap, toggleLinkMode } from './actions-edges.js';
 
 export async function loadIssuesForGraph() { return loadIssues(); }
 
+// Estados de issues que NO deben aparecer en el mapa (estorbo visual).
+// Implementadas podrían volver si se desea mostrar lo que ya está hecho.
+const HIDDEN_STATES = ['rechazada'];
+
 export function buildGraphData(issues) {
   const { schema, draft, layout } = state;
   const nodes = [];
@@ -21,18 +25,20 @@ export function buildGraphData(issues) {
     const kind = (r.kind === 'draft-add' || r.kind === 'draft-edit') ? 'draft' : 'system';
     edges.push({ data: { id: `rel-${idx}-${r.from}-${r.to}`, source: r.from, target: r.to, label: r.label || '', kind }});
   });
-  issues.forEach(iss => {
-    nodes.push({ data: {
-      id: 'issue:' + iss.number,
-      label: '#' + iss.number + ' ' + truncate(iss.title, 40),
-      desc: iss.title, type: 'issue', kind: 'issue', status: iss.status, url: iss.url, number: iss.number,
-    }});
-    iss.anchors.forEach((a, i) => {
-      if (nodes.some(n => n.data.id === a.id)) {
-        edges.push({ data: { id: `issue-edge-${iss.number}-${i}`, source: 'issue:'+iss.number, target: a.id, kind: 'issue' }});
-      }
+  issues
+    .filter(iss => !HIDDEN_STATES.includes(iss.status))
+    .forEach(iss => {
+      nodes.push({ data: {
+        id: 'issue:' + iss.number,
+        label: '#' + iss.number + ' ' + truncate(iss.title, 40),
+        desc: iss.title, type: 'issue', kind: 'issue', status: iss.status, url: iss.url, number: iss.number,
+      }});
+      iss.anchors.forEach((a, i) => {
+        if (nodes.some(n => n.data.id === a.id)) {
+          edges.push({ data: { id: `issue-edge-${iss.number}-${i}`, source: 'issue:'+iss.number, target: a.id, kind: 'issue' }});
+        }
+      });
     });
-  });
   nodes.forEach(n => { if (layout.positions[n.data.id]) n.position = layout.positions[n.data.id]; });
   return { nodes, edges };
 }
