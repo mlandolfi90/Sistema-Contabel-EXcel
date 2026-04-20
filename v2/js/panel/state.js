@@ -5,4 +5,6 @@ export const state = {
   cards: [],
   composerAnchors: [],
   currentFilter: 'all',
+  currentSearch: '',
+  focusIssue: null,
 };

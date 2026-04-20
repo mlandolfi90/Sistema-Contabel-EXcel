@@ -7,7 +7,7 @@ import { loadSchemaAll } from '../schema-loader.js';
 import { loadConfig } from '../config-loader.js';
 import { saveTokenBtn, clearTokenBtn, updateAuthUI } from './auth.js';
 import { openNode, toggleAnchorPicker, resetComposer, saveCard } from './composer.js';
-import { renderStatusSelect, renderKanbanColumns, renderFilters, renderKanban } from './render-kanban.js';
+import { renderStatusSelect, renderKanbanColumns, renderFilters, renderKanban, readFocusFromURL } from './render-kanban.js';
 import { renderStructure } from './render-structure.js';
 import { switchView, copyVBAPrompt } from './views.js';
 
@@ -27,6 +27,7 @@ async function loadAll() {
 
     setStatus('Cargando issues...');
     state.cards = await loadIssues();
+    readFocusFromURL();
     renderKanban();
     renderStructure((id, type) => openNode(id, type, switchView));
     setStatus('Cargadas ' + state.cards.length + ' ideas');

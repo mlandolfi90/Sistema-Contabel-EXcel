@@ -1,4 +1,4 @@
-// v2/js/panel/render-kanban.js — Columnas + filtros + render completo
+// v2/js/panel/render-kanban.js — Columnas + filtros + búsqueda + highlight
 
 import { state } from './state.js';
 import { $, esc } from './utils.js';
@@ -32,6 +32,23 @@ export function renderFilters(copyVBAPromptFn) {
     `<div style="margin-left:auto;"><button class="btn" id="btn-vba-prompt">Copiar prompt VBA</button></div>`;
   bar.querySelectorAll('.filter-chip').forEach(b => b.addEventListener('click', () => setFilter(b.dataset.filter)));
   $('btn-vba-prompt').addEventListener('click', copyVBAPromptFn);
+
+  // Bind buscador (una sola vez)
+  const input = $('search-input');
+  const clearBtn = $('search-clear');
+  if (input && !input.dataset.bound) {
+    input.dataset.bound = '1';
+    input.addEventListener('input', () => {
+      state.currentSearch = input.value.trim().toLowerCase();
+      clearBtn.style.display = state.currentSearch ? 'inline-block' : 'none';
+      renderKanban();
+    });
+    clearBtn.addEventListener('click', () => {
+      input.value = ''; state.currentSearch = '';
+      clearBtn.style.display = 'none';
+      renderKanban(); input.focus();
+    });
+  }
 }
 
 export function setFilter(f) {
@@ -40,9 +57,20 @@ export function setFilter(f) {
   renderKanban();
 }
 
+function matchesSearch(card, q) {
+  if (!q) return true;
+  if (('#' + card.number).includes(q)) return true;
+  if ((card.title || '').toLowerCase().includes(q)) return true;
+  if ((card.note || '').toLowerCase().includes(q)) return true;
+  if (card.anchors.some(a => (a.id || '').toLowerCase().includes(q))) return true;
+  return false;
+}
+
 export function renderKanban() {
-  const { cards, config, currentFilter } = state;
-  const visible = cards.filter(c => currentFilter === 'all' || c.anchors.some(a => a.type === currentFilter));
+  const { cards, config, currentFilter, currentSearch } = state;
+  const visible = cards
+    .filter(c => currentFilter === 'all' || c.anchors.some(a => a.type === currentFilter))
+    .filter(c => matchesSearch(c, currentSearch));
   const cols = Object.fromEntries(config.stateIds.map(id => [id, []]));
   visible.forEach(c => { if (cols[c.status]) cols[c.status].push(c); });
 
@@ -61,4 +89,24 @@ export function renderKanban() {
   document.querySelectorAll('[data-reject]').forEach(b => b.addEventListener('click', () => rejectCard(parseInt(b.dataset.number), rcb)));
   document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => backCard(parseInt(b.dataset.number), rcb)));
   document.querySelectorAll('[data-delete]').forEach(b => b.addEventListener('click', () => deleteCard(parseInt(b.dataset.number), rcb)));
+
+  // Highlight del issue indicado en ?issue=N (solo la primera vez tras carga)
+  if (state.focusIssue) {
+    const num = state.focusIssue;
+    state.focusIssue = null;
+    requestAnimationFrame(() => {
+      const card = document.querySelector(`[data-number="${num}"]`)?.closest('.card');
+      if (!card) return;
+      card.classList.add('card-highlight');
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => card.classList.remove('card-highlight'), 3000);
+    });
+  }
+}
+
+/* Lee ?issue=N del URL y lo marca como foco antes del primer renderKanban */
+export function readFocusFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const n = parseInt(params.get('issue'));
+  if (n) state.focusIssue = n;
 }

@@ -13,6 +13,11 @@
 .composer select { font-family: inherit; font-size: 12px; padding: 5px 8px; border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary); }
 .composer-anchors { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 
+/* Buscador */
+.search-bar { display: flex; gap: 6px; margin-bottom: 10px; }
+.search-bar input { flex: 1; font-family: inherit; font-size: 13px; padding: 8px 12px; border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary); }
+.search-bar input:focus { outline: none; border-color: var(--text-info); }
+
 .filter-chip { font-size: 11px; padding: 3px 10px; border-radius: 10px; background: var(--bg-secondary); border: 1px solid transparent; cursor: pointer; color: var(--text-secondary); font-family: inherit; }
 .filter-chip.on { background: var(--bg-primary); border-color: var(--border-secondary); color: var(--text-primary); }
 
@@ -35,7 +40,7 @@
 .col-rejected h3 { color: #9a2020; }
 @media (prefers-color-scheme: dark) { .col-rejected { background: #3a1e1e; } .col-rejected h3 { color: #e07070; } }
 
-.card { background: var(--bg-primary); border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 8px; position: relative; }
+.card { background: var(--bg-primary); border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 8px; position: relative; transition: box-shadow 0.3s, border-color 0.3s; }
 .card p.title { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; padding-right: 110px; }
 .card p.title a { color: inherit; text-decoration: none; }
 .card p.title a:hover { text-decoration: underline; }
@@ -49,6 +54,10 @@
 .card .actions .btn-reject:hover { background: #fee; color: #a11; }
 .card .actions .btn-back { color: #5f5e5a; border-color: rgba(0,0,0,0.15); }
 .card .actions .btn-back:hover { background: var(--bg-secondary); color: var(--text-primary); }
+
+/* Highlight temporal de la card objetivo desde ?issue=N */
+.card.card-highlight { border-color: #B08500; box-shadow: 0 0 0 3px rgba(176,133,0,0.35); animation: cardPulse 1.5s ease-in-out 2; }
+@keyframes cardPulse { 0%,100% { box-shadow: 0 0 0 3px rgba(176,133,0,0.35); } 50% { box-shadow: 0 0 0 6px rgba(176,133,0,0.15); } }
 
 /* Tarjetas implementadas: tachado leve */
 .card.status-implementada { opacity: 0.75; }
