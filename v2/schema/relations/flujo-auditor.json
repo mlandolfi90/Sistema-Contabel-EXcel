@@ -1,10 +1,42 @@
 [
-  { "from": "AUDITOR_LOTES", "to": "LoteAnterior", "label": "botón" },
-  { "from": "AUDITOR_LOTES", "to": "LoteSiguiente", "label": "botón" },
-  { "from": "AUDITOR_LOTES", "to": "AccionSobreLoteVisible", "label": "botón" },
-  { "from": "AccionSobreLoteVisible", "to": "CorregirLoteConID", "label": "si anulado" },
-  { "from": "AccionSobreLoteVisible", "to": "DuplicarLoteConID", "label": "si válido" },
-  { "from": "CorregirLoteConID", "to": "tb_mayor", "label": "anula líneas" },
-  { "from": "DuplicarLoteConID", "to": "REGISTRO_RAPIDO", "label": "precarga" },
-  { "from": "IDs_Unicos", "to": "AUDITOR_LOTES", "label": "alimenta" }
+  {
+    "from": "AUDITOR_LOTES",
+    "to": "LoteAnterior",
+    "label": "botón"
+  },
+  {
+    "from": "AUDITOR_LOTES",
+    "to": "LoteSiguiente",
+    "label": "botón"
+  },
+  {
+    "from": "AUDITOR_LOTES",
+    "to": "AccionSobreLoteVisible",
+    "label": "botón"
+  },
+  {
+    "from": "AccionSobreLoteVisible",
+    "to": "CorregirLoteConID",
+    "label": "si anulado"
+  },
+  {
+    "from": "AccionSobreLoteVisible",
+    "to": "DuplicarLoteConID",
+    "label": "si válido"
+  },
+  {
+    "from": "CorregirLoteConID",
+    "to": "tb_mayor",
+    "label": "anula líneas"
+  },
+  {
+    "from": "DuplicarLoteConID",
+    "to": "REGISTRO_RAPIDO",
+    "label": "precarga"
+  },
+  {
+    "from": "IDs_Unicos",
+    "to": "AUDITOR_LOTES",
+    "label": "alimenta"
+  }
 ]
