@@ -192,7 +192,7 @@ Las macros públicas (a conectar con botones de hoja) son:
 - **`RevalorizarCuenta`** — diálogo que prellena un asiento de revalorización tomando la ganancia/pérdida latente desde `SALDOS_Y_ENTIDADES`.
 - **`LoteAnterior` / `LoteSiguiente`** — navegación cronológica en `AUDITOR_LOTES`.
 - **`AccionSobreLoteVisible`** — botón inteligente: si el lote está Activo lanza `CorregirLoteConID`; si está Anulado lanza `DuplicarLoteConID`.
-- **`ExportarTodoVBA`** — utilidad que exporta todos los componentes VBA del proyecto a una carpeta `VBA_Export` junto al libro.
+- **`ExportarTodoVBA_Completo`** — _auxiliar de desarrollo_ (no runtime). Exporta todos los componentes VBA del proyecto a una carpeta `VBA_Export` junto al libro. El sistema funciona normalmente sin esta macro.
 
 ## 9. Reglas de negocio clave
 
@@ -208,16 +208,21 @@ Las macros públicas (a conectar con botones de hoja) son:
 
 ## 10. Componentes VBA del proyecto
 
-El proyecto VBA, inventariado por `ExportarTodoVBA_Completo` (Módulo3), tiene **35 componentes totales**, de los cuales **solo 4 contienen código**:
+El proyecto VBA tiene **35 componentes totales**, de los cuales **solo 4 contienen código**. De esos 4, **3 son runtime y 1 es auxiliar**:
 
-### 10.1 Componentes con código (4)
+### 10.1 Componentes de runtime (3)
+
+Estos módulos SON requeridos para que el sistema funcione:
 
 - **`Módulo1.bas`** (módulo estándar, `Type = 1`) — núcleo contable: `GuardarLote`, `LimpiarRegistro`, `ActualizarTasaVigente`, `GenerarAsientoPacto`, `RevalorizarCuenta`.
 - **`Módulo2.bas`** (módulo estándar, `Type = 1`) — auditor de lotes: `LoteAnterior`, `LoteSiguiente`, `AccionSobreLoteVisible`, `DuplicarLoteConID`, `CorregirLoteConID`.
-- **`Módulo3.bas`** (módulo estándar, `Type = 1`) — utilidad de exportación: `ExportarTodoVBA_Completo`.
 - **`Hoja3.cls`** (código de hoja, `Type = 100`) — **CodeName `Hoja3` = hoja visible `REGISTRO_RAPIDO`**. Contiene `Worksheet_Change` y `Worksheet_SelectionChange` que implementan la selección múltiple tipo toggle sobre la celda `B3` (Socios participantes) usando el `Comment` oculto de la celda como memoria del valor previo.
 
-### 10.2 Componentes vacíos (31)
+### 10.2 Componente auxiliar de desarrollo (1)
+
+- **`Módulo3.bas`** (módulo estándar, `Type = 1`) — utilidad de exportación: `ExportarTodoVBA_Completo`. **NO es parte del runtime.** Su única función es exportar los componentes VBA del proyecto a archivos planos para auditoría o respaldo. Ningún flujo operativo lo invoca y su ausencia no afecta el funcionamiento del libro. Puede eliminarse del `.xlsm` sin consecuencias si no se necesita la exportación automática.
+
+### 10.3 Componentes vacíos (31)
 
 `ThisWorkbook` y las demás hojas (`Hoja1`, `Hoja2`, `Hoja4`, …, `Hoja32`) no tienen código.
 

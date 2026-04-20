@@ -13,12 +13,16 @@ Antes el código VBA vivía embebido en bloques markdown dentro de los `docs/*.m
 
 ## Contenido
 
-| Archivo | Tipo VBA | CodeName | Hoja visible | Estado |
-|---|---|---|---|---|
-| `Modulo1.bas` | Módulo estándar (`Type=1`) | Módulo1 | — | ✅ Extraído |
-| `Modulo2.bas` | Módulo estándar (`Type=1`) | Módulo2 | — | ✅ Extraído (incluye fix #11) |
-| `Modulo3.bas` | Módulo estándar (`Type=1`) | Módulo3 | — | ⏳ Pendiente — [issue #18](https://github.com/mlandolfi90/Sistema-Contabel-EXcel/issues/18) |
-| `Hoja3.cls` | Código de hoja (`Type=100`) | Hoja3 | REGISTRO_RAPIDO | ✅ Extraído |
+| Archivo | Tipo VBA | CodeName | Hoja visible | Rol | Estado |
+|---|---|---|---|---|---|
+| `Modulo1.bas` | Módulo estándar (`Type=1`) | Módulo1 | — | 🟢 Runtime (núcleo) | ✅ Extraído |
+| `Modulo2.bas` | Módulo estándar (`Type=1`) | Módulo2 | — | 🟢 Runtime (auditor) | ✅ Extraído (fix #11) |
+| `Modulo3.bas` | Módulo estándar (`Type=1`) | Módulo3 | — | ⚪ Auxiliar de desarrollo | ⏳ Pendiente — [issue #18](https://github.com/mlandolfi90/Sistema-Contabel-EXcel/issues/18) |
+| `Hoja3.cls` | Código de hoja (`Type=100`) | Hoja3 | REGISTRO_RAPIDO | 🟢 Runtime (UX socios) | ✅ Extraído |
+
+### ℹ️ Nota sobre `Modulo3.bas`
+
+`Modulo3` contiene la macro auxiliar `ExportarTodoVBA_Completo`, una utilidad de desarrollo que exporta todos los componentes VBA del proyecto a una carpeta plana. **No es parte del runtime del sistema contable**: ningún flujo operativo (captura, guardado, auditoría, pacto, revalorización) lo invoca. El libro funciona normalmente aunque `Modulo3` no exista. Su extracción es higiene del repo, no requisito funcional.
 
 ## Workflow de sincronización con el `.xlsm`
 
@@ -70,4 +74,4 @@ Alternativa más limpia: usar la opción `Importar archivo` solo si antes elimin
 
 - `Modulo2.bas` — refactor + fix [issue #11](https://github.com/mlandolfi90/Sistema-Contabel-EXcel/issues/11): tope duro de 20 líneas, helper `ContarFilasLote` extraído de duplicación entre macros.
 - `Modulo1.bas`, `Hoja3.cls` — extracción inicial sin cambios funcionales (source of truth movido de `.md` a `.bas`/`.cls`).
-- `Modulo3.bas` — pendiente de aporte manual (ver [issue #18](https://github.com/mlandolfi90/Sistema-Contabel-EXcel/issues/18)).
+- `Modulo3.bas` — módulo **auxiliar de desarrollo** (no runtime). Pendiente de extracción por higiene del repo, sin impacto funcional (ver [issue #18](https://github.com/mlandolfi90/Sistema-Contabel-EXcel/issues/18)).
