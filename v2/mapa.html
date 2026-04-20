@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa contable — Panel v2</title>
+<!-- Cytoscape.js: librería de grafos interactivos, cargada desde CDN (no hace falta instalar nada) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+<style>
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f4ee;
+  --bg-tertiary: #faf9f5;
+  --text-primary: #1a1a17;
+  --text-secondary: #5f5e5a;
+  --text-tertiary: #888780;
+  --text-info: #185FA5;
+  --border-tertiary: rgba(0,0,0,0.08);
+  --border-secondary: rgba(0,0,0,0.15);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1f1e1b;
+    --bg-secondary: #2a2927;
+    --bg-tertiary: #181716;
+    --text-primary: #f0efea;
+    --text-secondary: #b4b2a9;
+    --text-tertiary: #888780;
+    --text-info: #85B7EB;
+    --border-tertiary: rgba(255,255,255,0.08);
+    --border-secondary: rgba(255,255,255,0.15);
+  }
+}
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 16px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+h1 { font-size: 18px; font-weight: 500; margin: 0; }
+.subtitle { color: var(--text-secondary); font-size: 12px; margin: 0; }
+.nav a {
+  font-size: 12px;
+  color: var(--text-info);
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1px solid var(--border-tertiary);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+}
+.nav a:hover { background: var(--bg-secondary); }
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  align-items: center;
+  background: var(--bg-secondary);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+}
+.toolbar .sep { width: 1px; height: 20px; background: var(--border-tertiary); }
+.btn-small {
+  font-size: 11px;
+  padding: 5px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-tertiary);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-small:hover { color: var(--text-primary); border-color: var(--border-secondary); }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--text-secondary); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+#graph {
+  width: 100%;
+  height: calc(100vh - 200px);
+  min-height: 500px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-tertiary);
+  border-radius: var(--radius-md);
+}
+.status {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 6px;
+  min-height: 16px;
+}
+.hint { font-size: 11px; color: var(--text-tertiary); margin-left: auto; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Mapa contable</h1>
+    <p class="subtitle">Entramado completo del sistema + ideas flotando cerca de su ancla</p>
+  </div>
+  <div class="nav">
+    <a href="./">← Volver al panel v2</a>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="legend">
+    <span><span class="dot" style="background:#E1F5EE;border:1px solid #0F6E56;"></span>Hoja</span>
+    <span><span class="dot" style="background:#EEEDFE;border:1px solid #534AB7;"></span>Macro</span>
+    <span><span class="dot" style="background:#FAECE7;border:1px solid #C34416;"></span>Tabla</span>
+    <span><span class="dot" style="background:#FAEEDA;border:1px solid #854F0B;"></span>Regla</span>
+    <span><span class="dot" style="background:#FFF4D6;border:1px solid #B08500;border-radius:50%;"></span>Issue (idea)</span>
+  </div>
+  <div class="sep"></div>
+  <button class="btn-small" onclick="runLayout('cose')">Auto-organizar</button>
+  <button class="btn-small" onclick="runLayout('grid')">Grilla</button>
+  <button class="btn-small" onclick="graph.fit(null, 40)">Encajar vista</button>
+  <button class="btn-small" onclick="loadAll()">⟳ Recargar</button>
+  <span class="hint">Arrastrá nodos con el mouse · rueda = zoom · click vacío + arrastrar = pan</span>
+</div>
+
+<div id="graph"></div>
+<p class="status" id="status">Inicializando...</p>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN
+   ============================================================ */
+const OWNER = 'mlandolfi90';
+const REPO = 'Sistema-Contabel-EXcel';
+const API = 'https://api.github.com/repos/' + OWNER + '/' + REPO;
+const TOKEN_KEY = 'gh-token-panel-v2'; // mismo token que el panel v2
+const token = localStorage.getItem(TOKEN_KEY) || '';
+
+/* ============================================================
+   CATÁLOGO DE NODOS CONTABLES
+   Estos son los elementos fijos del sistema que no vienen de Issues.
+   ============================================================ */
+const CATALOG = {
+  hoja: [
+    { id:'REGISTRO_RAPIDO', label:'REGISTRO_RAPIDO', desc:'Formulario de captura' },
+    { id:'LIBRO_MAYOR', label:'LIBRO_MAYOR', desc:'Almacén acumulativo' },
+    { id:'TASAS', label:'TASAS', desc:'Tasas vigentes + historial' },
+    { id:'AUDITOR_LOTES', label:'AUDITOR_LOTES', desc:'Navegación de lotes' },
+    { id:'REPORTE_BARRIDO', label:'REPORTE_BARRIDO', desc:'Reparto de utilidades' },
+    { id:'SALDOS_Y_ENTIDADES', label:'SALDOS_Y_ENTIDADES', desc:'Saldos y ganancia latente' },
+  ],
+  macro: [
+    { id:'GuardarLote', label:'GuardarLote', desc:'Graba lote validado' },
+    { id:'LimpiarRegistro', label:'LimpiarRegistro', desc:'Resetea formulario' },
+    { id:'ActualizarTasaVigente', label:'ActualizarTasaVigente', desc:'Diálogo cambio tasa' },
+    { id:'ActualizarTasaVigenteDesde', label:'ActualizarTasaVigenteDesde', desc:'Tasa parametrizada' },
+    { id:'GenerarAsientoPacto', label:'GenerarAsientoPacto', desc:'Asiento de pacto' },
+    { id:'RevalorizarCuenta', label:'RevalorizarCuenta', desc:'Ganancia latente' },
+    { id:'LoteAnterior', label:'LoteAnterior', desc:'Navega atrás' },
+    { id:'LoteSiguiente', label:'LoteSiguiente', desc:'Navega adelante' },
+    { id:'AccionSobreLoteVisible', label:'AccionSobreLoteVisible', desc:'Corrige o duplica' },
+    { id:'CorregirLoteConID', label:'CorregirLoteConID', desc:'Anula y recarga' },
+    { id:'DuplicarLoteConID', label:'DuplicarLoteConID', desc:'Clona al formulario' },
+    { id:'Helpers', label:'Helpers', desc:'colIdx + EscribirLinea' },
+  ],
+  tabla: [
+    { id:'tb_registro_rapido', label:'tb_registro_rapido', desc:'9 cols - entrada' },
+    { id:'tb_mayor', label:'tb_mayor', desc:'19 cols - asientos' },
+    { id:'tb_tasas_vigentes', label:'tb_tasas_vigentes', desc:'Tasas actuales' },
+    { id:'tb_tasas_historial', label:'tb_tasas_historial', desc:'Bitácora tasas' },
+    { id:'tb_cuentas', label:'tb_cuentas', desc:'Catálogo cuentas' },
+    { id:'tb_entidades', label:'tb_entidades', desc:'Catálogo entidades' },
+    { id:'tb_divisas', label:'tb_divisas', desc:'Catálogo divisas' },
+    { id:'tb_categorias', label:'tb_categorias', desc:'Catálogo categorías' },
+    { id:'tb_segmentos', label:'tb_segmentos', desc:'Catálogo segmentos' },
+    { id:'tb_clase_cuenta', label:'tb_clase_cuenta', desc:'Catálogo clases' },
+  ],
+  regla: [
+    { id:'AlertaSpread', label:'AlertaSpread', desc:'Umbral 3% spread' },
+  ],
+};
+
+/* ============================================================
+   RELACIONES PRECARGADAS DEL SISTEMA
+   Fuente → destino, según el flujo real (extraído del index.html v1)
+   ============================================================ */
+const RELATIONS = [
+  // REGISTRO_RAPIDO dispara macros principales
+  { from:'REGISTRO_RAPIDO', to:'GuardarLote', label:'dispara' },
+  { from:'REGISTRO_RAPIDO', to:'LimpiarRegistro', label:'dispara' },
+  { from:'REGISTRO_RAPIDO', to:'GenerarAsientoPacto', label:'dispara' },
+  { from:'REGISTRO_RAPIDO', to:'RevalorizarCuenta', label:'dispara' },
+  { from:'REGISTRO_RAPIDO', to:'tb_registro_rapido', label:'lee/escribe' },
+
+  // GuardarLote escribe al mayor y tasas
+  { from:'GuardarLote', to:'LIBRO_MAYOR', label:'escribe' },
+  { from:'GuardarLote', to:'TASAS', label:'registra' },
+  { from:'GuardarLote', to:'tb_mayor', label:'inserta filas' },
+  { from:'GuardarLote', to:'Helpers', label:'usa' },
+
+  // Tasas y alertas
+  { from:'TASAS', to:'AlertaSpread', label:'evalúa' },
+  { from:'AlertaSpread', to:'ActualizarTasaVigente', label:'sugiere' },
+  { from:'ActualizarTasaVigente', to:'ActualizarTasaVigenteDesde', label:'delega en' },
+  { from:'ActualizarTasaVigenteDesde', to:'tb_tasas_vigentes', label:'actualiza' },
+  { from:'ActualizarTasaVigenteDesde', to:'tb_tasas_historial', label:'registra' },
+
+  // Auditor de lotes
+  { from:'AUDITOR_LOTES', to:'LoteAnterior', label:'botón' },
+  { from:'AUDITOR_LOTES', to:'LoteSiguiente', label:'botón' },
+  { from:'AUDITOR_LOTES', to:'AccionSobreLoteVisible', label:'botón' },
+  { from:'AccionSobreLoteVisible', to:'CorregirLoteConID', label:'si anulado' },
+  { from:'AccionSobreLoteVisible', to:'DuplicarLoteConID', label:'si válido' },
+  { from:'CorregirLoteConID', to:'tb_mayor', label:'anula líneas' },
+  { from:'DuplicarLoteConID', to:'REGISTRO_RAPIDO', label:'precarga' },
+
+  // Revalorización → hojas de resultados
+  { from:'RevalorizarCuenta', to:'SALDOS_Y_ENTIDADES', label:'alimenta' },
+  { from:'REPORTE_BARRIDO', to:'LIBRO_MAYOR', label:'lee de' },
+  { from:'SALDOS_Y_ENTIDADES', to:'tb_mayor', label:'agrupa' },
+
+  // Catálogos que alimentan REGISTRO_RAPIDO
+  { from:'tb_cuentas', to:'REGISTRO_RAPIDO', label:'dropdown' },
+  { from:'tb_divisas', to:'REGISTRO_RAPIDO', label:'dropdown' },
+  { from:'tb_segmentos', to:'REGISTRO_RAPIDO', label:'dropdown' },
+  { from:'tb_categorias', to:'REGISTRO_RAPIDO', label:'dropdown' },
+  { from:'tb_clase_cuenta', to:'tb_cuentas', label:'clasifica' },
+  { from:'tb_entidades', to:'REGISTRO_RAPIDO', label:'dropdown' },
+];
+
+/* ============================================================
+   COLORES POR TIPO (tokens del panel v2)
+   ============================================================ */
+const STYLES = {
+  hoja:  { bg:'#E1F5EE', border:'#0F6E56', text:'#04342C' },
+  macro: { bg:'#EEEDFE', border:'#534AB7', text:'#26215C' },
+  tabla: { bg:'#FAECE7', border:'#C34416', text:'#4A1B0C' },
+  rango: { bg:'#FAEEDA', border:'#854F0B', text:'#412402' },
+  regla: { bg:'#FAEEDA', border:'#854F0B', text:'#412402' },
+  issue: { bg:'#FFF4D6', border:'#B08500', text:'#5a3e00' },
+};
+
+/* ============================================================
+   CARGAR ISSUES DESDE GITHUB
+   ============================================================ */
+async function loadIssues() {
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const r = await fetch(API + '/issues?state=open&per_page=100', { headers });
+  if (!r.ok) throw new Error('No se pudo cargar issues: ' + r.status);
+  const issues = await r.json();
+  return issues.filter(i => !i.pull_request).map(issue => {
+    const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
+    let status = 'idea';
+    for (const s of ['idea','diseño','listo']) if (labels.includes(s)) { status = s; break; }
+    const anchors = [];
+    labels.forEach(l => {
+      const m = l.match(/^(macro|hoja|tabla|rango|regla):(.+)$/);
+      if (m) anchors.push({ type: m[1], id: m[2] });
+    });
+    return {
+      number: issue.number,
+      title: issue.title,
+      status,
+      anchors,
+      url: issue.html_url,
+    };
+  });
+}
+
+/* ============================================================
+   CONSTRUIR DATA DEL GRAFO (nodos + aristas)
+   ============================================================ */
+function buildGraphData(issues) {
+  const nodes = [];
+  const edges = [];
+
+  // 1. Nodos del sistema contable
+  Object.keys(CATALOG).forEach(type => {
+    CATALOG[type].forEach(n => {
+      nodes.push({
+        data: {
+          id: type + ':' + n.id,
+          label: n.label,
+          desc: n.desc,
+          type: type,
+          kind: 'system',
+        }
+      });
+    });
+  });
+
+  // 2. Aristas del sistema (relaciones precargadas)
+  RELATIONS.forEach((r, idx) => {
+    const fromId = findNodeId(r.from);
+    const toId = findNodeId(r.to);
+    if (fromId && toId) {
+      edges.push({
+        data: {
+          id: 'sys-edge-' + idx,
+          source: fromId,
+          target: toId,
+          label: r.label || '',
+          kind: 'system',
+        }
+      });
+    }
+  });
+
+  // 3. Nodos de Issues (burbujas amarillas)
+  issues.forEach(iss => {
+    nodes.push({
+      data: {
+        id: 'issue:' + iss.number,
+        label: '#' + iss.number + ' ' + truncate(iss.title, 40),
+        desc: iss.title,
+        type: 'issue',
+        kind: 'issue',
+        status: iss.status,
+        url: iss.url,
+      }
+    });
+    // Aristas punteadas de Issue → sus anclas
+    iss.anchors.forEach((a, i) => {
+      const targetId = findNodeId(a.id);
+      if (targetId) {
+        edges.push({
+          data: {
+            id: 'issue-edge-' + iss.number + '-' + i,
+            source: 'issue:' + iss.number,
+            target: targetId,
+            kind: 'issue',
+          }
+        });
+      }
+    });
+  });
+
+  return { nodes, edges };
+}
+
+// Busca un node id dentro del CATALOG sin saber el tipo
+function findNodeId(plainId) {
+  for (const type of Object.keys(CATALOG)) {
+    if (CATALOG[type].some(n => n.id === plainId)) return type + ':' + plainId;
+  }
+  return null;
+}
+
+function truncate(s, n) { return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+
+/* ============================================================
+   INICIALIZAR CYTOSCAPE
+   ============================================================ */
+let graph;
+
+function initGraph(nodes, edges) {
+  graph = cytoscape({
+    container: document.getElementById('graph'),
+    elements: [...nodes, ...edges],
+    style: [
+      // Nodos del sistema (rectángulos redondeados)
+      {
+        selector: 'node[kind = "system"]',
+        style: {
+          'shape': 'round-rectangle',
+          'background-color': ele => STYLES[ele.data('type')]?.bg || '#eee',
+          'border-color': ele => STYLES[ele.data('type')]?.border || '#888',
+          'border-width': 1.5,
+          'label': 'data(label)',
+          'color': ele => STYLES[ele.data('type')]?.text || '#333',
+          'font-size': 11,
+          'font-weight': 500,
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'width': 'label',
+          'height': 32,
+          'padding': '10px',
+          'text-wrap': 'wrap',
+          'text-max-width': 140,
+        },
+      },
+      // Issues (círculos amarillos)
+      {
+        selector: 'node[kind = "issue"]',
+        style: {
+          'shape': 'round-rectangle',
+          'background-color': STYLES.issue.bg,
+          'border-color': STYLES.issue.border,
+          'border-width': 1.5,
+          'border-style': 'dashed',
+          'label': 'data(label)',
+          'color': STYLES.issue.text,
+          'font-size': 10,
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'width': 'label',
+          'height': 26,
+          'padding': '6px',
+          'text-wrap': 'wrap',
+          'text-max-width': 180,
+        },
+      },
+      // Aristas del sistema (grises, con flecha y etiqueta)
+      {
+        selector: 'edge[kind = "system"]',
+        style: {
+          'width': 1.2,
+          'line-color': '#888',
+          'target-arrow-color': '#888',
+          'target-arrow-shape': 'triangle',
+          'curve-style': 'bezier',
+          'label': 'data(label)',
+          'font-size': 9,
+          'color': '#888',
+          'text-background-color': 'var(--bg-primary)',
+          'text-background-opacity': 0.8,
+          'text-background-padding': 2,
+        },
+      },
+      // Aristas de issues (punteadas amarillas)
+      {
+        selector: 'edge[kind = "issue"]',
+        style: {
+          'width': 1,
+          'line-color': '#B08500',
+          'line-style': 'dashed',
+          'target-arrow-color': '#B08500',
+          'target-arrow-shape': 'triangle',
+          'curve-style': 'bezier',
+          'opacity': 0.6,
+        },
+      },
+      // Nodo seleccionado (resalta)
+      {
+        selector: ':selected',
+        style: {
+          'border-width': 3,
+          'border-color': '#185FA5',
+        },
+      },
+    ],
+    layout: {
+      name: 'cose',  // "cose" es un layout físico: acomoda nodos automáticamente
+      animate: false,
+      nodeRepulsion: 8000,
+      idealEdgeLength: 120,
+      padding: 30,
+    },
+    wheelSensitivity: 0.2,
+    minZoom: 0.2,
+    maxZoom: 2.5,
+  });
+
+  // Click en Issue → abre el issue en GitHub
+  graph.on('tap', 'node[kind = "issue"]', evt => {
+    const url = evt.target.data('url');
+    if (url) window.open(url, '_blank');
+  });
+
+  // Tooltip simple al hacer hover
+  graph.on('mouseover', 'node', evt => {
+    const d = evt.target.data();
+    setStatus(d.desc || d.label);
+  });
+  graph.on('mouseout', 'node', () => setStatus(''));
+}
+
+/* ============================================================
+   CONTROLES DE LAYOUT
+   ============================================================ */
+function runLayout(name) {
+  if (!graph) return;
+  const opts = name === 'grid'
+    ? { name: 'grid', padding: 30, animate: true }
+    : { name: 'cose', animate: true, nodeRepulsion: 8000, idealEdgeLength: 120, padding: 30 };
+  graph.layout(opts).run();
+}
+
+/* ============================================================
+   UI / UTILIDADES
+   ============================================================ */
+function setStatus(msg) {
+  document.getElementById('status').textContent = msg || '';
+}
+
+async function loadAll() {
+  try {
+    setStatus('Cargando issues...');
+    const issues = await loadIssues();
+    const { nodes, edges } = buildGraphData(issues);
+    if (graph) graph.destroy();
+    initGraph(nodes, edges);
+    setStatus('Listo: ' + nodes.length + ' nodos, ' + edges.length + ' relaciones, ' + issues.length + ' issues');
+  } catch (e) {
+    setStatus('Error: ' + e.message);
+  }
+}
+
+loadAll();
+</script>
+
+</body>
+</html>
