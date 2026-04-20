@@ -1,21 +1,97 @@
 [
-  { "from": "RevalorizarCuenta", "to": "SALDOS_Y_ENTIDADES", "label": "alimenta" },
-  { "from": "Socio01", "to": "Cta_Corriente_Socio01", "label": "titular" },
-  { "from": "Socio02", "to": "Cta_Corriente_Socio02", "label": "titular" },
-  { "from": "Socio03", "to": "Cta_Corriente_Socio03", "label": "titular" },
-  { "from": "REPORTE_BARRIDO", "to": "Socio01", "label": "B29 asignación" },
-  { "from": "REPORTE_BARRIDO", "to": "Socio02", "label": "B30 asignación" },
-  { "from": "REPORTE_BARRIDO", "to": "Socio03", "label": "B31 asignación" },
-  { "from": "GenerarAsientoPacto", "to": "Utilidad_Distribuible", "label": "débito" },
-  { "from": "GenerarAsientoPacto", "to": "Cta_Corriente_Socio01", "label": "crédito" },
-  { "from": "GenerarAsientoPacto", "to": "Cta_Corriente_Socio02", "label": "crédito" },
-  { "from": "GenerarAsientoPacto", "to": "Cta_Corriente_Socio03", "label": "crédito" },
-  { "from": "RevalorizarCuenta", "to": "Ganancia_por_Revalorizacion", "label": "si ganancia" },
-  { "from": "RevalorizarCuenta", "to": "Perdida_por_Revalorizacion", "label": "si pérdida" },
-  { "from": "tb_cuentas", "to": "Utilidad_Distribuible", "label": "contiene" },
-  { "from": "tb_cuentas", "to": "Cta_Corriente_Socio01", "label": "contiene" },
-  { "from": "tb_cuentas", "to": "Cta_Corriente_Socio02", "label": "contiene" },
-  { "from": "tb_cuentas", "to": "Cta_Corriente_Socio03", "label": "contiene" },
-  { "from": "tb_cuentas", "to": "Ganancia_por_Revalorizacion", "label": "contiene" },
-  { "from": "tb_cuentas", "to": "Perdida_por_Revalorizacion", "label": "contiene" }
+  {
+    "from": "RevalorizarCuenta",
+    "to": "SALDOS_Y_ENTIDADES",
+    "label": "alimenta"
+  },
+  {
+    "from": "Socio01",
+    "to": "Cta_Corriente_Socio01",
+    "label": "titular"
+  },
+  {
+    "from": "Socio02",
+    "to": "Cta_Corriente_Socio02",
+    "label": "titular"
+  },
+  {
+    "from": "Socio03",
+    "to": "Cta_Corriente_Socio03",
+    "label": "titular"
+  },
+  {
+    "from": "REPORTE_BARRIDO",
+    "to": "Socio01",
+    "label": "B29 asignación"
+  },
+  {
+    "from": "REPORTE_BARRIDO",
+    "to": "Socio02",
+    "label": "B30 asignación"
+  },
+  {
+    "from": "REPORTE_BARRIDO",
+    "to": "Socio03",
+    "label": "B31 asignación"
+  },
+  {
+    "from": "GenerarAsientoPacto",
+    "to": "Utilidad_Distribuible",
+    "label": "débito"
+  },
+  {
+    "from": "GenerarAsientoPacto",
+    "to": "Cta_Corriente_Socio01",
+    "label": "crédito"
+  },
+  {
+    "from": "GenerarAsientoPacto",
+    "to": "Cta_Corriente_Socio02",
+    "label": "crédito"
+  },
+  {
+    "from": "GenerarAsientoPacto",
+    "to": "Cta_Corriente_Socio03",
+    "label": "crédito"
+  },
+  {
+    "from": "RevalorizarCuenta",
+    "to": "Ganancia_por_Revalorizacion",
+    "label": "si ganancia"
+  },
+  {
+    "from": "RevalorizarCuenta",
+    "to": "Perdida_por_Revalorizacion",
+    "label": "si pérdida"
+  },
+  {
+    "from": "tb_cuentas",
+    "to": "Utilidad_Distribuible",
+    "label": "contiene"
+  },
+  {
+    "from": "tb_cuentas",
+    "to": "Cta_Corriente_Socio01",
+    "label": "contiene"
+  },
+  {
+    "from": "tb_cuentas",
+    "to": "Cta_Corriente_Socio02",
+    "label": "contiene"
+  },
+  {
+    "from": "tb_cuentas",
+    "to": "Cta_Corriente_Socio03",
+    "label": "contiene"
+  },
+  {
+    "from": "tb_cuentas",
+    "to": "Ganancia_por_Revalorizacion",
+    "label": "contiene"
+  },
+  {
+    "from": "tb_cuentas",
+    "to": "Perdida_por_Revalorizacion",
+    "label": "contiene"
+  }
 ]
