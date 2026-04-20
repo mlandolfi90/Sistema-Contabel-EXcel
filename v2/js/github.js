@@ -1,19 +1,13 @@
 // v2/js/github.js — Cliente mínimo de la API REST de GitHub
 // Lee/escribe archivos JSON del repo + crea/edita/cierra Issues.
-// No usa ningún framework, todo fetch nativo. Compartido por mapa.js y panel.js.
 
 export const OWNER = 'mlandolfi90';
 export const REPO  = 'Sistema-Contabel-EXcel';
 export const API   = `https://api.github.com/repos/${OWNER}/${REPO}`;
 export const TOKEN_KEY = 'gh-token-panel-v2';
 
-export function getToken() {
-  return localStorage.getItem(TOKEN_KEY) || '';
-}
-export function setToken(t) {
-  if (t) localStorage.setItem(TOKEN_KEY, t);
-  else   localStorage.removeItem(TOKEN_KEY);
-}
+export function getToken() { return localStorage.getItem(TOKEN_KEY) || ''; }
+export function setToken(t) { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
 export function hasToken() { return !!getToken(); }
 
 function headers(extra = {}) {
@@ -23,7 +17,6 @@ function headers(extra = {}) {
   return h;
 }
 
-/* ----------------- API básica ----------------- */
 export async function apiGet(path) {
   const r = await fetch(API + path, { headers: headers() });
   if (!r.ok) throw new Error(`GET ${path} → ${r.status}`);
@@ -45,7 +38,6 @@ export async function apiPut(path, body) {
   return r.json();
 }
 
-/* ----------------- Archivos JSON ----------------- */
 export async function loadJsonFile(path, defaultVal) {
   try {
     const r = await fetch(`${API}/contents/${path}?t=${Date.now()}`, { headers: headers() });
@@ -70,8 +62,9 @@ export async function saveJsonFile(path, data, sha, message) {
   return r.content.sha;
 }
 
-/* ----------------- Issues (ideas del Kanban) ----------------- */
-export const STATUS_LABELS = ['idea', 'diseño', 'listo'];
+/* ----------------- Issues ----------------- */
+// 4 estados: idea → diseño → listo → implementada (+ cerrar para archivar)
+export const STATUS_LABELS = ['idea', 'diseño', 'listo', 'implementada'];
 export const ANCHOR_TYPES = ['macro','hoja','tabla','rango','regla','socio','cuenta'];
 
 export function issueToCard(issue) {
@@ -84,13 +77,7 @@ export function issueToCard(issue) {
     const m = l.match(anchorRe);
     if (m) anchors.push({ type: m[1], id: m[2] });
   });
-  return {
-    number: issue.number,
-    title: issue.title,
-    note: issue.body || '',
-    status, anchors, labels,
-    url: issue.html_url,
-  };
+  return { number: issue.number, title: issue.title, note: issue.body || '', status, anchors, labels, url: issue.html_url };
 }
 
 export function cardToLabels(status, anchors, existingLabels) {
@@ -106,12 +93,6 @@ export async function loadIssues() {
   return issues.filter(i => !i.pull_request).map(issueToCard);
 }
 
-export async function createIssue(title, body, labels) {
-  return apiPost('/issues', { title, body, labels });
-}
-export async function updateIssue(number, patch) {
-  return apiPatch('/issues/' + number, patch);
-}
-export async function closeIssue(number) {
-  return apiPatch('/issues/' + number, { state: 'closed' });
-}
+export async function createIssue(title, body, labels) { return apiPost('/issues', { title, body, labels }); }
+export async function updateIssue(number, patch) { return apiPatch('/issues/' + number, patch); }
+export async function closeIssue(number) { return apiPatch('/issues/' + number, { state: 'closed' }); }

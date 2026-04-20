@@ -1,10 +1,21 @@
 // v2/js/panel.js — Lógica del panel Kanban que lee desde schema.json
-// Reemplaza el CATALOG hardcodeado del viejo index.html.
 
-import { getToken, hasToken, setToken, createIssue, updateIssue, closeIssue, loadIssues, cardToLabels } from './github.js';
+import { getToken, hasToken, setToken, createIssue, updateIssue, closeIssue, loadIssues, cardToLabels, STATUS_LABELS } from './github.js';
 import { loadSchemaAll, getEffectiveNodes } from './schema-loader.js';
 
-const STATUS_LABELS = ['idea', 'diseño', 'listo'];
+// Transiciones del Kanban: cada estado sabe a cuál sigue cuando pulsás →
+const NEXT_STATUS = {
+  'idea': 'diseño',
+  'diseño': 'listo',
+  'listo': 'implementada',
+  'implementada': 'idea',  // ciclo de vuelta al principio
+};
+const STATUS_ARROW = {
+  'idea': '→',
+  'diseño': '→',
+  'listo': '✓',       // avanzar a implementada
+  'implementada': '↻', // volver a idea
+};
 
 /* ========== ESTADO ========== */
 let schema;
@@ -56,7 +67,7 @@ function switchView(v) {
   document.querySelectorAll('.view').forEach(el => el.classList.toggle('active', el.id === 'view-' + v));
 }
 
-/* ========== COMPOSER (crear idea) ========== */
+/* ========== COMPOSER ========== */
 function openNode(id, type) {
   switchView('ideas');
   composerAnchors = [{ id, type }];
@@ -125,7 +136,7 @@ async function moveCard(number, newStatus) {
 
 async function deleteCard(number) {
   if (!hasToken()) return alert('Necesitás un token');
-  if (!confirm('¿Cerrar este issue?')) return;
+  if (!confirm('¿Archivar este issue? (se cierra en GitHub)')) return;
   try { setStatus('Cerrando...'); await closeIssue(number); await loadAll(); }
   catch (e) { setStatus('Error: ' + e.message); }
 }
@@ -139,29 +150,30 @@ function setFilter(f) {
 
 function renderKanban() {
   const visible = cards.filter(c => currentFilter === 'all' || c.anchors.some(a => a.type === currentFilter));
-  const cols = { idea: [], 'diseño': [], listo: [] };
+  const cols = { 'idea': [], 'diseño': [], 'listo': [], 'implementada': [] };
   visible.forEach(c => { if (cols[c.status]) cols[c.status].push(c); });
   Object.keys(cols).forEach(k => {
     const el = $('col-' + k);
-    $('c-' + k).textContent = cols[k].length;
+    const countEl = $('c-' + k);
+    if (!el || !countEl) return;
+    countEl.textContent = cols[k].length;
     if (cols[k].length === 0) { el.innerHTML = '<p class="empty">Sin tarjetas</p>'; return; }
     el.innerHTML = cols[k].map(c => renderCard(c)).join('');
   });
   $('ideas-count').textContent = cards.length;
-  // re-bind handlers
   document.querySelectorAll('[data-move]').forEach(b => b.addEventListener('click', () => moveCard(parseInt(b.dataset.number), b.dataset.move)));
   document.querySelectorAll('[data-delete]').forEach(b => b.addEventListener('click', () => deleteCard(parseInt(b.dataset.number))));
 }
 
 function renderCard(c) {
   const tags = c.anchors.map(a => `<span class="tag tag-${a.type}">${esc(a.id)}</span>`).join('');
-  const nextStatus = { idea: 'diseño', 'diseño': 'listo', listo: 'idea' }[c.status];
-  const nextLabel = c.status === 'listo' ? '↻' : '→';
+  const nextStatus = NEXT_STATUS[c.status];
+  const arrow = STATUS_ARROW[c.status];
   const preview = (c.note || '').slice(0, 200);
-  return `<div class="card">
+  return `<div class="card status-${c.status}">
     <div class="actions">
-      <button data-move="${nextStatus}" data-number="${c.number}" title="Mover">${nextLabel}</button>
-      <button data-delete data-number="${c.number}" title="Cerrar">×</button>
+      <button data-move="${nextStatus}" data-number="${c.number}" title="Mover">${arrow}</button>
+      <button data-delete data-number="${c.number}" title="Archivar (cerrar)">×</button>
     </div>
     <p class="title"><a href="${c.url}" target="_blank">${esc(c.title)}</a> <span class="issue-num">#${c.number}</span></p>
     ${preview ? `<p class="note">${esc(preview)}${c.note.length > 200 ? '...' : ''}</p>` : ''}
