@@ -1,6 +1,12 @@
 {
   "addNodes": [],
-  "addEdges": [],
+  "addEdges": [
+    {
+      "from": "issue:6",
+      "to": "Perdida_por_Revalorizacion",
+      "label": ""
+    }
+  ],
   "removeNodes": [],
   "removeEdges": [],
   "editNodes": [],
