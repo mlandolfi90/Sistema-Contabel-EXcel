@@ -1,4 +1,4 @@
-// v2/js/mapa/ideas.js — Crear Issue anclada al nodo seleccionado
+// v2/js/mapa/ideas.js — Crear Issue anclada a UNO o VARIOS nodos seleccionados
 
 import { state } from './state.js';
 import { $, setStatus, openModal, closeModal } from './utils.js';
@@ -8,15 +8,22 @@ export function openAddIdeaModal() {
   if (!hasToken()) return alert('Necesitás token para crear issues');
   const { graph } = state;
   const sel = graph.$('node[kind != "issue"]:selected');
+
   if (sel.length === 0) {
     if (!confirm('No hay nodo seleccionado. ¿Crear idea sin ancla?')) return;
-    state.pendingIdeaAnchor = null;
+    state.pendingIdeaAnchors = [];
     $('idea-anchor-info').textContent = 'Sin ancla (Issue suelto)';
   } else {
-    const n = sel[0];
-    state.pendingIdeaAnchor = { type: n.data('type'), id: n.id() };
-    $('idea-anchor-info').textContent = `Ancla: ${state.pendingIdeaAnchor.type}:${state.pendingIdeaAnchor.id}`;
+    // Multi-ancla: recorremos TODOS los nodos seleccionados.
+    // Cada uno se convertirá en una label tipo "type:id" y en una arista en el mapa
+    // (graph-build.js ya dibuja una arista por cada ancla de un issue).
+    const anchors = sel.map(n => ({ type: n.data('type'), id: n.id() }));
+    state.pendingIdeaAnchors = anchors;
+    const resumen = anchors.map(a => `${a.type}:${a.id}`).join(', ');
+    const prefijo = anchors.length === 1 ? 'Ancla' : `Anclas (${anchors.length})`;
+    $('idea-anchor-info').textContent = `${prefijo}: ${resumen}`;
   }
+
   // Reset UI del modal
   const err = $('idea-error'); if (err) { err.textContent = ''; err.style.display = 'none'; }
   const btn = $('idea-submit-btn'); if (btn) { btn.disabled = false; btn.textContent = 'Crear Issue'; }
@@ -36,7 +43,11 @@ export async function confirmAddIdea(reloadCallback) {
   const note = $('idea-note').value.trim();
   const status = $('idea-status').value;
   const labels = [status];
-  if (state.pendingIdeaAnchor) labels.push(`${state.pendingIdeaAnchor.type}:${state.pendingIdeaAnchor.id}`);
+
+  // Una label por cada ancla seleccionada -> issueToCard en github.js las
+  // reconstruye todas al recargar, y graph-build.js dibuja una arista por cada una.
+  const anchors = state.pendingIdeaAnchors || [];
+  anchors.forEach(a => labels.push(`${a.type}:${a.id}`));
 
   // Bloquea doble click + feedback visual
   if (btn) { btn.disabled = true; btn.textContent = 'Creando...'; }
@@ -48,7 +59,9 @@ export async function confirmAddIdea(reloadCallback) {
     $('idea-title').value = ''; $('idea-note').value = '';
     closeModal('modal-idea');
     if (reloadCallback) await reloadCallback();
-    setStatus('Issue creado ✓');
+    setStatus(anchors.length > 1
+      ? `Issue creado ✓ (${anchors.length} anclas)`
+      : 'Issue creado ✓');
   } catch (e) {
     console.error('[confirmAddIdea] error:', e);
     const msg = e.message || String(e);
