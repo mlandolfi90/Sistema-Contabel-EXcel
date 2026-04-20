@@ -6,10 +6,11 @@ Herramienta visual para iterar ideas de cambio sobre el libro Excel `Sistema_Con
 
 | Versión | URL | Almacenamiento | Sincroniza entre dispositivos |
 |---|---|---|---|
-| **v1** (legacy) | [→ panel v1](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/) | `localStorage` del navegador | No (manual via Export/Import JSON) |
+| **v1** (legacy) | [→ panel v1](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/v1/) | `localStorage` del navegador | No (manual via Export/Import JSON) |
 | **v2** (recomendada) | [→ panel v2](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/v2/) | GitHub Issues del repo | Sí, automático |
+| **v2 + Mapa** | [→ mapa contable](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/v2/mapa.html) | GitHub Issues + `layout.json` | Sí, automático |
 
-Ambas comparten la misma UI (Flujo · Estructura · Kanban). La v2 usa los Issues del repo como fuente de verdad en lugar del `localStorage`.
+La v2 usa los Issues del repo como fuente de verdad. El **mapa** es una vista extra (grafo interactivo) sobre los mismos Issues.
 
 ---
 
@@ -19,7 +20,7 @@ Ambas comparten la misma UI (Flujo · Estructura · Kanban). La v2 usa los Issue
 
 - Cada tarjeta del Kanban **es un Issue del repo**.
 - Las columnas se modelan con labels: `idea`, `diseño`, `listo`.
-- Las anclas (macro/hoja/tabla/rango/regla) se modelan con labels tipo `macro:GuardarLote`, `hoja:REGISTRO_RAPIDO`, etc.
+- Las anclas (macro/hoja/tabla/rango/regla/cuenta) se modelan con labels tipo `macro:GuardarLote`, `hoja:REGISTRO_RAPIDO`, etc.
 - Al abrir la v2, lee los Issues y los muestra como tarjetas.
 - Crear / mover / cerrar tarjetas desde el HTML actualiza los Issues vía API REST de GitHub.
 - Sincroniza automáticamente entre todos los dispositivos y con Claude (que ve los mismos Issues).
@@ -33,7 +34,7 @@ Ambas comparten la misma UI (Flujo · Estructura · Kanban). La v2 usa los Issue
    - Nombre: `Panel Contable`
    - Expiración: 1 año (o la que prefieras)
    - Repository access: *Only select repositories* → `Sistema-Contabel-EXcel`
-   - Permissions → Repository → **Issues: Read and write**
+   - Permissions → Repository → **Issues: Read and write**, **Contents: Read and write** (este último para guardar `layout.json` del mapa)
    - Generar y copiar el token
 3. Pegá el token en el campo de la barra superior del panel y pulsá **Guardar token**.
 4. El token queda en `localStorage` de ese navegador (nunca se sube a ningún lado).
@@ -47,9 +48,21 @@ Ambas comparten la misma UI (Flujo · Estructura · Kanban). La v2 usa los Issue
 4. Para cerrar una idea implementada: clic en la `×` (cierra el Issue, no lo borra).
 5. **Copiar prompt VBA** arma el prompt con todas las tarjetas en estado `listo` para pegar en Claude.
 
-### Modo solo lectura (sin token)
+---
 
-Si entrás sin pegar token, ves todas las tarjetas existentes pero no podés modificarlas. Útil para compartir el panel con alguien que solo necesite consultar.
+## Mapa contable (vista de grafo)
+
+URL: https://mlandolfi90.github.io/Sistema-Contabel-EXcel/v2/mapa.html
+
+Grafo interactivo con todos los nodos del sistema (hojas, macros, tablas, reglas, cuentas/socios) + los Issues flotando conectados a su ancla. Permite:
+
+- **Arrastrar** nodos y guardar posiciones en `v2/layout.json`.
+- **Agregar nodos custom** (solo visuales, no tocan el sistema real).
+- **Crear conexiones custom** entre nodos (modo "click origen → click destino").
+- **Crear ideas ancladas** a un nodo seleccionado (genera Issue real en GitHub).
+- **Eliminar** nodos/conexiones custom (los del sistema base están protegidos).
+
+Requiere token con permiso `Contents: Read and write` para guardar layout.
 
 ---
 
@@ -57,21 +70,14 @@ Si entrás sin pegar token, ves todas las tarjetas existentes pero no podés mod
 
 ### Uso rápido
 
-1. Abrir el [panel v1](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/)
+1. Abrir el [panel v1](https://mlandolfi90.github.io/Sistema-Contabel-EXcel/v1/)
 2. Capturar una idea en la pestaña **Ideas de cambio** con su título, notas y anclas
 3. Moverla entre columnas: *Idea → En diseño → Listo para implementar*
 4. Cuando esté lista, usar el botón **Copiar prompt VBA**
-5. Pegar en un chat con Claude → recibir el código VBA
 
 ### Sincronización manual (solo v1)
 
-`localStorage` no sincroniza solo:
-
-1. **Exportar JSON** en el dispositivo origen (descarga `data.json`)
-2. Subir ese archivo al repo reemplazando el existente
-3. En el otro dispositivo → **Importar JSON** pegando el contenido
-
-Si necesitás sincronización real entre dispositivos, conviene usar directamente la **v2**.
+`localStorage` no sincroniza solo. Si necesitás sincronización real entre dispositivos, conviene usar directamente la **v2**.
 
 ---
 
@@ -79,12 +85,14 @@ Si necesitás sincronización real entre dispositivos, conviene usar directament
 
 | Archivo | Función |
 |---|---|
-| `index.html` | Panel v1 (localStorage) — versión original |
-| `v2/index.html` | Panel v2 (sincronizado con GitHub Issues) |
-| `data.json` | Respaldo versionado de las tarjetas de v1 |
+| `index.html` | Redirect automático a `v2/` |
+| `v1/index.html` | Panel v1 (localStorage) — legacy |
+| `v2/index.html` | Panel v2 sincronizado con Issues |
+| `v2/mapa.html` | Mapa contable interactivo (grafo) |
+| `v2/layout.json` | Posiciones de nodos + nodos/conexiones custom del mapa |
+| `data.json` | Legacy (vacío, ya no se usa) |
 | `README.md` | Este archivo |
-| `.gitignore` | Exclusiones de Git |
-| `LICENSE` | Licencia del proyecto |
+| `.gitignore` · `LICENSE` | Técnicos |
 
 ---
 
@@ -104,17 +112,17 @@ Idea/por pensar  →   En diseño      →   Listo implementar  →  Claude
 
 El panel tiene hardcodeados los elementos reales del sistema contable:
 
-- **12 macros** — `GuardarLote`, `LimpiarRegistro`, `ActualizarTasaVigente`, `ActualizarTasaVigenteDesde`, `GenerarAsientoPacto`, `RevalorizarCuenta`, `LoteAnterior`, `LoteSiguiente`, `AccionSobreLoteVisible`, `CorregirLoteConID`, `DuplicarLoteConID`, `Helpers` (colIdx + EscribirLinea)
+- **11 macros operativas** — `GuardarLote`, `LimpiarRegistro`, `ActualizarTasaVigente`, `ActualizarTasaVigenteDesde`, `GenerarAsientoPacto`, `RevalorizarCuenta`, `LoteAnterior`, `LoteSiguiente`, `AccionSobreLoteVisible`, `CorregirLoteConID`, `DuplicarLoteConID`, más `Helpers` (colIdx + EscribirLinea)
 - **6 hojas** — `REGISTRO_RAPIDO`, `LIBRO_MAYOR`, `TASAS`, `AUDITOR_LOTES`, `REPORTE_BARRIDO`, `SALDOS_Y_ENTIDADES`
 - **10 tablas estructuradas** — `tb_registro_rapido`, `tb_mayor`, `tb_tasas_vigentes`, `tb_tasas_historial`, `tb_cuentas`, `tb_entidades`, `tb_divisas`, `tb_categorias`, `tb_segmentos`, `tb_clase_cuenta`
-- **5 rangos con nombre** — `IDs_Unicos`, `ListaCuentaActiva`, `ListaDivisaActiva`, `ListaSocios`, `ListaSegmentoActiva`
+- **3 socios** — Socio01, Socio02, Socio03 (sus `Cta. Corriente` son contrapartida en asientos de pacto)
+- **2 cuentas clave** — `Utilidad Distribuible`, `Ganancia/Pérdida por Revalorización`
+- **5 divisas** — USD (base), USDT, Bs, Oro, EUR
 - **1 regla** — `AlertaSpread` (umbral 3%)
 
 ## Convenciones del Kanban
 
-Los estados indican madurez, no prioridad:
-
-| Estado | Label en GitHub (v2) | Qué significa |
+| Estado | Label en GitHub | Qué significa |
 |---|---|---|
 | **Idea / por pensar** | `idea` | Se me ocurrió algo. Todavía no sé si es buena idea ni qué impacto tiene. |
 | **En diseño** | `diseño` | Empecé a pensarlo en serio. Estoy definiendo alcance, riesgos, cómo se hace. |
@@ -137,7 +145,6 @@ La documentación completa del sistema contable (extraída por IA del libro Exce
 - `00_Arquitectura_y_Datos_Maestros.md`
 - `01_Modulo1_Nucleo_Contable.md`
 - `02_Modulo2_Auditor_de_Lotes.md`
-- `03_Modulo3_Exportador_VBA.md`
 - `04_Hoja3_REGISTRO_RAPIDO_Eventos.md`
 - `Contructo_Sistema_ContableExcel.md`
 
