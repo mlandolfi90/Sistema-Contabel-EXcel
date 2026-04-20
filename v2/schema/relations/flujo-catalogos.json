@@ -1,29 +1,137 @@
 [
-  { "from": "tb_cuentas", "to": "REGISTRO_RAPIDO", "label": "dropdown" },
-  { "from": "tb_divisas", "to": "REGISTRO_RAPIDO", "label": "dropdown" },
-  { "from": "tb_segmentos", "to": "REGISTRO_RAPIDO", "label": "dropdown" },
-  { "from": "tb_categorias", "to": "REGISTRO_RAPIDO", "label": "dropdown" },
-  { "from": "tb_entidades", "to": "REGISTRO_RAPIDO", "label": "dropdown" },
-  { "from": "ListaSocios", "to": "REGISTRO_RAPIDO", "label": "dropdown B3" },
-  { "from": "tb_clase_cuenta", "to": "tb_cuentas", "label": "clasifica" },
-  { "from": "tb_naturaleza", "to": "tb_cuentas", "label": "clasifica" },
-  { "from": "tb_tipo_divisa", "to": "tb_divisas", "label": "clasifica" },
-  { "from": "tb_tipo_entidad", "to": "tb_entidades", "label": "clasifica" },
-  { "from": "ListaCuentaActiva", "to": "tb_cuentas", "label": "derrama" },
-  { "from": "ListaDivisaActiva", "to": "tb_divisas", "label": "derrama" },
-  { "from": "ListaSegmentoActiva", "to": "tb_segmentos", "label": "derrama" },
-  { "from": "CONFIG", "to": "tb_cuentas", "label": "contiene" },
-  { "from": "CONFIG", "to": "tb_entidades", "label": "contiene" },
-  { "from": "CONFIG", "to": "tb_divisas", "label": "contiene" },
-  { "from": "CONFIG", "to": "tb_categorias", "label": "contiene" },
-  { "from": "CONFIG", "to": "tb_segmentos", "label": "contiene" },
-  { "from": "CONFIG", "to": "tb_clase_cuenta", "label": "contiene" },
-  { "from": "CONFIG", "to": "tb_tipo_divisa", "label": "contiene" },
-  { "from": "CONFIG", "to": "tb_tipo_entidad", "label": "contiene" },
-  { "from": "CONFIG", "to": "tb_naturaleza", "label": "contiene" },
-  { "from": "CONFIG", "to": "CONFIG_AUX", "label": "alimenta" },
-  { "from": "CONFIG_AUX", "to": "ListaCuentaActiva", "label": "publica" },
-  { "from": "CONFIG_AUX", "to": "ListaDivisaActiva", "label": "publica" },
-  { "from": "CONFIG_AUX", "to": "ListaSegmentoActiva", "label": "publica" },
-  { "from": "CONFIG_AUX", "to": "CuentasPyL", "label": "publica" }
+  {
+    "from": "tb_cuentas",
+    "to": "REGISTRO_RAPIDO",
+    "label": "dropdown"
+  },
+  {
+    "from": "tb_divisas",
+    "to": "REGISTRO_RAPIDO",
+    "label": "dropdown"
+  },
+  {
+    "from": "tb_segmentos",
+    "to": "REGISTRO_RAPIDO",
+    "label": "dropdown"
+  },
+  {
+    "from": "tb_categorias",
+    "to": "REGISTRO_RAPIDO",
+    "label": "dropdown"
+  },
+  {
+    "from": "tb_entidades",
+    "to": "REGISTRO_RAPIDO",
+    "label": "dropdown"
+  },
+  {
+    "from": "ListaSocios",
+    "to": "REGISTRO_RAPIDO",
+    "label": "dropdown B3"
+  },
+  {
+    "from": "tb_clase_cuenta",
+    "to": "tb_cuentas",
+    "label": "clasifica"
+  },
+  {
+    "from": "tb_naturaleza",
+    "to": "tb_cuentas",
+    "label": "clasifica"
+  },
+  {
+    "from": "tb_tipo_divisa",
+    "to": "tb_divisas",
+    "label": "clasifica"
+  },
+  {
+    "from": "tb_tipo_entidad",
+    "to": "tb_entidades",
+    "label": "clasifica"
+  },
+  {
+    "from": "ListaCuentaActiva",
+    "to": "tb_cuentas",
+    "label": "derrama"
+  },
+  {
+    "from": "ListaDivisaActiva",
+    "to": "tb_divisas",
+    "label": "derrama"
+  },
+  {
+    "from": "ListaSegmentoActiva",
+    "to": "tb_segmentos",
+    "label": "derrama"
+  },
+  {
+    "from": "CONFIG",
+    "to": "tb_cuentas",
+    "label": "contiene"
+  },
+  {
+    "from": "CONFIG",
+    "to": "tb_entidades",
+    "label": "contiene"
+  },
+  {
+    "from": "CONFIG",
+    "to": "tb_divisas",
+    "label": "contiene"
+  },
+  {
+    "from": "CONFIG",
+    "to": "tb_categorias",
+    "label": "contiene"
+  },
+  {
+    "from": "CONFIG",
+    "to": "tb_segmentos",
+    "label": "contiene"
+  },
+  {
+    "from": "CONFIG",
+    "to": "tb_clase_cuenta",
+    "label": "contiene"
+  },
+  {
+    "from": "CONFIG",
+    "to": "tb_tipo_divisa",
+    "label": "contiene"
+  },
+  {
+    "from": "CONFIG",
+    "to": "tb_tipo_entidad",
+    "label": "contiene"
+  },
+  {
+    "from": "CONFIG",
+    "to": "tb_naturaleza",
+    "label": "contiene"
+  },
+  {
+    "from": "CONFIG",
+    "to": "CONFIG_AUX",
+    "label": "alimenta"
+  },
+  {
+    "from": "CONFIG_AUX",
+    "to": "ListaCuentaActiva",
+    "label": "publica"
+  },
+  {
+    "from": "CONFIG_AUX",
+    "to": "ListaDivisaActiva",
+    "label": "publica"
+  },
+  {
+    "from": "CONFIG_AUX",
+    "to": "ListaSegmentoActiva",
+    "label": "publica"
+  },
+  {
+    "from": "CONFIG_AUX",
+    "to": "CuentasPyL",
+    "label": "publica"
+  }
 ]
