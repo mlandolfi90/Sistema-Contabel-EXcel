@@ -33,12 +33,13 @@ async function loadGranularSchema() {
   const fragmentShas = {};
   const nodes = [];
   nodeFiles.forEach((p, i) => {
-    fragmentShas[`nodes/${p.replace(/^nodes\//, '')}`] = nodeResults[i].sha;
+    // Key canónica: la ruta relativa tal cual aparece en el index (ej: "nodes/hojas.json").
+    fragmentShas[p] = nodeResults[i].sha;
     if (Array.isArray(nodeResults[i].data)) nodes.push(...nodeResults[i].data);
   });
   const relations = [];
   relFiles.forEach((p, i) => {
-    fragmentShas[`relations/${p.replace(/^relations\//, '')}`] = relResults[i].sha;
+    fragmentShas[p] = relResults[i].sha;
     if (Array.isArray(relResults[i].data)) relations.push(...relResults[i].data);
   });
 
@@ -182,10 +183,9 @@ function routeNodes(schema, index) {
 
 // Enruta relaciones: preserva la distribución actual si cada relación ya vive en un archivo conocido; las nuevas van al default.
 // Como no guardamos de qué archivo vino cada relación, agrupamos por heurística: si coincide from+to+label con una relación ya presente, queda donde estaba. Las nuevas caen en _default.
-async function routeRelations(schema, index, existingByFile) {
+function routeRelations(schema, index, existingByFile) {
   const files = index.files?.relations || [];
   const defFile = index.writeRouting?.relations?._default || files[0] || 'relations/_misc.json';
-  // existingByFile: { 'relations/flujo-x.json': [relations...] } (si se pudo cargar)
   const buckets = Object.fromEntries(files.map(p => [p, []]));
   const assigned = new Set();
 
@@ -212,34 +212,58 @@ async function routeRelations(schema, index, existingByFile) {
   return buckets;
 }
 
+// Compara dos arrays de objetos sin importar el orden de las keys.
+// Sirve para evitar PUTs innecesarios a archivos que no cambiaron.
+function arraysEqual(a, b) {
+  try { return JSON.stringify(a) === JSON.stringify(b); } catch { return false; }
+}
+
 export async function saveSchema(schema, shaBlob) {
   // Modo granular: reparte nodes/relations a archivos según index.writeRouting.
   if (shaBlob && shaBlob.mode === 'granular') {
     const index = shaBlob.index;
     const nodeBuckets = routeNodes(schema, index);
 
-    // Recargo relations existentes por archivo para poder mantener su ubicación.
-    const relFiles = index.files?.relations || [];
-    const existingRelsByFile = {};
-    await Promise.all(relFiles.map(async p => {
-      const res = await loadJsonFile(`${SCHEMA_DIR}/${p}`, []);
-      existingRelsByFile[p] = Array.isArray(res.data) ? res.data : [];
-    }));
-    const relBuckets = await routeRelations(schema, index, existingRelsByFile);
+    // Recargo TODOS los fragmentos con SHAs frescos justo antes de escribir.
+    // Esto resuelve el 409: si otra operación (o una escritura previa en esta
+    // misma sesión) cambió un archivo, usamos su SHA actual, no el del snapshot
+    // inicial de loadSchemaAll.
+    const nodeFiles = index.files?.nodes || [];
+    const relFiles  = index.files?.relations || [];
+    const [freshNodeRes, freshRelRes] = await Promise.all([
+      Promise.all(nodeFiles.map(p => loadJsonFile(`${SCHEMA_DIR}/${p}`, []))),
+      Promise.all(relFiles.map(p  => loadJsonFile(`${SCHEMA_DIR}/${p}`, []))),
+    ]);
+    const freshShas = { ...shaBlob.fragments };
+    const existingNodesByFile = {};
+    const existingRelsByFile  = {};
+    nodeFiles.forEach((p, i) => {
+      freshShas[p] = freshNodeRes[i].sha;
+      existingNodesByFile[p] = Array.isArray(freshNodeRes[i].data) ? freshNodeRes[i].data : [];
+    });
+    relFiles.forEach((p, i) => {
+      freshShas[p] = freshRelRes[i].sha;
+      existingRelsByFile[p] = Array.isArray(freshRelRes[i].data) ? freshRelRes[i].data : [];
+    });
 
-    const newFragmentShas = { ...shaBlob.fragments };
+    const relBuckets = routeRelations(schema, index, existingRelsByFile);
 
-    // Guardar cada archivo solo si cambió respecto al snapshot cargado.
-    const writes = [];
+    // Guardar en SERIE (no en paralelo) para evitar 409s cuando el mismo
+    // archivo podría escribirse dos veces o cuando GitHub aún no propagó el SHA.
+    // La serialización también garantiza que el SHA devuelto por cada PUT se
+    // use en el siguiente, si hubiera dependencias.
+    const newFragmentShas = { ...freshShas };
+
     for (const [file, arr] of Object.entries(nodeBuckets)) {
-      const key = file; // 'nodes/xxx.json'
-      writes.push(saveJsonFile(`${SCHEMA_DIR}/${file}`, arr, newFragmentShas[key], `schema(nodes): ${file}`).then(sha => { newFragmentShas[key] = sha; }));
+      if (arraysEqual(arr, existingNodesByFile[file])) continue; // no cambió → skip
+      const sha = await saveJsonFile(`${SCHEMA_DIR}/${file}`, arr, newFragmentShas[file], `schema(nodes): ${file}`);
+      newFragmentShas[file] = sha;
     }
     for (const [file, arr] of Object.entries(relBuckets)) {
-      const key = file; // 'relations/xxx.json'
-      writes.push(saveJsonFile(`${SCHEMA_DIR}/${file}`, arr, newFragmentShas[key], `schema(relations): ${file}`).then(sha => { newFragmentShas[key] = sha; }));
+      if (arraysEqual(arr, existingRelsByFile[file])) continue; // no cambió → skip
+      const sha = await saveJsonFile(`${SCHEMA_DIR}/${file}`, arr, newFragmentShas[file], `schema(relations): ${file}`);
+      newFragmentShas[file] = sha;
     }
-    await Promise.all(writes);
 
     // Actualizar la nodeTypes en index si cambió.
     let newIndexSha = shaBlob.indexSha;
