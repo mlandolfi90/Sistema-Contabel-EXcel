@@ -216,17 +216,7 @@ El proyecto VBA, inventariado por `ExportarTodoVBA_Completo` (Módulo3), tiene *
 
 ### 10.2 Componentes vacíos (31)
 
-`ThisWorkbook` y las demás hojas (`Hoja1`, `Hoja2`, `Hoja4`, …, `Hoja32`) no tienen código. No hay `Workbook_Open`, ni más `Worksheet_Change`. Toda la lógica de esas hojas vive en sus celdas (fórmulas, tablas, validaciones, rangos con nombre), no en VBA.
-
-### 10.3 Tipos de componente
-
-- **`.bas`** — Módulo estándar (`Type = 1`).
-- **`.cls`** — Clase (`Type = 2`) o código de hoja/libro (`Type = 100`).
-- **`.frm`** — Formulario (`Type = 3`). No hay formularios en este proyecto.
-
-### 10.4 Mapeo CodeName ↔ hoja visible
-
-Solo está confirmado por código el siguiente mapeo: **`Hoja3` → `REGISTRO_RAPIDO`**. Los demás CodeNames (`Hoja1`, `Hoja2`, `Hoja4`…`Hoja32`) corresponden a las hojas visibles listadas en la sección 3 (`LIBRO_MAYOR`, `TASAS`, `AUDITOR_LOTES`, `REPORTE_BARRIDO`, `SALDOS_Y_ENTIDADES`, más otras auxiliares) pero el mapeo exacto no es derivable del código VBA — vive en las propiedades de cada hoja dentro del libro de Excel.
+`ThisWorkbook` y las demás hojas (`Hoja1`, `Hoja2`, `Hoja4`, …, `Hoja32`) no tienen código.
 
 ## 11. Divisas soportadas
 
@@ -236,18 +226,15 @@ Solo está confirmado por código el siguiente mapeo: **`Hoja3` → `REGISTRO_RA
 - `Oro`
 - `EUR`
 
-Los valores anteriores son los que propone literalmente el `InputBox` de `ActualizarTasaVigente`. El sistema admitirá cualquier otra divisa que ya exista en `tb_tasas_vigentes`, pero esas cuatro son las explícitamente contempladas en el diálogo.
-
 ## 12. Dependencias técnicas
 
-- Excel de escritorio (Windows) con **VBA habilitado** (`ThisWorkbook.VBProject` accesible, requiere marcar *"Confiar en el acceso al modelo de objetos de VBA"*).
-- Funciones: `XLookup`, `IfError`, `SORT` (implícita en `IDs_Unicos` / columna `AZ`), tablas `ListObject`.
-- Referencia a variable de entorno Windows `USERNAME` para auditar quién actualizó una tasa.
+- Excel de escritorio (Windows) con **VBA habilitado**.
+- Funciones: `XLookup`, `IfError`, `SORT`, tablas `ListObject`.
 
 ## 13. Glosario rápido
 
 - **Lote**: conjunto balanceado de líneas contables guardado bajo un mismo `ID_Lote`.
-- **Spread**: desviación porcentual entre la tasa usada en un asiento y la tasa vigente en `tb_tasas_vigentes`.
-- **Revalorización**: asiento que refleja ganancia/pérdida latente por variación de tasa sobre una cuenta en divisa distinta a USD.
+- **Spread**: desviación porcentual entre la tasa usada en un asiento y la tasa vigente.
+- **Revalorización**: asiento que refleja ganancia/pérdida latente por variación de tasa.
 - **Pacto**: asiento de distribución de utilidades entre los socios.
-- **Anulado**: fila del mayor marcada como `Estado_Registro = "Anulado"` con motivo embebido en `Descripcion`; permanece en el mayor para trazabilidad, no se borra.
+- **Anulado**: fila del mayor marcada como `Estado_Registro = "Anulado"`.
