@@ -118,7 +118,8 @@
     <option value="diseño">En diseño</option>
     <option value="listo">Listo para implementar</option>
   </select>
-  <div class="modal-actions"><button class="btn" onclick="closeModal('modal-idea')">Cancelar</button><button class="btn primary" onclick="confirmAddIdea()">Crear Issue</button></div>
+  <p id="idea-error" style="display:none;font-size:12px;color:#c33;background:#fee;padding:8px 10px;border-radius:6px;margin-top:10px;"></p>
+  <div class="modal-actions"><button class="btn" onclick="closeModal('modal-idea')">Cancelar</button><button class="btn primary" id="idea-submit-btn" onclick="confirmAddIdea()">Crear Issue</button></div>
 </div></div>
 
 <div class="modal-bg" id="modal-apply"><div class="modal">
