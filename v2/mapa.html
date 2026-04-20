@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mapa contable — Panel v2</title>
-<!-- Cytoscape.js: librería de grafos interactivos, cargada desde CDN (no hace falta instalar nada) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 <style>
 :root {
@@ -44,66 +43,70 @@ body {
   font-size: 14px;
 }
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 12px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 12px;
 }
 h1 { font-size: 18px; font-weight: 500; margin: 0; }
 .subtitle { color: var(--text-secondary); font-size: 12px; margin: 0; }
 .nav a {
-  font-size: 12px;
-  color: var(--text-info);
-  text-decoration: none;
-  padding: 6px 12px;
-  border: 1px solid var(--border-tertiary);
-  border-radius: var(--radius-md);
-  background: var(--bg-primary);
+  font-size: 12px; color: var(--text-info); text-decoration: none;
+  padding: 6px 12px; border: 1px solid var(--border-tertiary);
+  border-radius: var(--radius-md); background: var(--bg-primary);
 }
 .nav a:hover { background: var(--bg-secondary); }
 .toolbar {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-  align-items: center;
-  background: var(--bg-secondary);
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  font-size: 12px;
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
+  align-items: center; background: var(--bg-secondary);
+  padding: 10px 14px; border-radius: var(--radius-md); font-size: 12px;
 }
 .toolbar .sep { width: 1px; height: 20px; background: var(--border-tertiary); }
-.btn-small {
-  font-size: 11px;
-  padding: 5px 12px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-tertiary);
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-family: inherit;
+.btn {
+  font-size: 11px; padding: 5px 12px; background: var(--bg-primary);
+  border: 1px solid var(--border-tertiary); border-radius: var(--radius-md);
+  color: var(--text-secondary); cursor: pointer; font-family: inherit;
 }
-.btn-small:hover { color: var(--text-primary); border-color: var(--border-secondary); }
+.btn:hover { color: var(--text-primary); border-color: var(--border-secondary); }
+.btn.primary { background: var(--text-info); color: #fff; border-color: var(--text-info); }
+.btn.primary:hover { color: #fff; opacity: 0.9; }
+.btn.danger { color: #c33; }
+.btn.danger:hover { background: #fee; border-color: #c33; }
+.btn.active { background: var(--text-info); color: #fff; border-color: var(--text-info); }
 .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--text-secondary); }
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 #graph {
-  width: 100%;
-  height: calc(100vh - 200px);
-  min-height: 500px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border-tertiary);
+  width: 100%; height: calc(100vh - 240px); min-height: 480px;
+  background: var(--bg-primary); border: 1px solid var(--border-tertiary);
   border-radius: var(--radius-md);
 }
-.status {
-  font-size: 11px;
-  color: var(--text-tertiary);
-  margin-top: 6px;
-  min-height: 16px;
-}
+.status { font-size: 11px; color: var(--text-tertiary); margin-top: 6px; min-height: 16px; }
 .hint { font-size: 11px; color: var(--text-tertiary); margin-left: auto; }
+.modal-bg {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); z-index: 100;
+  align-items: center; justify-content: center; padding: 16px;
+}
+.modal-bg.show { display: flex; }
+.modal {
+  background: var(--bg-primary); border-radius: var(--radius-lg);
+  padding: 20px; max-width: 480px; width: 100%;
+}
+.modal h3 { margin: 0 0 14px; font-size: 16px; font-weight: 500; }
+.modal label { display: block; font-size: 12px; color: var(--text-secondary); margin: 8px 0 4px; }
+.modal input, .modal select, .modal textarea {
+  width: 100%; padding: 7px 10px; font-size: 13px; font-family: inherit;
+  border: 1px solid var(--border-tertiary); border-radius: var(--radius-md);
+  background: var(--bg-secondary); color: var(--text-primary); box-sizing: border-box;
+}
+.modal textarea { min-height: 80px; resize: vertical; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+.banner {
+  background: #FFF4D6; color: #5a3e00; padding: 8px 12px;
+  border-radius: var(--radius-md); font-size: 11px; margin-bottom: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  .banner { background: #4a3a10; color: #fae9b8; }
+}
 </style>
 </head>
 <body>
@@ -111,11 +114,27 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
 <div class="header">
   <div>
     <h1>Mapa contable</h1>
-    <p class="subtitle">Entramado completo del sistema + ideas flotando cerca de su ancla</p>
+    <p class="subtitle">Editá el entramado: agregá nodos, conexiones e ideas. Guardá el layout en el repo.</p>
   </div>
-  <div class="nav">
-    <a href="./">← Volver al panel v2</a>
-  </div>
+  <div class="nav"><a href="./">← Volver al panel v2</a></div>
+</div>
+
+<div id="no-token-banner" class="banner" style="display:none;">
+  ⚠ Sin token solo podés ver y arrastrar. Para guardar layout o crear ideas, pegá tu token en el <a href="./">panel v2</a> primero.
+</div>
+
+<div class="toolbar">
+  <button class="btn primary" onclick="openAddNodeModal()">+ Nodo</button>
+  <button class="btn primary" id="btn-link" onclick="toggleLinkMode()">+ Conexión</button>
+  <button class="btn primary" onclick="openAddIdeaModal()">+ Idea aquí</button>
+  <button class="btn danger" onclick="deleteSelected()">✕ Eliminar selección</button>
+  <div class="sep"></div>
+  <button class="btn" onclick="runLayout('cose')">Auto-organizar</button>
+  <button class="btn" onclick="runLayout('grid')">Grilla</button>
+  <button class="btn" onclick="graph.fit(null, 40)">Encajar</button>
+  <button class="btn" onclick="loadAll()">⟳ Recargar</button>
+  <div class="sep"></div>
+  <button class="btn primary" onclick="saveLayout()">💾 Guardar layout</button>
 </div>
 
 <div class="toolbar">
@@ -124,18 +143,58 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
     <span><span class="dot" style="background:#EEEDFE;border:1px solid #534AB7;"></span>Macro</span>
     <span><span class="dot" style="background:#FAECE7;border:1px solid #C34416;"></span>Tabla</span>
     <span><span class="dot" style="background:#FAEEDA;border:1px solid #854F0B;"></span>Regla</span>
-    <span><span class="dot" style="background:#FFF4D6;border:1px solid #B08500;border-radius:50%;"></span>Issue (idea)</span>
+    <span><span class="dot" style="background:#FFF4D6;border:1px solid #B08500;"></span>Issue</span>
   </div>
-  <div class="sep"></div>
-  <button class="btn-small" onclick="runLayout('cose')">Auto-organizar</button>
-  <button class="btn-small" onclick="runLayout('grid')">Grilla</button>
-  <button class="btn-small" onclick="graph.fit(null, 40)">Encajar vista</button>
-  <button class="btn-small" onclick="loadAll()">⟳ Recargar</button>
-  <span class="hint">Arrastrá nodos con el mouse · rueda = zoom · click vacío + arrastrar = pan</span>
+  <span class="hint">Click en nodo o flecha = seleccionar · arrastrar = mover · rueda = zoom</span>
 </div>
 
 <div id="graph"></div>
 <p class="status" id="status">Inicializando...</p>
+
+<!-- Modal: Agregar Nodo -->
+<div class="modal-bg" id="modal-node">
+  <div class="modal">
+    <h3>Agregar nodo al mapa</h3>
+    <label>Tipo</label>
+    <select id="node-type">
+      <option value="hoja">Hoja</option>
+      <option value="macro">Macro</option>
+      <option value="tabla">Tabla</option>
+      <option value="regla">Regla</option>
+    </select>
+    <label>Nombre (sin espacios, ej: tb_nuevatabla)</label>
+    <input id="node-name" type="text" placeholder="MiNuevoNodo">
+    <label>Descripción corta (opcional)</label>
+    <input id="node-desc" type="text" placeholder="Qué hace o representa">
+    <p style="font-size:11px;color:var(--text-tertiary);margin-top:8px;">Este nodo es solo visual y vive en layout.json. No afecta el sistema contable real.</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-node')">Cancelar</button>
+      <button class="btn primary" onclick="confirmAddNode()">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Agregar Idea -->
+<div class="modal-bg" id="modal-idea">
+  <div class="modal">
+    <h3>Crear idea (Issue en GitHub)</h3>
+    <p id="idea-anchor-info" style="font-size:11px;color:var(--text-tertiary);margin:0 0 8px;"></p>
+    <label>Título</label>
+    <input id="idea-title" type="text" placeholder="Ej: Validar moneda antes de guardar">
+    <label>Notas (markdown)</label>
+    <textarea id="idea-note" placeholder="Qué cambia, por qué, qué probar..."></textarea>
+    <label>Estado</label>
+    <select id="idea-status">
+      <option value="idea">Idea / por pensar</option>
+      <option value="diseño">En diseño</option>
+      <option value="listo">Listo para implementar</option>
+    </select>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-idea')">Cancelar</button>
+      <button class="btn primary" onclick="confirmAddIdea()">Crear Issue</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ============================================================
@@ -144,12 +203,12 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
 const OWNER = 'mlandolfi90';
 const REPO = 'Sistema-Contabel-EXcel';
 const API = 'https://api.github.com/repos/' + OWNER + '/' + REPO;
-const TOKEN_KEY = 'gh-token-panel-v2'; // mismo token que el panel v2
-const token = localStorage.getItem(TOKEN_KEY) || '';
+const TOKEN_KEY = 'gh-token-panel-v2';
+let token = localStorage.getItem(TOKEN_KEY) || '';
+const LAYOUT_PATH = 'v2/layout.json';
 
 /* ============================================================
-   CATÁLOGO DE NODOS CONTABLES
-   Estos son los elementos fijos del sistema que no vienen de Issues.
+   CATÁLOGO BASE (sistema contable)
    ============================================================ */
 const CATALOG = {
   hoja: [
@@ -191,32 +250,21 @@ const CATALOG = {
   ],
 };
 
-/* ============================================================
-   RELACIONES PRECARGADAS DEL SISTEMA
-   Fuente → destino, según el flujo real (extraído del index.html v1)
-   ============================================================ */
-const RELATIONS = [
-  // REGISTRO_RAPIDO dispara macros principales
+const BASE_RELATIONS = [
   { from:'REGISTRO_RAPIDO', to:'GuardarLote', label:'dispara' },
   { from:'REGISTRO_RAPIDO', to:'LimpiarRegistro', label:'dispara' },
   { from:'REGISTRO_RAPIDO', to:'GenerarAsientoPacto', label:'dispara' },
   { from:'REGISTRO_RAPIDO', to:'RevalorizarCuenta', label:'dispara' },
   { from:'REGISTRO_RAPIDO', to:'tb_registro_rapido', label:'lee/escribe' },
-
-  // GuardarLote escribe al mayor y tasas
   { from:'GuardarLote', to:'LIBRO_MAYOR', label:'escribe' },
   { from:'GuardarLote', to:'TASAS', label:'registra' },
   { from:'GuardarLote', to:'tb_mayor', label:'inserta filas' },
   { from:'GuardarLote', to:'Helpers', label:'usa' },
-
-  // Tasas y alertas
   { from:'TASAS', to:'AlertaSpread', label:'evalúa' },
   { from:'AlertaSpread', to:'ActualizarTasaVigente', label:'sugiere' },
   { from:'ActualizarTasaVigente', to:'ActualizarTasaVigenteDesde', label:'delega en' },
   { from:'ActualizarTasaVigenteDesde', to:'tb_tasas_vigentes', label:'actualiza' },
   { from:'ActualizarTasaVigenteDesde', to:'tb_tasas_historial', label:'registra' },
-
-  // Auditor de lotes
   { from:'AUDITOR_LOTES', to:'LoteAnterior', label:'botón' },
   { from:'AUDITOR_LOTES', to:'LoteSiguiente', label:'botón' },
   { from:'AUDITOR_LOTES', to:'AccionSobreLoteVisible', label:'botón' },
@@ -224,13 +272,9 @@ const RELATIONS = [
   { from:'AccionSobreLoteVisible', to:'DuplicarLoteConID', label:'si válido' },
   { from:'CorregirLoteConID', to:'tb_mayor', label:'anula líneas' },
   { from:'DuplicarLoteConID', to:'REGISTRO_RAPIDO', label:'precarga' },
-
-  // Revalorización → hojas de resultados
   { from:'RevalorizarCuenta', to:'SALDOS_Y_ENTIDADES', label:'alimenta' },
   { from:'REPORTE_BARRIDO', to:'LIBRO_MAYOR', label:'lee de' },
   { from:'SALDOS_Y_ENTIDADES', to:'tb_mayor', label:'agrupa' },
-
-  // Catálogos que alimentan REGISTRO_RAPIDO
   { from:'tb_cuentas', to:'REGISTRO_RAPIDO', label:'dropdown' },
   { from:'tb_divisas', to:'REGISTRO_RAPIDO', label:'dropdown' },
   { from:'tb_segmentos', to:'REGISTRO_RAPIDO', label:'dropdown' },
@@ -239,27 +283,55 @@ const RELATIONS = [
   { from:'tb_entidades', to:'REGISTRO_RAPIDO', label:'dropdown' },
 ];
 
-/* ============================================================
-   COLORES POR TIPO (tokens del panel v2)
-   ============================================================ */
 const STYLES = {
   hoja:  { bg:'#E1F5EE', border:'#0F6E56', text:'#04342C' },
   macro: { bg:'#EEEDFE', border:'#534AB7', text:'#26215C' },
   tabla: { bg:'#FAECE7', border:'#C34416', text:'#4A1B0C' },
-  rango: { bg:'#FAEEDA', border:'#854F0B', text:'#412402' },
   regla: { bg:'#FAEEDA', border:'#854F0B', text:'#412402' },
   issue: { bg:'#FFF4D6', border:'#B08500', text:'#5a3e00' },
 };
 
 /* ============================================================
-   CARGAR ISSUES DESDE GITHUB
+   ESTADO GLOBAL
+   ============================================================ */
+let graph;
+let layoutData = { positions: {}, customNodes: [], customEdges: [] };
+let layoutSha = null; // sha del layout.json en GitHub (para update)
+let linkMode = false;
+let linkSource = null;
+
+/* ============================================================
+   API HELPERS
+   ============================================================ */
+function authHeaders() {
+  const h = { 'Accept': 'application/vnd.github+json' };
+  if (token) h['Authorization'] = 'Bearer ' + token;
+  return h;
+}
+
+async function apiGet(path) {
+  const r = await fetch(API + path, { headers: authHeaders() });
+  if (!r.ok) throw new Error('GET ' + path + ' → ' + r.status);
+  return r.json();
+}
+async function apiPost(path, body) {
+  const h = authHeaders(); h['Content-Type'] = 'application/json';
+  const r = await fetch(API + path, { method: 'POST', headers: h, body: JSON.stringify(body) });
+  if (!r.ok) throw new Error('POST ' + path + ' → ' + r.status + ' ' + await r.text());
+  return r.json();
+}
+async function apiPut(path, body) {
+  const h = authHeaders(); h['Content-Type'] = 'application/json';
+  const r = await fetch(API + path, { method: 'PUT', headers: h, body: JSON.stringify(body) });
+  if (!r.ok) throw new Error('PUT ' + path + ' → ' + r.status + ' ' + await r.text());
+  return r.json();
+}
+
+/* ============================================================
+   CARGAR ISSUES
    ============================================================ */
 async function loadIssues() {
-  const headers = { 'Accept': 'application/vnd.github+json' };
-  if (token) headers['Authorization'] = 'Bearer ' + token;
-  const r = await fetch(API + '/issues?state=open&per_page=100', { headers });
-  if (!r.ok) throw new Error('No se pudo cargar issues: ' + r.status);
-  const issues = await r.json();
+  const issues = await apiGet('/issues?state=open&per_page=100');
   return issues.filter(i => !i.pull_request).map(issue => {
     const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
     let status = 'idea';
@@ -269,217 +341,333 @@ async function loadIssues() {
       const m = l.match(/^(macro|hoja|tabla|rango|regla):(.+)$/);
       if (m) anchors.push({ type: m[1], id: m[2] });
     });
-    return {
-      number: issue.number,
-      title: issue.title,
-      status,
-      anchors,
-      url: issue.html_url,
-    };
+    return { number: issue.number, title: issue.title, status, anchors, url: issue.html_url };
   });
 }
 
 /* ============================================================
-   CONSTRUIR DATA DEL GRAFO (nodos + aristas)
+   CARGAR / GUARDAR LAYOUT.JSON
+   ============================================================ */
+async function loadLayout() {
+  try {
+    const r = await fetch(API + '/contents/' + LAYOUT_PATH, { headers: authHeaders() });
+    if (r.status === 404) {
+      layoutData = { positions: {}, customNodes: [], customEdges: [] };
+      layoutSha = null;
+      return;
+    }
+    if (!r.ok) throw new Error('No se pudo leer layout.json');
+    const json = await r.json();
+    layoutSha = json.sha;
+    const decoded = atob(json.content.replace(/\s/g, ''));
+    layoutData = JSON.parse(decodeURIComponent(escape(decoded)));
+    // defaults por si falta algo
+    layoutData.positions = layoutData.positions || {};
+    layoutData.customNodes = layoutData.customNodes || [];
+    layoutData.customEdges = layoutData.customEdges || [];
+  } catch (e) {
+    console.warn('layout.json no disponible:', e);
+    layoutData = { positions: {}, customNodes: [], customEdges: [] };
+    layoutSha = null;
+  }
+}
+
+async function saveLayout() {
+  if (!token) { alert('Necesitás token guardado en el panel v2 para guardar layout'); return; }
+  // Capturar posiciones actuales del grafo
+  graph.nodes().forEach(n => {
+    const p = n.position();
+    layoutData.positions[n.id()] = { x: Math.round(p.x), y: Math.round(p.y) };
+  });
+  const content = JSON.stringify(layoutData, null, 2);
+  const encoded = btoa(unescape(encodeURIComponent(content)));
+  const body = { message: 'mapa: actualizar layout', content: encoded, branch: 'main' };
+  if (layoutSha) body.sha = layoutSha;
+  try {
+    setStatus('Guardando layout...');
+    const r = await apiPut('/contents/' + LAYOUT_PATH, body);
+    layoutSha = r.content.sha;
+    setStatus('Layout guardado ✓');
+  } catch (e) {
+    setStatus('Error al guardar: ' + e.message);
+  }
+}
+
+/* ============================================================
+   CONSTRUIR DATA DEL GRAFO
    ============================================================ */
 function buildGraphData(issues) {
   const nodes = [];
   const edges = [];
 
-  // 1. Nodos del sistema contable
+  // Nodos del catálogo base
   Object.keys(CATALOG).forEach(type => {
     CATALOG[type].forEach(n => {
-      nodes.push({
-        data: {
-          id: type + ':' + n.id,
-          label: n.label,
-          desc: n.desc,
-          type: type,
-          kind: 'system',
-        }
-      });
+      nodes.push(makeNodeData(type + ':' + n.id, n.label, n.desc, type, 'system'));
     });
   });
 
-  // 2. Aristas del sistema (relaciones precargadas)
-  RELATIONS.forEach((r, idx) => {
+  // Nodos custom (de layout.json)
+  layoutData.customNodes.forEach(n => {
+    nodes.push(makeNodeData(n.id, n.label, n.desc || '', n.type, 'custom'));
+  });
+
+  // Aristas base
+  BASE_RELATIONS.forEach((r, idx) => {
     const fromId = findNodeId(r.from);
     const toId = findNodeId(r.to);
     if (fromId && toId) {
-      edges.push({
-        data: {
-          id: 'sys-edge-' + idx,
-          source: fromId,
-          target: toId,
-          label: r.label || '',
-          kind: 'system',
-        }
-      });
+      edges.push({ data: { id: 'sys-edge-' + idx, source: fromId, target: toId, label: r.label || '', kind: 'system' } });
     }
   });
 
-  // 3. Nodos de Issues (burbujas amarillas)
+  // Aristas custom (de layout.json)
+  layoutData.customEdges.forEach((e, idx) => {
+    edges.push({ data: { id: 'custom-edge-' + idx, source: e.source, target: e.target, label: e.label || '', kind: 'custom' } });
+  });
+
+  // Issues
   issues.forEach(iss => {
     nodes.push({
       data: {
         id: 'issue:' + iss.number,
         label: '#' + iss.number + ' ' + truncate(iss.title, 40),
-        desc: iss.title,
-        type: 'issue',
-        kind: 'issue',
-        status: iss.status,
-        url: iss.url,
+        desc: iss.title, type: 'issue', kind: 'issue', status: iss.status, url: iss.url,
       }
     });
-    // Aristas punteadas de Issue → sus anclas
     iss.anchors.forEach((a, i) => {
       const targetId = findNodeId(a.id);
       if (targetId) {
-        edges.push({
-          data: {
-            id: 'issue-edge-' + iss.number + '-' + i,
-            source: 'issue:' + iss.number,
-            target: targetId,
-            kind: 'issue',
-          }
-        });
+        edges.push({ data: { id: 'issue-edge-' + iss.number + '-' + i, source: 'issue:' + iss.number, target: targetId, kind: 'issue' } });
       }
     });
+  });
+
+  // Aplicar posiciones guardadas
+  nodes.forEach(n => {
+    if (layoutData.positions[n.data.id]) n.position = layoutData.positions[n.data.id];
   });
 
   return { nodes, edges };
 }
 
-// Busca un node id dentro del CATALOG sin saber el tipo
+function makeNodeData(id, label, desc, type, kind) {
+  return { data: { id, label, desc, type, kind } };
+}
+
 function findNodeId(plainId) {
   for (const type of Object.keys(CATALOG)) {
     if (CATALOG[type].some(n => n.id === plainId)) return type + ':' + plainId;
   }
+  // ¿es custom?
+  const custom = layoutData.customNodes.find(n => n.id.endsWith(':' + plainId) || n.id === plainId);
+  if (custom) return custom.id;
   return null;
 }
 
 function truncate(s, n) { return s.length > n ? s.slice(0, n - 1) + '…' : s; }
 
 /* ============================================================
-   INICIALIZAR CYTOSCAPE
+   INICIALIZAR GRAFO
    ============================================================ */
-let graph;
-
 function initGraph(nodes, edges) {
+  const hasPositions = Object.keys(layoutData.positions).length > 0;
   graph = cytoscape({
     container: document.getElementById('graph'),
     elements: [...nodes, ...edges],
     style: [
-      // Nodos del sistema (rectángulos redondeados)
-      {
-        selector: 'node[kind = "system"]',
-        style: {
-          'shape': 'round-rectangle',
-          'background-color': ele => STYLES[ele.data('type')]?.bg || '#eee',
-          'border-color': ele => STYLES[ele.data('type')]?.border || '#888',
-          'border-width': 1.5,
-          'label': 'data(label)',
-          'color': ele => STYLES[ele.data('type')]?.text || '#333',
-          'font-size': 11,
-          'font-weight': 500,
-          'text-valign': 'center',
-          'text-halign': 'center',
-          'width': 'label',
-          'height': 32,
-          'padding': '10px',
-          'text-wrap': 'wrap',
-          'text-max-width': 140,
-        },
-      },
-      // Issues (círculos amarillos)
-      {
-        selector: 'node[kind = "issue"]',
-        style: {
-          'shape': 'round-rectangle',
-          'background-color': STYLES.issue.bg,
-          'border-color': STYLES.issue.border,
-          'border-width': 1.5,
-          'border-style': 'dashed',
-          'label': 'data(label)',
-          'color': STYLES.issue.text,
-          'font-size': 10,
-          'text-valign': 'center',
-          'text-halign': 'center',
-          'width': 'label',
-          'height': 26,
-          'padding': '6px',
-          'text-wrap': 'wrap',
-          'text-max-width': 180,
-        },
-      },
-      // Aristas del sistema (grises, con flecha y etiqueta)
-      {
-        selector: 'edge[kind = "system"]',
-        style: {
-          'width': 1.2,
-          'line-color': '#888',
-          'target-arrow-color': '#888',
-          'target-arrow-shape': 'triangle',
-          'curve-style': 'bezier',
-          'label': 'data(label)',
-          'font-size': 9,
-          'color': '#888',
-          'text-background-color': 'var(--bg-primary)',
-          'text-background-opacity': 0.8,
-          'text-background-padding': 2,
-        },
-      },
-      // Aristas de issues (punteadas amarillas)
-      {
-        selector: 'edge[kind = "issue"]',
-        style: {
-          'width': 1,
-          'line-color': '#B08500',
-          'line-style': 'dashed',
-          'target-arrow-color': '#B08500',
-          'target-arrow-shape': 'triangle',
-          'curve-style': 'bezier',
-          'opacity': 0.6,
-        },
-      },
-      // Nodo seleccionado (resalta)
-      {
-        selector: ':selected',
-        style: {
-          'border-width': 3,
-          'border-color': '#185FA5',
-        },
-      },
+      { selector: 'node[kind = "system"], node[kind = "custom"]', style: {
+        'shape': 'round-rectangle',
+        'background-color': ele => STYLES[ele.data('type')]?.bg || '#eee',
+        'border-color': ele => STYLES[ele.data('type')]?.border || '#888',
+        'border-width': 1.5,
+        'border-style': ele => ele.data('kind') === 'custom' ? 'dotted' : 'solid',
+        'label': 'data(label)',
+        'color': ele => STYLES[ele.data('type')]?.text || '#333',
+        'font-size': 11, 'font-weight': 500,
+        'text-valign': 'center', 'text-halign': 'center',
+        'width': 'label', 'height': 32, 'padding': '10px',
+        'text-wrap': 'wrap', 'text-max-width': 140,
+      }},
+      { selector: 'node[kind = "issue"]', style: {
+        'shape': 'round-rectangle',
+        'background-color': STYLES.issue.bg, 'border-color': STYLES.issue.border,
+        'border-width': 1.5, 'border-style': 'dashed',
+        'label': 'data(label)', 'color': STYLES.issue.text,
+        'font-size': 10, 'text-valign': 'center', 'text-halign': 'center',
+        'width': 'label', 'height': 26, 'padding': '6px',
+        'text-wrap': 'wrap', 'text-max-width': 180,
+      }},
+      { selector: 'edge[kind = "system"]', style: {
+        'width': 1.2, 'line-color': '#888',
+        'target-arrow-color': '#888', 'target-arrow-shape': 'triangle',
+        'curve-style': 'bezier', 'label': 'data(label)',
+        'font-size': 9, 'color': '#888',
+        'text-background-color': '#fff', 'text-background-opacity': 0.85, 'text-background-padding': 2,
+      }},
+      { selector: 'edge[kind = "custom"]', style: {
+        'width': 1.5, 'line-color': '#185FA5',
+        'target-arrow-color': '#185FA5', 'target-arrow-shape': 'triangle',
+        'curve-style': 'bezier', 'label': 'data(label)',
+        'font-size': 9, 'color': '#185FA5',
+        'text-background-color': '#fff', 'text-background-opacity': 0.85, 'text-background-padding': 2,
+      }},
+      { selector: 'edge[kind = "issue"]', style: {
+        'width': 1, 'line-color': '#B08500', 'line-style': 'dashed',
+        'target-arrow-color': '#B08500', 'target-arrow-shape': 'triangle',
+        'curve-style': 'bezier', 'opacity': 0.6,
+      }},
+      { selector: ':selected', style: { 'border-width': 3, 'border-color': '#185FA5', 'line-color': '#185FA5' } },
     ],
-    layout: {
-      name: 'cose',  // "cose" es un layout físico: acomoda nodos automáticamente
-      animate: false,
-      nodeRepulsion: 8000,
-      idealEdgeLength: 120,
-      padding: 30,
-    },
-    wheelSensitivity: 0.2,
-    minZoom: 0.2,
-    maxZoom: 2.5,
+    layout: hasPositions ? { name: 'preset' } : { name: 'cose', animate: false, nodeRepulsion: 8000, idealEdgeLength: 120, padding: 30 },
+    wheelSensitivity: 0.2, minZoom: 0.2, maxZoom: 2.5,
   });
 
-  // Click en Issue → abre el issue en GitHub
+  // Click en Issue → abre URL
   graph.on('tap', 'node[kind = "issue"]', evt => {
+    if (linkMode) return;
     const url = evt.target.data('url');
     if (url) window.open(url, '_blank');
   });
 
-  // Tooltip simple al hacer hover
+  // Modo conexión: dos clicks consecutivos
+  graph.on('tap', 'node', evt => {
+    if (!linkMode) return;
+    const node = evt.target;
+    if (!linkSource) {
+      linkSource = node;
+      node.style({ 'border-color': '#0a0', 'border-width': 4 });
+      setStatus('Origen: ' + node.data('label') + ' — click ahora en el destino');
+    } else if (linkSource.id() !== node.id()) {
+      createCustomEdge(linkSource.id(), node.id());
+      linkSource.removeStyle();
+      linkSource = null;
+      toggleLinkMode(); // salir del modo
+    }
+  });
+
+  // Hover tooltip
   graph.on('mouseover', 'node', evt => {
     const d = evt.target.data();
     setStatus(d.desc || d.label);
   });
-  graph.on('mouseout', 'node', () => setStatus(''));
+  graph.on('mouseout', 'node', () => { if (!linkMode) setStatus(''); });
 }
 
 /* ============================================================
-   CONTROLES DE LAYOUT
+   ACCIONES DE EDICIÓN
    ============================================================ */
+function openAddNodeModal() { openModal('modal-node'); }
+
+function confirmAddNode() {
+  const type = document.getElementById('node-type').value;
+  const name = document.getElementById('node-name').value.trim();
+  const desc = document.getElementById('node-desc').value.trim();
+  if (!name) { alert('Falta el nombre'); return; }
+  if (/[\s'"\\\/]/.test(name)) { alert('Sin espacios ni caracteres especiales'); return; }
+  const id = type + ':' + name;
+  if (graph.getElementById(id).length) { alert('Ya existe un nodo con ese id'); return; }
+  layoutData.customNodes.push({ id, label: name, desc, type });
+  graph.add({ data: { id, label: name, desc, type, kind: 'custom' }, position: { x: 200, y: 200 } });
+  document.getElementById('node-name').value = '';
+  document.getElementById('node-desc').value = '';
+  closeModal('modal-node');
+  setStatus('Nodo agregado: ' + name + ' (acordate de Guardar layout)');
+}
+
+function toggleLinkMode() {
+  linkMode = !linkMode;
+  const btn = document.getElementById('btn-link');
+  if (linkMode) {
+    btn.classList.add('active'); btn.textContent = '✕ Cancelar conexión';
+    setStatus('Modo conexión: click en el nodo ORIGEN');
+  } else {
+    btn.classList.remove('active'); btn.textContent = '+ Conexión';
+    if (linkSource) { linkSource.removeStyle(); linkSource = null; }
+    setStatus('');
+  }
+}
+
+function createCustomEdge(sourceId, targetId) {
+  const label = prompt('Etiqueta de la conexión (opcional):', '') || '';
+  layoutData.customEdges.push({ source: sourceId, target: targetId, label });
+  const id = 'custom-edge-' + Date.now();
+  graph.add({ data: { id, source: sourceId, target: targetId, label, kind: 'custom' } });
+  setStatus('Conexión creada (acordate de Guardar layout)');
+}
+
+function deleteSelected() {
+  const sel = graph.$(':selected');
+  if (sel.length === 0) { alert('Seleccioná primero un nodo o flecha (click sobre él)'); return; }
+  if (!confirm('¿Eliminar ' + sel.length + ' elemento(s) del mapa?')) return;
+  sel.forEach(el => {
+    const id = el.id();
+    if (el.isNode()) {
+      // Solo se pueden eliminar nodos custom
+      if (el.data('kind') !== 'custom') { alert('No podés eliminar nodos del sistema base. Solo nodos agregados manualmente.'); return; }
+      layoutData.customNodes = layoutData.customNodes.filter(n => n.id !== id);
+      delete layoutData.positions[id];
+    } else if (el.isEdge()) {
+      // Solo aristas custom
+      if (el.data('kind') !== 'custom') { alert('No podés eliminar conexiones del sistema base.'); return; }
+      layoutData.customEdges = layoutData.customEdges.filter((e, idx) => 'custom-edge-' + idx !== id && !id.startsWith('custom-edge-' + Date.now().toString().slice(0,5)));
+      // Simplificación: filtrar por source+target+label
+      const s = el.data('source'), t = el.data('target'), l = el.data('label');
+      layoutData.customEdges = layoutData.customEdges.filter(e => !(e.source === s && e.target === t && (e.label || '') === (l || '')));
+    }
+    graph.remove(el);
+  });
+  setStatus('Eliminado (acordate de Guardar layout)');
+}
+
+/* ============================================================
+   CREAR ISSUE (idea anclada)
+   ============================================================ */
+let pendingIdeaAnchor = null;
+
+function openAddIdeaModal() {
+  if (!token) { alert('Necesitás token para crear issues. Pegalo en el panel v2.'); return; }
+  const sel = graph.$('node[kind != "issue"]:selected');
+  if (sel.length === 0) {
+    if (!confirm('No hay nodo seleccionado. ¿Crear idea sin ancla?')) return;
+    pendingIdeaAnchor = null;
+    document.getElementById('idea-anchor-info').textContent = 'Sin ancla (será un Issue suelto)';
+  } else {
+    const n = sel[0];
+    pendingIdeaAnchor = { type: n.data('type'), id: n.data('label') };
+    document.getElementById('idea-anchor-info').textContent = 'Ancla: ' + pendingIdeaAnchor.type + ':' + pendingIdeaAnchor.id;
+  }
+  openModal('modal-idea');
+}
+
+async function confirmAddIdea() {
+  const title = document.getElementById('idea-title').value.trim();
+  if (!title) { alert('Falta el título'); return; }
+  const note = document.getElementById('idea-note').value.trim();
+  const status = document.getElementById('idea-status').value;
+  const labels = [status];
+  if (pendingIdeaAnchor) labels.push(pendingIdeaAnchor.type + ':' + pendingIdeaAnchor.id);
+  try {
+    setStatus('Creando issue...');
+    await apiPost('/issues', { title, body: note, labels });
+    document.getElementById('idea-title').value = '';
+    document.getElementById('idea-note').value = '';
+    closeModal('modal-idea');
+    await loadAll();
+    setStatus('Issue creado ✓');
+  } catch (e) {
+    setStatus('Error: ' + e.message);
+  }
+}
+
+/* ============================================================
+   UI HELPERS
+   ============================================================ */
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function setStatus(msg) { document.getElementById('status').textContent = msg || ''; }
+
 function runLayout(name) {
   if (!graph) return;
   const opts = name === 'grid'
@@ -489,24 +677,27 @@ function runLayout(name) {
 }
 
 /* ============================================================
-   UI / UTILIDADES
+   ARRANQUE
    ============================================================ */
-function setStatus(msg) {
-  document.getElementById('status').textContent = msg || '';
-}
-
 async function loadAll() {
   try {
-    setStatus('Cargando issues...');
+    setStatus('Cargando...');
+    if (!token) document.getElementById('no-token-banner').style.display = 'block';
+    await loadLayout();
     const issues = await loadIssues();
     const { nodes, edges } = buildGraphData(issues);
     if (graph) graph.destroy();
     initGraph(nodes, edges);
-    setStatus('Listo: ' + nodes.length + ' nodos, ' + edges.length + ' relaciones, ' + issues.length + ' issues');
+    setStatus('Listo: ' + nodes.length + ' nodos · ' + edges.length + ' conexiones · ' + issues.length + ' issues');
   } catch (e) {
     setStatus('Error: ' + e.message);
   }
 }
+
+// Click fuera de modal cierra
+document.querySelectorAll('.modal-bg').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
+});
 
 loadAll();
 </script>
