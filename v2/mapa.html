@@ -7,121 +7,76 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
 <style>
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f5f4ee;
-  --bg-tertiary: #faf9f5;
-  --text-primary: #1a1a17;
-  --text-secondary: #5f5e5a;
-  --text-tertiary: #888780;
-  --text-info: #185FA5;
-  --border-tertiary: rgba(0,0,0,0.08);
-  --border-secondary: rgba(0,0,0,0.15);
-  --radius-md: 8px;
-  --radius-lg: 12px;
+  --bg-primary: #ffffff; --bg-secondary: #f5f4ee; --bg-tertiary: #faf9f5;
+  --text-primary: #1a1a17; --text-secondary: #5f5e5a; --text-tertiary: #888780;
+  --text-info: #185FA5; --border-tertiary: rgba(0,0,0,0.08); --border-secondary: rgba(0,0,0,0.15);
+  --radius-md: 8px; --radius-lg: 12px;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-primary: #1f1e1b;
-    --bg-secondary: #2a2927;
-    --bg-tertiary: #181716;
-    --text-primary: #f0efea;
-    --text-secondary: #b4b2a9;
-    --text-tertiary: #888780;
-    --text-info: #85B7EB;
-    --border-tertiary: rgba(255,255,255,0.08);
-    --border-secondary: rgba(255,255,255,0.15);
+    --bg-primary: #1f1e1b; --bg-secondary: #2a2927; --bg-tertiary: #181716;
+    --text-primary: #f0efea; --text-secondary: #b4b2a9; --text-tertiary: #888780;
+    --text-info: #85B7EB; --border-tertiary: rgba(255,255,255,0.08); --border-secondary: rgba(255,255,255,0.15);
   }
 }
 * { box-sizing: border-box; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  margin: 0;
-  padding: 16px;
-  line-height: 1.5;
-  font-size: 14px;
+  background: var(--bg-tertiary); color: var(--text-primary);
+  margin: 0; padding: 16px; line-height: 1.5; font-size: 14px;
 }
-.header {
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 12px; margin-bottom: 12px;
-}
+.header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
 h1 { font-size: 18px; font-weight: 500; margin: 0; }
 .subtitle { color: var(--text-secondary); font-size: 12px; margin: 0; }
-.nav a {
-  font-size: 12px; color: var(--text-info); text-decoration: none;
-  padding: 6px 12px; border: 1px solid var(--border-tertiary);
-  border-radius: var(--radius-md); background: var(--bg-primary);
-}
+.nav a { font-size: 12px; color: var(--text-info); text-decoration: none; padding: 6px 12px; border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); background: var(--bg-primary); }
 .nav a:hover { background: var(--bg-secondary); }
-.toolbar {
-  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
-  align-items: center; background: var(--bg-secondary);
-  padding: 10px 14px; border-radius: var(--radius-md); font-size: 12px;
-}
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; align-items: center; background: var(--bg-secondary); padding: 10px 14px; border-radius: var(--radius-md); font-size: 12px; }
 .toolbar .sep { width: 1px; height: 20px; background: var(--border-tertiary); }
-.btn {
-  font-size: 11px; padding: 5px 12px; background: var(--bg-primary);
-  border: 1px solid var(--border-tertiary); border-radius: var(--radius-md);
-  color: var(--text-secondary); cursor: pointer; font-family: inherit;
-}
+.btn { font-size: 11px; padding: 5px 12px; background: var(--bg-primary); border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); color: var(--text-secondary); cursor: pointer; font-family: inherit; }
 .btn:hover { color: var(--text-primary); border-color: var(--border-secondary); }
 .btn.primary { background: var(--text-info); color: #fff; border-color: var(--text-info); }
 .btn.primary:hover { color: #fff; opacity: 0.9; }
+.btn.success { background: #0a8a2a; color: #fff; border-color: #0a8a2a; }
+.btn.success:hover { color: #fff; opacity: 0.9; }
 .btn.danger { color: #c33; }
 .btn.danger:hover { background: #fee; border-color: #c33; }
 .btn.active { background: var(--text-info); color: #fff; border-color: var(--text-info); }
 .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--text-secondary); }
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
-#graph {
-  width: 100%; height: calc(100vh - 240px); min-height: 480px;
-  background: var(--bg-primary); border: 1px solid var(--border-tertiary);
-  border-radius: var(--radius-md);
-}
+#graph { width: 100%; height: calc(100vh - 280px); min-height: 480px; background: var(--bg-primary); border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); }
 .status { font-size: 11px; color: var(--text-tertiary); margin-top: 6px; min-height: 16px; }
 .hint { font-size: 11px; color: var(--text-tertiary); margin-left: auto; }
-.modal-bg {
-  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5); z-index: 100;
-  align-items: center; justify-content: center; padding: 16px;
-}
+.draft-badge { background: #B08500; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; margin-left: 6px; }
+.modal-bg { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
 .modal-bg.show { display: flex; }
-.modal {
-  background: var(--bg-primary); border-radius: var(--radius-lg);
-  padding: 20px; max-width: 480px; width: 100%;
-}
+.modal { background: var(--bg-primary); border-radius: var(--radius-lg); padding: 20px; max-width: 520px; width: 100%; max-height: 85vh; overflow-y: auto; }
 .modal h3 { margin: 0 0 14px; font-size: 16px; font-weight: 500; }
 .modal label { display: block; font-size: 12px; color: var(--text-secondary); margin: 8px 0 4px; }
-.modal input, .modal select, .modal textarea {
-  width: 100%; padding: 7px 10px; font-size: 13px; font-family: inherit;
-  border: 1px solid var(--border-tertiary); border-radius: var(--radius-md);
-  background: var(--bg-secondary); color: var(--text-primary); box-sizing: border-box;
-}
+.modal input, .modal select, .modal textarea { width: 100%; padding: 7px 10px; font-size: 13px; font-family: inherit; border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); background: var(--bg-secondary); color: var(--text-primary); box-sizing: border-box; }
 .modal textarea { min-height: 80px; resize: vertical; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
-.banner {
-  background: #FFF4D6; color: #5a3e00; padding: 8px 12px;
-  border-radius: var(--radius-md); font-size: 11px; margin-bottom: 8px;
-}
-@media (prefers-color-scheme: dark) {
-  .banner { background: #4a3a10; color: #fae9b8; }
-}
+.banner { background: #FFF4D6; color: #5a3e00; padding: 8px 12px; border-radius: var(--radius-md); font-size: 11px; margin-bottom: 8px; }
+@media (prefers-color-scheme: dark) { .banner { background: #4a3a10; color: #fae9b8; } }
+.draft-summary { background: #FFF4D6; border: 1px solid #B08500; border-radius: var(--radius-md); padding: 10px 12px; font-size: 11px; color: #5a3e00; margin-bottom: 8px; }
+@media (prefers-color-scheme: dark) { .draft-summary { background: #4a3a10; color: #fae9b8; border-color: #B08500; } }
 </style>
 </head>
 <body>
 
 <div class="header">
   <div>
-    <h1>Mapa contable</h1>
-    <p class="subtitle">Editá el entramado: agregá nodos, conexiones e ideas. Guardá el layout en el repo.</p>
+    <h1>Mapa contable <span id="draft-badge" class="draft-badge" style="display:none;">Borrador activo</span></h1>
+    <p class="subtitle">Lee <code>schema.json</code> (oficial) + <code>draft.json</code> (tus cambios pendientes). Las ediciones van al borrador hasta que las apliques.</p>
   </div>
   <div class="nav"><a href="./">← Volver al panel v2</a></div>
 </div>
 
 <div id="no-token-banner" class="banner" style="display:none;">
-  ⚠ Sin token solo podés ver y arrastrar. Para guardar layout o crear ideas, pegá tu token en el <a href="./">panel v2</a> primero.
+  ⚠ Sin token solo podés ver y arrastrar. Para guardar borrador, aplicar cambios o crear ideas, pegá tu token en el <a href="./">panel v2</a> primero.
 </div>
+
+<div id="draft-summary" class="draft-summary" style="display:none;"></div>
 
 <div class="toolbar">
   <button class="btn primary" onclick="openAddNodeModal()">+ Nodo</button>
@@ -133,8 +88,15 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
   <button class="btn" onclick="runLayout('grid')">Grilla</button>
   <button class="btn" onclick="graph.fit(null, 40)">Encajar</button>
   <button class="btn" onclick="loadAll()">⟳ Recargar</button>
+</div>
+
+<div class="toolbar">
+  <button class="btn primary" onclick="saveDraft()">💾 Guardar borrador</button>
+  <button class="btn success" onclick="applyDraftToSchema()">✅ Aplicar al esquema</button>
+  <button class="btn danger" onclick="discardDraft()">🗑 Descartar borrador</button>
   <div class="sep"></div>
-  <button class="btn primary" onclick="saveLayout()">💾 Guardar layout</button>
+  <button class="btn" onclick="saveLayout()">📍 Guardar posiciones (layout)</button>
+  <span class="hint">Los cambios que hagas van al <b>borrador</b>. Solo al <b>aplicar</b> se vuelven oficiales.</span>
 </div>
 
 <div class="toolbar">
@@ -142,12 +104,12 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
     <span><span class="dot" style="background:#E1F5EE;border:1px solid #0F6E56;"></span>Hoja</span>
     <span><span class="dot" style="background:#EEEDFE;border:1px solid #534AB7;"></span>Macro</span>
     <span><span class="dot" style="background:#FAECE7;border:1px solid #C34416;"></span>Tabla</span>
-    <span><span class="dot" style="background:#FAEEDA;border:1px solid #854F0B;"></span>Regla</span>
+    <span><span class="dot" style="background:#FAEEDA;border:1px solid #854F0B;"></span>Regla/Rango</span>
     <span><span class="dot" style="background:#DCE7FA;border:1px solid #1E47AE;"></span>Socio</span>
     <span><span class="dot" style="background:#EFE1FA;border:1px solid #6B2E9B;"></span>Cuenta</span>
     <span><span class="dot" style="background:#FFF4D6;border:1px solid #B08500;"></span>Issue</span>
+    <span style="color:#B08500;">· borde punteado = borrador</span>
   </div>
-  <span class="hint">Click en nodo o flecha = seleccionar · arrastrar = mover · rueda = zoom</span>
 </div>
 
 <div id="graph"></div>
@@ -156,24 +118,27 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
 <!-- Modal: Agregar Nodo -->
 <div class="modal-bg" id="modal-node">
   <div class="modal">
-    <h3>Agregar nodo al mapa</h3>
+    <h3>Agregar nodo (al borrador)</h3>
     <label>Tipo</label>
     <select id="node-type">
       <option value="hoja">Hoja</option>
       <option value="macro">Macro</option>
       <option value="tabla">Tabla</option>
+      <option value="rango">Rango con nombre</option>
       <option value="regla">Regla</option>
       <option value="socio">Socio</option>
       <option value="cuenta">Cuenta contable</option>
     </select>
-    <label>Nombre (sin espacios, ej: tb_nuevatabla)</label>
+    <label>ID interno (sin espacios, ej: tb_nuevatabla)</label>
     <input id="node-name" type="text" placeholder="MiNuevoNodo">
+    <label>Etiqueta visible (opcional, puede tener espacios)</label>
+    <input id="node-label" type="text" placeholder="Si lo dejás vacío usa el ID">
     <label>Descripción corta (opcional)</label>
     <input id="node-desc" type="text" placeholder="Qué hace o representa">
-    <p style="font-size:11px;color:var(--text-tertiary);margin-top:8px;">Este nodo es solo visual y vive en layout.json. No afecta el sistema contable real.</p>
+    <p style="font-size:11px;color:var(--text-tertiary);margin-top:8px;">Va al borrador. Se vuelve oficial cuando apliques al esquema.</p>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('modal-node')">Cancelar</button>
-      <button class="btn primary" onclick="confirmAddNode()">Agregar</button>
+      <button class="btn primary" onclick="confirmAddNode()">Agregar al borrador</button>
     </div>
   </div>
 </div>
@@ -200,6 +165,19 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
   </div>
 </div>
 
+<!-- Modal: Aplicar borrador -->
+<div class="modal-bg" id="modal-apply">
+  <div class="modal">
+    <h3>✅ Aplicar borrador al esquema oficial</h3>
+    <div id="apply-preview" style="font-size:12px;"></div>
+    <p style="font-size:11px;color:var(--text-tertiary);margin-top:12px;">Esta acción modifica <code>schema.json</code> de forma permanente (commit al repo). El borrador queda vacío después.</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('modal-apply')">Cancelar</button>
+      <button class="btn success" onclick="confirmApplyDraft()">Confirmar y aplicar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ============================================================
    CONFIGURACIÓN
@@ -207,146 +185,31 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
 const OWNER = 'mlandolfi90';
 const REPO = 'Sistema-Contabel-EXcel';
 const API = 'https://api.github.com/repos/' + OWNER + '/' + REPO;
+const RAW = 'https://raw.githubusercontent.com/' + OWNER + '/' + REPO + '/main/';
 const TOKEN_KEY = 'gh-token-panel-v2';
 let token = localStorage.getItem(TOKEN_KEY) || '';
+
+const SCHEMA_PATH = 'v2/schema.json';
+const DRAFT_PATH  = 'v2/draft.json';
 const LAYOUT_PATH = 'v2/layout.json';
 
 /* ============================================================
-   CATÁLOGO BASE (sistema contable)
-   ============================================================ */
-const CATALOG = {
-  hoja: [
-    { id:'REGISTRO_RAPIDO', label:'REGISTRO_RAPIDO', desc:'Formulario de captura' },
-    { id:'LIBRO_MAYOR', label:'LIBRO_MAYOR', desc:'Almacén acumulativo' },
-    { id:'TASAS', label:'TASAS', desc:'Tasas vigentes + historial' },
-    { id:'AUDITOR_LOTES', label:'AUDITOR_LOTES', desc:'Navegación de lotes' },
-    { id:'REPORTE_BARRIDO', label:'REPORTE_BARRIDO', desc:'Reparto de utilidades' },
-    { id:'SALDOS_Y_ENTIDADES', label:'SALDOS_Y_ENTIDADES', desc:'Saldos y ganancia latente' },
-  ],
-  macro: [
-    { id:'GuardarLote', label:'GuardarLote', desc:'Graba lote validado' },
-    { id:'LimpiarRegistro', label:'LimpiarRegistro', desc:'Resetea formulario' },
-    { id:'ActualizarTasaVigente', label:'ActualizarTasaVigente', desc:'Diálogo cambio tasa' },
-    { id:'ActualizarTasaVigenteDesde', label:'ActualizarTasaVigenteDesde', desc:'Tasa parametrizada' },
-    { id:'GenerarAsientoPacto', label:'GenerarAsientoPacto', desc:'Asiento de pacto' },
-    { id:'RevalorizarCuenta', label:'RevalorizarCuenta', desc:'Ganancia latente' },
-    { id:'LoteAnterior', label:'LoteAnterior', desc:'Navega atrás' },
-    { id:'LoteSiguiente', label:'LoteSiguiente', desc:'Navega adelante' },
-    { id:'AccionSobreLoteVisible', label:'AccionSobreLoteVisible', desc:'Corrige o duplica' },
-    { id:'CorregirLoteConID', label:'CorregirLoteConID', desc:'Anula y recarga' },
-    { id:'DuplicarLoteConID', label:'DuplicarLoteConID', desc:'Clona al formulario' },
-    { id:'Helpers', label:'Helpers', desc:'colIdx + EscribirLinea' },
-  ],
-  tabla: [
-    { id:'tb_registro_rapido', label:'tb_registro_rapido', desc:'9 cols - entrada' },
-    { id:'tb_mayor', label:'tb_mayor', desc:'19 cols - asientos' },
-    { id:'tb_tasas_vigentes', label:'tb_tasas_vigentes', desc:'Tasas actuales' },
-    { id:'tb_tasas_historial', label:'tb_tasas_historial', desc:'Bitácora tasas' },
-    { id:'tb_cuentas', label:'tb_cuentas', desc:'Catálogo cuentas' },
-    { id:'tb_entidades', label:'tb_entidades', desc:'Catálogo entidades' },
-    { id:'tb_divisas', label:'tb_divisas', desc:'Catálogo divisas' },
-    { id:'tb_categorias', label:'tb_categorias', desc:'Catálogo categorías' },
-    { id:'tb_segmentos', label:'tb_segmentos', desc:'Catálogo segmentos' },
-    { id:'tb_clase_cuenta', label:'tb_clase_cuenta', desc:'Catálogo clases' },
-  ],
-  regla: [
-    { id:'AlertaSpread', label:'AlertaSpread', desc:'Umbral 3% spread' },
-  ],
-  socio: [
-    { id:'Socio01', label:'Socio01', desc:'Socio del negocio' },
-    { id:'Socio02', label:'Socio02', desc:'Socia del negocio' },
-    { id:'Socio03', label:'Socio03', desc:'Socia del negocio' },
-  ],
-  cuenta: [
-    { id:'Utilidad_Distribuible', label:'Utilidad Distribuible', desc:'Débito único en asiento de pacto' },
-    { id:'Cta_Corriente_Socio01', label:'Cta. Corriente Socio01', desc:'Crédito en pacto a Socio01' },
-    { id:'Cta_Corriente_Socio02', label:'Cta. Corriente Socio02', desc:'Crédito en pacto a Socio02' },
-    { id:'Cta_Corriente_Socio03', label:'Cta. Corriente Socio03', desc:'Crédito en pacto a Socio03' },
-    { id:'Ganancia_por_Revalorizacion', label:'Ganancia por Revalorización', desc:'Crédito en revaluación (+)' },
-    { id:'Perdida_por_Revalorizacion', label:'Pérdida por Revalorización', desc:'Débito en revaluación (−)' },
-  ],
-};
-
-const BASE_RELATIONS = [
-  // Flujo captura
-  { from:'REGISTRO_RAPIDO', to:'GuardarLote', label:'dispara' },
-  { from:'REGISTRO_RAPIDO', to:'LimpiarRegistro', label:'dispara' },
-  { from:'REGISTRO_RAPIDO', to:'GenerarAsientoPacto', label:'dispara' },
-  { from:'REGISTRO_RAPIDO', to:'RevalorizarCuenta', label:'dispara' },
-  { from:'REGISTRO_RAPIDO', to:'tb_registro_rapido', label:'lee/escribe' },
-  // GuardarLote
-  { from:'GuardarLote', to:'LIBRO_MAYOR', label:'escribe' },
-  { from:'GuardarLote', to:'TASAS', label:'registra' },
-  { from:'GuardarLote', to:'tb_mayor', label:'inserta filas' },
-  { from:'GuardarLote', to:'Helpers', label:'usa' },
-  // Tasas
-  { from:'TASAS', to:'AlertaSpread', label:'evalúa' },
-  { from:'AlertaSpread', to:'ActualizarTasaVigente', label:'sugiere' },
-  { from:'ActualizarTasaVigente', to:'ActualizarTasaVigenteDesde', label:'delega en' },
-  { from:'ActualizarTasaVigenteDesde', to:'tb_tasas_vigentes', label:'actualiza' },
-  { from:'ActualizarTasaVigenteDesde', to:'tb_tasas_historial', label:'registra' },
-  // Auditor
-  { from:'AUDITOR_LOTES', to:'LoteAnterior', label:'botón' },
-  { from:'AUDITOR_LOTES', to:'LoteSiguiente', label:'botón' },
-  { from:'AUDITOR_LOTES', to:'AccionSobreLoteVisible', label:'botón' },
-  { from:'AccionSobreLoteVisible', to:'CorregirLoteConID', label:'si anulado' },
-  { from:'AccionSobreLoteVisible', to:'DuplicarLoteConID', label:'si válido' },
-  { from:'CorregirLoteConID', to:'tb_mayor', label:'anula líneas' },
-  { from:'DuplicarLoteConID', to:'REGISTRO_RAPIDO', label:'precarga' },
-  // Resultados
-  { from:'RevalorizarCuenta', to:'SALDOS_Y_ENTIDADES', label:'alimenta' },
-  { from:'REPORTE_BARRIDO', to:'LIBRO_MAYOR', label:'lee de' },
-  { from:'SALDOS_Y_ENTIDADES', to:'tb_mayor', label:'agrupa' },
-  // Catálogos
-  { from:'tb_cuentas', to:'REGISTRO_RAPIDO', label:'dropdown' },
-  { from:'tb_divisas', to:'REGISTRO_RAPIDO', label:'dropdown' },
-  { from:'tb_segmentos', to:'REGISTRO_RAPIDO', label:'dropdown' },
-  { from:'tb_categorias', to:'REGISTRO_RAPIDO', label:'dropdown' },
-  { from:'tb_clase_cuenta', to:'tb_cuentas', label:'clasifica' },
-  { from:'tb_entidades', to:'REGISTRO_RAPIDO', label:'dropdown' },
-  // Socios → sus cuentas
-  { from:'Socio01', to:'Cta_Corriente_Socio01', label:'titular' },
-  { from:'Socio02', to:'Cta_Corriente_Socio02', label:'titular' },
-  { from:'Socio03', to:'Cta_Corriente_Socio03', label:'titular' },
-  // REPORTE_BARRIDO → socios
-  { from:'REPORTE_BARRIDO', to:'Socio01', label:'B29 asignación' },
-  { from:'REPORTE_BARRIDO', to:'Socio02', label:'B30 asignación' },
-  { from:'REPORTE_BARRIDO', to:'Socio03', label:'B31 asignación' },
-  // Pacto (GenerarAsientoPacto)
-  { from:'GenerarAsientoPacto', to:'Utilidad_Distribuible', label:'débito' },
-  { from:'GenerarAsientoPacto', to:'Cta_Corriente_Socio01', label:'crédito' },
-  { from:'GenerarAsientoPacto', to:'Cta_Corriente_Socio02', label:'crédito' },
-  { from:'GenerarAsientoPacto', to:'Cta_Corriente_Socio03', label:'crédito' },
-  // Revalorización
-  { from:'RevalorizarCuenta', to:'Ganancia_por_Revalorizacion', label:'si ganancia' },
-  { from:'RevalorizarCuenta', to:'Perdida_por_Revalorizacion', label:'si pérdida' },
-  // Cuentas → tb_cuentas (pertenecen al catálogo)
-  { from:'tb_cuentas', to:'Utilidad_Distribuible', label:'contiene' },
-  { from:'tb_cuentas', to:'Cta_Corriente_Socio01', label:'contiene' },
-  { from:'tb_cuentas', to:'Cta_Corriente_Socio02', label:'contiene' },
-  { from:'tb_cuentas', to:'Cta_Corriente_Socio03', label:'contiene' },
-  { from:'tb_cuentas', to:'Ganancia_por_Revalorizacion', label:'contiene' },
-  { from:'tb_cuentas', to:'Perdida_por_Revalorizacion', label:'contiene' },
-];
-
-const STYLES = {
-  hoja:  { bg:'#E1F5EE', border:'#0F6E56', text:'#04342C' },
-  macro: { bg:'#EEEDFE', border:'#534AB7', text:'#26215C' },
-  tabla: { bg:'#FAECE7', border:'#C34416', text:'#4A1B0C' },
-  regla: { bg:'#FAEEDA', border:'#854F0B', text:'#412402' },
-  socio: { bg:'#DCE7FA', border:'#1E47AE', text:'#0F2458' },
-  cuenta:{ bg:'#EFE1FA', border:'#6B2E9B', text:'#35154E' },
-  issue: { bg:'#FFF4D6', border:'#B08500', text:'#5a3e00' },
-};
-
-/* ============================================================
    ESTADO GLOBAL
+   Schema  = oficial (nodos + relaciones confirmados)
+   Draft   = borrador (propuestas de addNode/addEdge/removeNode/removeEdge)
+   Layout  = posiciones de nodos
    ============================================================ */
-let graph;
-let layoutData = { positions: {}, customNodes: [], customEdges: [] };
+let schema = { nodeTypes: {}, nodes: [], relations: [] };
+let schemaSha = null;
+let draft  = { addNodes: [], addEdges: [], removeNodes: [], removeEdges: [] };
+let draftSha = null;
+let layoutData = { positions: {} };
 let layoutSha = null;
+
+let graph;
 let linkMode = false;
 let linkSource = null;
+let pendingIdeaAnchor = null;
 
 /* ============================================================
    API HELPERS
@@ -356,7 +219,6 @@ function authHeaders() {
   if (token) h['Authorization'] = 'Bearer ' + token;
   return h;
 }
-
 async function apiGet(path) {
   const r = await fetch(API + path, { headers: authHeaders() });
   if (!r.ok) throw new Error('GET ' + path + ' → ' + r.status);
@@ -373,6 +235,33 @@ async function apiPut(path, body) {
   const r = await fetch(API + path, { method: 'PUT', headers: h, body: JSON.stringify(body) });
   if (!r.ok) throw new Error('PUT ' + path + ' → ' + r.status + ' ' + await r.text());
   return r.json();
+}
+
+/* ============================================================
+   CARGA DE ARCHIVOS (schema, draft, layout)
+   ============================================================ */
+async function loadJsonFile(path, defaultVal) {
+  try {
+    const r = await fetch(API + '/contents/' + path + '?t=' + Date.now(), { headers: authHeaders() });
+    if (r.status === 404) return { data: defaultVal, sha: null };
+    if (!r.ok) throw new Error('fetch ' + path + ': ' + r.status);
+    const json = await r.json();
+    const decoded = atob(json.content.replace(/\s/g, ''));
+    const data = JSON.parse(decodeURIComponent(escape(decoded)));
+    return { data, sha: json.sha };
+  } catch (e) {
+    console.warn(path + ' no disponible:', e);
+    return { data: defaultVal, sha: null };
+  }
+}
+
+async function saveJsonFile(path, data, sha, message) {
+  const content = JSON.stringify(data, null, 2);
+  const encoded = btoa(unescape(encodeURIComponent(content)));
+  const body = { message, content: encoded, branch: 'main' };
+  if (sha) body.sha = sha;
+  const r = await apiPut('/contents/' + path, body);
+  return r.content.sha;
 }
 
 /* ============================================================
@@ -394,80 +283,51 @@ async function loadIssues() {
 }
 
 /* ============================================================
-   CARGAR / GUARDAR LAYOUT.JSON
+   RESOLUCIÓN: combinar schema + draft
+   Retorna la vista efectiva (qué nodos/edges ve el usuario)
    ============================================================ */
-async function loadLayout() {
-  try {
-    const r = await fetch(API + '/contents/' + LAYOUT_PATH, { headers: authHeaders() });
-    if (r.status === 404) {
-      layoutData = { positions: {}, customNodes: [], customEdges: [] };
-      layoutSha = null;
-      return;
-    }
-    if (!r.ok) throw new Error('No se pudo leer layout.json');
-    const json = await r.json();
-    layoutSha = json.sha;
-    const decoded = atob(json.content.replace(/\s/g, ''));
-    layoutData = JSON.parse(decodeURIComponent(escape(decoded)));
-    layoutData.positions = layoutData.positions || {};
-    layoutData.customNodes = layoutData.customNodes || [];
-    layoutData.customEdges = layoutData.customEdges || [];
-  } catch (e) {
-    console.warn('layout.json no disponible:', e);
-    layoutData = { positions: {}, customNodes: [], customEdges: [] };
-    layoutSha = null;
-  }
+function getEffectiveNodes() {
+  // Start with schema nodes, remove ones in removeNodes, add draft addNodes
+  const removed = new Set(draft.removeNodes || []);
+  const base = schema.nodes.filter(n => !removed.has(n.id)).map(n => ({ ...n, kind: 'system' }));
+  const added = (draft.addNodes || []).map(n => ({ ...n, kind: 'draft-add' }));
+  return [...base, ...added];
 }
 
-async function saveLayout() {
-  if (!token) { alert('Necesitás token guardado en el panel v2 para guardar layout'); return; }
-  graph.nodes().forEach(n => {
-    const p = n.position();
-    layoutData.positions[n.id()] = { x: Math.round(p.x), y: Math.round(p.y) };
-  });
-  const content = JSON.stringify(layoutData, null, 2);
-  const encoded = btoa(unescape(encodeURIComponent(content)));
-  const body = { message: 'mapa: actualizar layout', content: encoded, branch: 'main' };
-  if (layoutSha) body.sha = layoutSha;
-  try {
-    setStatus('Guardando layout...');
-    const r = await apiPut('/contents/' + LAYOUT_PATH, body);
-    layoutSha = r.content.sha;
-    setStatus('Layout guardado ✓');
-  } catch (e) {
-    setStatus('Error al guardar: ' + e.message);
-  }
+function getEffectiveRelations() {
+  // La edge key es "from|to|label" (ignoramos order dentro de pares distintos)
+  const keyOf = e => (e.from || e.source) + '|' + (e.to || e.target) + '|' + (e.label || '');
+  const removed = new Set((draft.removeEdges || []).map(keyOf));
+  const base = schema.relations
+    .filter(r => !removed.has(keyOf(r)))
+    .map(r => ({ ...r, kind: 'system' }));
+  const added = (draft.addEdges || []).map(e => ({ ...e, kind: 'draft-add' }));
+  return [...base, ...added];
 }
 
 /* ============================================================
-   CONSTRUIR DATA DEL GRAFO
+   CONSTRUIR DATA DE CYTOSCAPE
    ============================================================ */
 function buildGraphData(issues) {
   const nodes = [];
   const edges = [];
 
-  Object.keys(CATALOG).forEach(type => {
-    CATALOG[type].forEach(n => {
-      nodes.push(makeNodeData(type + ':' + n.id, n.label, n.desc, type, 'system'));
-    });
+  getEffectiveNodes().forEach(n => {
+    nodes.push({ data: { id: n.id, label: n.label || n.id, desc: n.desc || '', type: n.type, kind: n.kind } });
   });
 
-  layoutData.customNodes.forEach(n => {
-    nodes.push(makeNodeData(n.id, n.label, n.desc || '', n.type, 'custom'));
+  getEffectiveRelations().forEach((r, idx) => {
+    const fromId = r.from;
+    const toId = r.to;
+    edges.push({ data: {
+      id: 'rel-' + idx + '-' + fromId + '-' + toId,
+      source: fromId, target: toId,
+      label: r.label || '',
+      kind: r.kind === 'draft-add' ? 'draft' : 'system'
+    }});
   });
 
-  BASE_RELATIONS.forEach((r, idx) => {
-    const fromId = findNodeId(r.from);
-    const toId = findNodeId(r.to);
-    if (fromId && toId) {
-      edges.push({ data: { id: 'sys-edge-' + idx, source: fromId, target: toId, label: r.label || '', kind: 'system' } });
-    }
-  });
-
-  layoutData.customEdges.forEach((e, idx) => {
-    edges.push({ data: { id: 'custom-edge-' + idx, source: e.source, target: e.target, label: e.label || '', kind: 'custom' } });
-  });
-
+  // Issues
   issues.forEach(iss => {
     nodes.push({
       data: {
@@ -477,13 +337,14 @@ function buildGraphData(issues) {
       }
     });
     iss.anchors.forEach((a, i) => {
-      const targetId = findNodeId(a.id);
-      if (targetId) {
-        edges.push({ data: { id: 'issue-edge-' + iss.number + '-' + i, source: 'issue:' + iss.number, target: targetId, kind: 'issue' } });
+      // Issue apunta al nodo con id = a.id (debe existir en schema o draft)
+      if (nodes.some(n => n.data.id === a.id)) {
+        edges.push({ data: { id: 'issue-edge-' + iss.number + '-' + i, source: 'issue:' + iss.number, target: a.id, kind: 'issue' } });
       }
     });
   });
 
+  // Aplicar posiciones guardadas
   nodes.forEach(n => {
     if (layoutData.positions[n.data.id]) n.position = layoutData.positions[n.data.id];
   });
@@ -491,49 +352,38 @@ function buildGraphData(issues) {
   return { nodes, edges };
 }
 
-function makeNodeData(id, label, desc, type, kind) {
-  return { data: { id, label, desc, type, kind } };
-}
-
-function findNodeId(plainId) {
-  for (const type of Object.keys(CATALOG)) {
-    if (CATALOG[type].some(n => n.id === plainId)) return type + ':' + plainId;
-  }
-  const custom = layoutData.customNodes.find(n => n.id.endsWith(':' + plainId) || n.id === plainId);
-  if (custom) return custom.id;
-  return null;
-}
-
 function truncate(s, n) { return s.length > n ? s.slice(0, n - 1) + '…' : s; }
 
 /* ============================================================
-   INICIALIZAR GRAFO
+   INICIALIZAR CYTOSCAPE
    ============================================================ */
 function initGraph(nodes, edges) {
   const hasPositions = Object.keys(layoutData.positions).length > 0;
+  const nodeTypes = schema.nodeTypes || {};
+
   graph = cytoscape({
     container: document.getElementById('graph'),
     elements: [...nodes, ...edges],
     style: [
-      { selector: 'node[kind = "system"], node[kind = "custom"]', style: {
-        'shape': 'round-rectangle',
-        'background-color': ele => STYLES[ele.data('type')]?.bg || '#eee',
-        'border-color': ele => STYLES[ele.data('type')]?.border || '#888',
+      { selector: 'node[kind = "system"], node[kind = "draft-add"]', style: {
+        'shape': ele => nodeTypes[ele.data('type')]?.shape || 'round-rectangle',
+        'background-color': ele => nodeTypes[ele.data('type')]?.bg || '#eee',
+        'border-color': ele => nodeTypes[ele.data('type')]?.border || '#888',
         'border-width': 1.5,
-        'border-style': ele => ele.data('kind') === 'custom' ? 'dotted' : 'solid',
+        'border-style': ele => ele.data('kind') === 'draft-add' ? 'dotted' : 'solid',
         'label': 'data(label)',
-        'color': ele => STYLES[ele.data('type')]?.text || '#333',
+        'color': ele => nodeTypes[ele.data('type')]?.text || '#333',
         'font-size': 11, 'font-weight': 500,
         'text-valign': 'center', 'text-halign': 'center',
         'width': 'label', 'height': 32, 'padding': '10px',
         'text-wrap': 'wrap', 'text-max-width': 140,
       }},
-      { selector: 'node[type = "socio"]', style: { 'shape': 'ellipse', 'width': 60, 'height': 60 } },
+      { selector: 'node[type = "socio"]', style: { 'width': 60, 'height': 60 } },
       { selector: 'node[kind = "issue"]', style: {
         'shape': 'round-rectangle',
-        'background-color': STYLES.issue.bg, 'border-color': STYLES.issue.border,
+        'background-color': '#FFF4D6', 'border-color': '#B08500',
         'border-width': 1.5, 'border-style': 'dashed',
-        'label': 'data(label)', 'color': STYLES.issue.text,
+        'label': 'data(label)', 'color': '#5a3e00',
         'font-size': 10, 'text-valign': 'center', 'text-halign': 'center',
         'width': 'label', 'height': 26, 'padding': '6px',
         'text-wrap': 'wrap', 'text-max-width': 180,
@@ -545,17 +395,17 @@ function initGraph(nodes, edges) {
         'font-size': 9, 'color': '#888',
         'text-background-color': '#fff', 'text-background-opacity': 0.85, 'text-background-padding': 2,
       }},
-      { selector: 'edge[kind = "custom"]', style: {
-        'width': 1.5, 'line-color': '#185FA5',
-        'target-arrow-color': '#185FA5', 'target-arrow-shape': 'triangle',
+      { selector: 'edge[kind = "draft"]', style: {
+        'width': 1.8, 'line-color': '#B08500', 'line-style': 'dashed',
+        'target-arrow-color': '#B08500', 'target-arrow-shape': 'triangle',
         'curve-style': 'bezier', 'label': 'data(label)',
-        'font-size': 9, 'color': '#185FA5',
+        'font-size': 9, 'color': '#B08500',
         'text-background-color': '#fff', 'text-background-opacity': 0.85, 'text-background-padding': 2,
       }},
       { selector: 'edge[kind = "issue"]', style: {
         'width': 1, 'line-color': '#B08500', 'line-style': 'dashed',
         'target-arrow-color': '#B08500', 'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier', 'opacity': 0.6,
+        'curve-style': 'bezier', 'opacity': 0.5,
       }},
       { selector: ':selected', style: { 'border-width': 3, 'border-color': '#185FA5', 'line-color': '#185FA5' } },
     ],
@@ -572,44 +422,45 @@ function initGraph(nodes, edges) {
   graph.on('tap', 'node', evt => {
     if (!linkMode) return;
     const node = evt.target;
+    if (node.data('kind') === 'issue') return;
     if (!linkSource) {
       linkSource = node;
       node.style({ 'border-color': '#0a0', 'border-width': 4 });
       setStatus('Origen: ' + node.data('label') + ' — click ahora en el destino');
     } else if (linkSource.id() !== node.id()) {
-      createCustomEdge(linkSource.id(), node.id());
+      createDraftEdge(linkSource.id(), node.id());
       linkSource.removeStyle();
       linkSource = null;
       toggleLinkMode();
     }
   });
 
-  graph.on('mouseover', 'node', evt => {
-    const d = evt.target.data();
-    setStatus(d.desc || d.label);
-  });
+  graph.on('mouseover', 'node', evt => setStatus(evt.target.data('desc') || evt.target.data('label')));
   graph.on('mouseout', 'node', () => { if (!linkMode) setStatus(''); });
 }
 
 /* ============================================================
-   ACCIONES DE EDICIÓN
+   ACCIONES DE BORRADOR
    ============================================================ */
 function openAddNodeModal() { openModal('modal-node'); }
 
 function confirmAddNode() {
   const type = document.getElementById('node-type').value;
-  const name = document.getElementById('node-name').value.trim();
+  const id = document.getElementById('node-name').value.trim();
+  const label = document.getElementById('node-label').value.trim() || id;
   const desc = document.getElementById('node-desc').value.trim();
-  if (!name) { alert('Falta el nombre'); return; }
-  if (/[\s'"\\\/]/.test(name)) { alert('Sin espacios ni caracteres especiales'); return; }
-  const id = type + ':' + name;
-  if (graph.getElementById(id).length) { alert('Ya existe un nodo con ese id'); return; }
-  layoutData.customNodes.push({ id, label: name, desc, type });
-  graph.add({ data: { id, label: name, desc, type, kind: 'custom' }, position: { x: 200, y: 200 } });
+  if (!id) { alert('Falta el ID'); return; }
+  if (/[\s'"\\\/]/.test(id)) { alert('El ID no puede tener espacios ni caracteres especiales'); return; }
+  const allIds = getEffectiveNodes().map(n => n.id);
+  if (allIds.includes(id)) { alert('Ya existe un nodo con ese ID'); return; }
+  draft.addNodes = draft.addNodes || [];
+  draft.addNodes.push({ id, type, label, desc });
   document.getElementById('node-name').value = '';
+  document.getElementById('node-label').value = '';
   document.getElementById('node-desc').value = '';
   closeModal('modal-node');
-  setStatus('Nodo agregado: ' + name + ' (acordate de Guardar layout)');
+  rerender();
+  setStatus('Nodo agregado al BORRADOR: ' + id);
 }
 
 function toggleLinkMode() {
@@ -617,7 +468,7 @@ function toggleLinkMode() {
   const btn = document.getElementById('btn-link');
   if (linkMode) {
     btn.classList.add('active'); btn.textContent = '✕ Cancelar conexión';
-    setStatus('Modo conexión: click en el nodo ORIGEN');
+    setStatus('Modo conexión: click en el nodo ORIGEN (no issues)');
   } else {
     btn.classList.remove('active'); btn.textContent = '+ Conexión';
     if (linkSource) { linkSource.removeStyle(); linkSource = null; }
@@ -625,51 +476,161 @@ function toggleLinkMode() {
   }
 }
 
-function createCustomEdge(sourceId, targetId) {
+function createDraftEdge(sourceId, targetId) {
   const label = prompt('Etiqueta de la conexión (opcional):', '') || '';
-  layoutData.customEdges.push({ source: sourceId, target: targetId, label });
-  const id = 'custom-edge-' + Date.now();
-  graph.add({ data: { id, source: sourceId, target: targetId, label, kind: 'custom' } });
-  setStatus('Conexión creada (acordate de Guardar layout)');
+  draft.addEdges = draft.addEdges || [];
+  draft.addEdges.push({ from: sourceId, to: targetId, label });
+  rerender();
+  setStatus('Conexión agregada al BORRADOR');
 }
 
 function deleteSelected() {
   const sel = graph.$(':selected');
   if (sel.length === 0) { alert('Seleccioná primero un nodo o flecha'); return; }
-  if (!confirm('¿Eliminar ' + sel.length + ' elemento(s) del mapa?')) return;
+  const msg = sel.length + ' elemento(s) se marcarán para eliminación en el borrador. ¿Continuar?';
+  if (!confirm(msg)) return;
+
   sel.forEach(el => {
-    const id = el.id();
     if (el.isNode()) {
-      if (el.data('kind') !== 'custom') { alert('No podés eliminar nodos del sistema base. Solo nodos agregados manualmente.'); return; }
-      layoutData.customNodes = layoutData.customNodes.filter(n => n.id !== id);
-      delete layoutData.positions[id];
+      if (el.data('kind') === 'issue') { alert('Los Issues se cierran desde el panel v2, no desde acá.'); return; }
+      const id = el.id();
+      if (el.data('kind') === 'draft-add') {
+        draft.addNodes = (draft.addNodes || []).filter(n => n.id !== id);
+      } else {
+        draft.removeNodes = draft.removeNodes || [];
+        if (!draft.removeNodes.includes(id)) draft.removeNodes.push(id);
+      }
     } else if (el.isEdge()) {
-      if (el.data('kind') !== 'custom') { alert('No podés eliminar conexiones del sistema base.'); return; }
-      const s = el.data('source'), t = el.data('target'), l = el.data('label');
-      layoutData.customEdges = layoutData.customEdges.filter(e => !(e.source === s && e.target === t && (e.label || '') === (l || '')));
+      if (el.data('kind') === 'issue') { alert('Las conexiones de Issues vienen de labels. Se cambian editando el Issue.'); return; }
+      const s = el.data('source'), t = el.data('target'), l = el.data('label') || '';
+      if (el.data('kind') === 'draft') {
+        draft.addEdges = (draft.addEdges || []).filter(e => !(e.from === s && e.to === t && (e.label || '') === l));
+      } else {
+        draft.removeEdges = draft.removeEdges || [];
+        if (!draft.removeEdges.some(e => e.from === s && e.to === t && (e.label || '') === l)) {
+          draft.removeEdges.push({ from: s, to: t, label: l });
+        }
+      }
     }
-    graph.remove(el);
   });
-  setStatus('Eliminado (acordate de Guardar layout)');
+  rerender();
+  setStatus('Eliminación pendiente en el BORRADOR');
 }
 
 /* ============================================================
-   CREAR ISSUE (idea anclada)
+   GUARDAR / APLICAR / DESCARTAR BORRADOR
    ============================================================ */
-let pendingIdeaAnchor = null;
+async function saveDraft() {
+  if (!token) { alert('Necesitás token guardado en panel v2'); return; }
+  try {
+    setStatus('Guardando borrador...');
+    draftSha = await saveJsonFile(DRAFT_PATH, draft, draftSha, 'mapa: guardar borrador');
+    setStatus('Borrador guardado ✓');
+    updateDraftUI();
+  } catch (e) { setStatus('Error: ' + e.message); }
+}
 
+function openApplyModal() {
+  const preview = [];
+  if (draft.addNodes?.length) preview.push('<b>' + draft.addNodes.length + ' nodos nuevos:</b><br>' + draft.addNodes.map(n => '&nbsp;&nbsp;+ ' + n.type + ':' + n.id + ' (' + (n.label || n.id) + ')').join('<br>'));
+  if (draft.addEdges?.length) preview.push('<b>' + draft.addEdges.length + ' conexiones nuevas:</b><br>' + draft.addEdges.map(e => '&nbsp;&nbsp;+ ' + e.from + ' → ' + e.to + (e.label ? ' (' + e.label + ')' : '')).join('<br>'));
+  if (draft.removeNodes?.length) preview.push('<b>' + draft.removeNodes.length + ' nodos a eliminar:</b><br>' + draft.removeNodes.map(id => '&nbsp;&nbsp;− ' + id).join('<br>'));
+  if (draft.removeEdges?.length) preview.push('<b>' + draft.removeEdges.length + ' conexiones a eliminar:</b><br>' + draft.removeEdges.map(e => '&nbsp;&nbsp;− ' + e.from + ' → ' + e.to).join('<br>'));
+  if (preview.length === 0) { alert('El borrador está vacío'); return; }
+  document.getElementById('apply-preview').innerHTML = preview.join('<br><br>');
+  openModal('modal-apply');
+}
+
+function applyDraftToSchema() { openApplyModal(); }
+
+async function confirmApplyDraft() {
+  if (!token) { alert('Necesitás token'); return; }
+  try {
+    setStatus('Aplicando borrador al esquema...');
+
+    // 1. Clonar schema para no mutarlo en memoria
+    const newSchema = JSON.parse(JSON.stringify(schema));
+
+    // 2. Remover nodos (y sus relaciones dependientes)
+    const removeNodeIds = new Set(draft.removeNodes || []);
+    newSchema.nodes = newSchema.nodes.filter(n => !removeNodeIds.has(n.id));
+    newSchema.relations = newSchema.relations.filter(r => !removeNodeIds.has(r.from) && !removeNodeIds.has(r.to));
+
+    // 3. Remover relaciones específicas
+    const keyOf = e => e.from + '|' + e.to + '|' + (e.label || '');
+    const removeEdgeKeys = new Set((draft.removeEdges || []).map(keyOf));
+    newSchema.relations = newSchema.relations.filter(r => !removeEdgeKeys.has(keyOf(r)));
+
+    // 4. Agregar nodos
+    (draft.addNodes || []).forEach(n => {
+      if (!newSchema.nodes.some(x => x.id === n.id)) newSchema.nodes.push(n);
+    });
+
+    // 5. Agregar relaciones
+    (draft.addEdges || []).forEach(e => {
+      if (!newSchema.relations.some(r => r.from === e.from && r.to === e.to && (r.label || '') === (e.label || ''))) {
+        newSchema.relations.push({ from: e.from, to: e.to, label: e.label || '' });
+      }
+    });
+
+    // 6. Commit nuevo schema
+    schemaSha = await saveJsonFile(SCHEMA_PATH, newSchema, schemaSha, 'mapa: aplicar borrador al esquema');
+    schema = newSchema;
+
+    // 7. Vaciar draft
+    draft = { addNodes: [], addEdges: [], removeNodes: [], removeEdges: [] };
+    draftSha = await saveJsonFile(DRAFT_PATH, draft, draftSha, 'mapa: limpiar borrador tras aplicar');
+
+    closeModal('modal-apply');
+    rerender();
+    setStatus('Borrador aplicado al esquema ✓');
+  } catch (e) { setStatus('Error: ' + e.message); }
+}
+
+async function discardDraft() {
+  if (!isDraftEmpty() && !confirm('¿Descartar todos los cambios del borrador?')) return;
+  draft = { addNodes: [], addEdges: [], removeNodes: [], removeEdges: [] };
+  if (token) {
+    try { draftSha = await saveJsonFile(DRAFT_PATH, draft, draftSha, 'mapa: descartar borrador'); }
+    catch (e) { console.warn(e); }
+  }
+  rerender();
+  setStatus('Borrador descartado');
+}
+
+function isDraftEmpty() {
+  return !(draft.addNodes?.length || draft.addEdges?.length || draft.removeNodes?.length || draft.removeEdges?.length);
+}
+
+/* ============================================================
+   LAYOUT (posiciones)
+   ============================================================ */
+async function saveLayout() {
+  if (!token) { alert('Necesitás token'); return; }
+  graph.nodes().forEach(n => {
+    const p = n.position();
+    layoutData.positions[n.id()] = { x: Math.round(p.x), y: Math.round(p.y) };
+  });
+  try {
+    setStatus('Guardando posiciones...');
+    layoutSha = await saveJsonFile(LAYOUT_PATH, layoutData, layoutSha, 'mapa: actualizar posiciones');
+    setStatus('Posiciones guardadas ✓');
+  } catch (e) { setStatus('Error: ' + e.message); }
+}
+
+/* ============================================================
+   CREAR ISSUE (idea anclada a nodo seleccionado)
+   ============================================================ */
 function openAddIdeaModal() {
-  if (!token) { alert('Necesitás token para crear issues. Pegalo en el panel v2.'); return; }
+  if (!token) { alert('Necesitás token para crear issues'); return; }
   const sel = graph.$('node[kind != "issue"]:selected');
   if (sel.length === 0) {
     if (!confirm('No hay nodo seleccionado. ¿Crear idea sin ancla?')) return;
     pendingIdeaAnchor = null;
-    document.getElementById('idea-anchor-info').textContent = 'Sin ancla (será un Issue suelto)';
+    document.getElementById('idea-anchor-info').textContent = 'Sin ancla (Issue suelto)';
   } else {
     const n = sel[0];
-    // Para socios/cuentas, usar el id plano (sin espacios) — el label puede tener espacios
-    const plainId = n.id().split(':')[1];
-    pendingIdeaAnchor = { type: n.data('type'), id: plainId };
+    pendingIdeaAnchor = { type: n.data('type'), id: n.id() };
     document.getElementById('idea-anchor-info').textContent = 'Ancla: ' + pendingIdeaAnchor.type + ':' + pendingIdeaAnchor.id;
   }
   openModal('modal-idea');
@@ -690,9 +651,7 @@ async function confirmAddIdea() {
     closeModal('modal-idea');
     await loadAll();
     setStatus('Issue creado ✓');
-  } catch (e) {
-    setStatus('Error: ' + e.message);
-  }
+  } catch (e) { setStatus('Error: ' + e.message); }
 }
 
 /* ============================================================
@@ -710,22 +669,65 @@ function runLayout(name) {
   graph.layout(opts).run();
 }
 
+function updateDraftUI() {
+  const has = !isDraftEmpty();
+  document.getElementById('draft-badge').style.display = has ? 'inline-block' : 'none';
+  const sum = document.getElementById('draft-summary');
+  if (!has) { sum.style.display = 'none'; return; }
+  const parts = [];
+  if (draft.addNodes?.length) parts.push('+' + draft.addNodes.length + ' nodos');
+  if (draft.addEdges?.length) parts.push('+' + draft.addEdges.length + ' conexiones');
+  if (draft.removeNodes?.length) parts.push('−' + draft.removeNodes.length + ' nodos');
+  if (draft.removeEdges?.length) parts.push('−' + draft.removeEdges.length + ' conexiones');
+  sum.innerHTML = '<b>Borrador:</b> ' + parts.join(' · ') + ' pendientes de aplicar';
+  sum.style.display = 'block';
+}
+
+async function rerender() {
+  updateDraftUI();
+  try {
+    const issues = await loadIssues();
+    const { nodes, edges } = buildGraphData(issues);
+    const positions = {};
+    if (graph) graph.nodes().forEach(n => positions[n.id()] = n.position());
+    if (graph) graph.destroy();
+    // preservar posiciones del momento
+    nodes.forEach(n => { if (positions[n.data.id]) n.position = positions[n.data.id]; });
+    initGraph(nodes, edges);
+  } catch (e) { setStatus('Error rerender: ' + e.message); }
+}
+
 /* ============================================================
    ARRANQUE
    ============================================================ */
 async function loadAll() {
   try {
-    setStatus('Cargando...');
+    setStatus('Cargando schema, borrador, layout, issues...');
     if (!token) document.getElementById('no-token-banner').style.display = 'block';
-    await loadLayout();
+
+    const [s, d, l] = await Promise.all([
+      loadJsonFile(SCHEMA_PATH, { nodeTypes: {}, nodes: [], relations: [] }),
+      loadJsonFile(DRAFT_PATH,  { addNodes: [], addEdges: [], removeNodes: [], removeEdges: [] }),
+      loadJsonFile(LAYOUT_PATH, { positions: {} }),
+    ]);
+    schema = s.data; schemaSha = s.sha;
+    draft  = d.data; draftSha  = d.sha;
+    layoutData = l.data; layoutSha = l.sha;
+
+    // defaults seguros
+    draft.addNodes = draft.addNodes || [];
+    draft.addEdges = draft.addEdges || [];
+    draft.removeNodes = draft.removeNodes || [];
+    draft.removeEdges = draft.removeEdges || [];
+    layoutData.positions = layoutData.positions || {};
+
     const issues = await loadIssues();
     const { nodes, edges } = buildGraphData(issues);
     if (graph) graph.destroy();
     initGraph(nodes, edges);
+    updateDraftUI();
     setStatus('Listo: ' + nodes.length + ' nodos · ' + edges.length + ' conexiones · ' + issues.length + ' issues');
-  } catch (e) {
-    setStatus('Error: ' + e.message);
-  }
+  } catch (e) { setStatus('Error: ' + e.message); }
 }
 
 document.querySelectorAll('.modal-bg').forEach(el => {
