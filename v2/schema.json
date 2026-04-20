@@ -2,129 +2,574 @@
   "version": 1,
   "description": "Esquema oficial del sistema contable. Fuente única de verdad leída por mapa.html e index.html del panel v2. Editar vía borrador (draft.json) y aplicar desde el mapa.",
   "nodeTypes": {
-    "hoja":   { "bg": "#E1F5EE", "border": "#0F6E56", "text": "#04342C", "shape": "round-rectangle" },
-    "macro":  { "bg": "#EEEDFE", "border": "#534AB7", "text": "#26215C", "shape": "round-rectangle" },
-    "tabla":  { "bg": "#FAECE7", "border": "#C34416", "text": "#4A1B0C", "shape": "round-rectangle" },
-    "rango":  { "bg": "#FAEEDA", "border": "#854F0B", "text": "#412402", "shape": "round-rectangle" },
-    "regla":  { "bg": "#FAEEDA", "border": "#854F0B", "text": "#412402", "shape": "round-rectangle" },
-    "socio":  { "bg": "#DCE7FA", "border": "#1E47AE", "text": "#0F2458", "shape": "ellipse" },
-    "cuenta": { "bg": "#EFE1FA", "border": "#6B2E9B", "text": "#35154E", "shape": "round-rectangle" }
+    "hoja": {
+      "bg": "#E1F5EE",
+      "border": "#0F6E56",
+      "text": "#04342C",
+      "shape": "round-rectangle"
+    },
+    "macro": {
+      "bg": "#EEEDFE",
+      "border": "#534AB7",
+      "text": "#26215C",
+      "shape": "round-rectangle"
+    },
+    "tabla": {
+      "bg": "#FAECE7",
+      "border": "#C34416",
+      "text": "#4A1B0C",
+      "shape": "round-rectangle"
+    },
+    "rango": {
+      "bg": "#FAEEDA",
+      "border": "#854F0B",
+      "text": "#412402",
+      "shape": "round-rectangle"
+    },
+    "regla": {
+      "bg": "#FAEEDA",
+      "border": "#854F0B",
+      "text": "#412402",
+      "shape": "round-rectangle"
+    },
+    "socio": {
+      "bg": "#DCE7FA",
+      "border": "#1E47AE",
+      "text": "#0F2458",
+      "shape": "ellipse"
+    },
+    "cuenta": {
+      "bg": "#EFE1FA",
+      "border": "#6B2E9B",
+      "text": "#35154E",
+      "shape": "round-rectangle"
+    }
   },
   "nodes": [
-    { "id": "REGISTRO_RAPIDO", "type": "hoja", "label": "REGISTRO_RAPIDO", "desc": "Formulario de captura" },
-    { "id": "LIBRO_MAYOR", "type": "hoja", "label": "LIBRO_MAYOR", "desc": "Almacén acumulativo" },
-    { "id": "TASAS", "type": "hoja", "label": "TASAS", "desc": "Tasas vigentes + historial" },
-    { "id": "AUDITOR_LOTES", "type": "hoja", "label": "AUDITOR_LOTES", "desc": "Navegación de lotes" },
-    { "id": "REPORTE_BARRIDO", "type": "hoja", "label": "REPORTE_BARRIDO", "desc": "Reparto de utilidades" },
-    { "id": "SALDOS_Y_ENTIDADES", "type": "hoja", "label": "SALDOS_Y_ENTIDADES", "desc": "Saldos y ganancia latente" },
-
-    { "id": "GuardarLote", "type": "macro", "label": "GuardarLote", "desc": "Graba lote validado" },
-    { "id": "LimpiarRegistro", "type": "macro", "label": "LimpiarRegistro", "desc": "Resetea formulario" },
-    { "id": "ActualizarTasaVigente", "type": "macro", "label": "ActualizarTasaVigente", "desc": "Diálogo cambio tasa" },
-    { "id": "ActualizarTasaVigenteDesde", "type": "macro", "label": "ActualizarTasaVigenteDesde", "desc": "Tasa parametrizada" },
-    { "id": "GenerarAsientoPacto", "type": "macro", "label": "GenerarAsientoPacto", "desc": "Asiento de pacto" },
-    { "id": "RevalorizarCuenta", "type": "macro", "label": "RevalorizarCuenta", "desc": "Ganancia latente" },
-    { "id": "LoteAnterior", "type": "macro", "label": "LoteAnterior", "desc": "Navega atrás" },
-    { "id": "LoteSiguiente", "type": "macro", "label": "LoteSiguiente", "desc": "Navega adelante" },
-    { "id": "AccionSobreLoteVisible", "type": "macro", "label": "AccionSobreLoteVisible", "desc": "Corrige o duplica" },
-    { "id": "CorregirLoteConID", "type": "macro", "label": "CorregirLoteConID", "desc": "Anula y recarga" },
-    { "id": "DuplicarLoteConID", "type": "macro", "label": "DuplicarLoteConID", "desc": "Clona al formulario" },
-    { "id": "Helpers", "type": "macro", "label": "Helpers", "desc": "colIdx + EscribirLinea" },
-
-    { "id": "tb_registro_rapido", "type": "tabla", "label": "tb_registro_rapido", "desc": "9 cols - entrada" },
-    { "id": "tb_mayor", "type": "tabla", "label": "tb_mayor", "desc": "19 cols - asientos" },
-    { "id": "tb_tasas_vigentes", "type": "tabla", "label": "tb_tasas_vigentes", "desc": "Tasas actuales" },
-    { "id": "tb_tasas_historial", "type": "tabla", "label": "tb_tasas_historial", "desc": "Bitácora tasas" },
-    { "id": "tb_cuentas", "type": "tabla", "label": "tb_cuentas", "desc": "Catálogo cuentas" },
-    { "id": "tb_entidades", "type": "tabla", "label": "tb_entidades", "desc": "Catálogo entidades" },
-    { "id": "tb_divisas", "type": "tabla", "label": "tb_divisas", "desc": "Catálogo divisas" },
-    { "id": "tb_categorias", "type": "tabla", "label": "tb_categorias", "desc": "Catálogo categorías" },
-    { "id": "tb_segmentos", "type": "tabla", "label": "tb_segmentos", "desc": "Catálogo segmentos" },
-    { "id": "tb_clase_cuenta", "type": "tabla", "label": "tb_clase_cuenta", "desc": "Catálogo clases" },
-
-    { "id": "IDs_Unicos", "type": "rango", "label": "IDs_Unicos", "desc": "Lista ordenada de lotes (AUDITOR_LOTES)" },
-    { "id": "ListaCuentaActiva", "type": "rango", "label": "ListaCuentaActiva", "desc": "Cuentas activas (derrame)" },
-    { "id": "ListaDivisaActiva", "type": "rango", "label": "ListaDivisaActiva", "desc": "Divisas activas (derrame)" },
-    { "id": "ListaSocios", "type": "rango", "label": "ListaSocios", "desc": "Socios del negocio" },
-    { "id": "ListaSegmentoActiva", "type": "rango", "label": "ListaSegmentoActiva", "desc": "Segmentos activos (derrame)" },
-
-    { "id": "AlertaSpread", "type": "regla", "label": "AlertaSpread", "desc": "Umbral 3% spread" },
-
-    { "id": "Socio01", "type": "socio", "label": "Socio01", "desc": "Socio del negocio" },
-    { "id": "Socio02", "type": "socio", "label": "Socio02", "desc": "Socia del negocio" },
-    { "id": "Socio03", "type": "socio", "label": "Socio03", "desc": "Socia del negocio" },
-
-    { "id": "Utilidad_Distribuible", "type": "cuenta", "label": "Utilidad Distribuible", "desc": "Débito único en asiento de pacto" },
-    { "id": "Cta_Corriente_Socio01", "type": "cuenta", "label": "Cta. Corriente Socio01", "desc": "Crédito en pacto a Socio01" },
-    { "id": "Cta_Corriente_Socio02", "type": "cuenta", "label": "Cta. Corriente Socio02", "desc": "Crédito en pacto a Socio02" },
-    { "id": "Cta_Corriente_Socio03", "type": "cuenta", "label": "Cta. Corriente Socio03", "desc": "Crédito en pacto a Socio03" },
-    { "id": "Ganancia_por_Revalorizacion", "type": "cuenta", "label": "Ganancia por Revalorización", "desc": "Crédito en revaluación (+)" },
-    { "id": "Perdida_por_Revalorizacion", "type": "cuenta", "label": "Pérdida por Revalorización", "desc": "Débito en revaluación (−)" }
+    {
+      "id": "REGISTRO_RAPIDO",
+      "type": "hoja",
+      "label": "REGISTRO_RAPIDO",
+      "desc": "Formulario de captura"
+    },
+    {
+      "id": "LIBRO_MAYOR",
+      "type": "hoja",
+      "label": "LIBRO_MAYOR",
+      "desc": "Almacén acumulativo"
+    },
+    {
+      "id": "TASAS",
+      "type": "hoja",
+      "label": "TASAS",
+      "desc": "Tasas vigentes + historial"
+    },
+    {
+      "id": "AUDITOR_LOTES",
+      "type": "hoja",
+      "label": "AUDITOR_LOTES",
+      "desc": "Navegación de lotes"
+    },
+    {
+      "id": "REPORTE_BARRIDO",
+      "type": "hoja",
+      "label": "REPORTE_BARRIDO",
+      "desc": "Reparto de utilidades"
+    },
+    {
+      "id": "SALDOS_Y_ENTIDADES",
+      "type": "hoja",
+      "label": "SALDOS_Y_ENTIDADES",
+      "desc": "Saldos y ganancia latente"
+    },
+    {
+      "id": "GuardarLote",
+      "type": "macro",
+      "label": "GuardarLote",
+      "desc": "Graba lote validado"
+    },
+    {
+      "id": "LimpiarRegistro",
+      "type": "macro",
+      "label": "LimpiarRegistro",
+      "desc": "Resetea formulario"
+    },
+    {
+      "id": "ActualizarTasaVigente",
+      "type": "macro",
+      "label": "ActualizarTasaVigente",
+      "desc": "Diálogo cambio tasa"
+    },
+    {
+      "id": "ActualizarTasaVigenteDesde",
+      "type": "macro",
+      "label": "ActualizarTasaVigenteDesde",
+      "desc": "Tasa parametrizada"
+    },
+    {
+      "id": "GenerarAsientoPacto",
+      "type": "macro",
+      "label": "GenerarAsientoPacto",
+      "desc": "Asiento de pacto"
+    },
+    {
+      "id": "RevalorizarCuenta",
+      "type": "macro",
+      "label": "RevalorizarCuenta",
+      "desc": "Ganancia latente"
+    },
+    {
+      "id": "LoteAnterior",
+      "type": "macro",
+      "label": "LoteAnterior",
+      "desc": "Navega atrás"
+    },
+    {
+      "id": "LoteSiguiente",
+      "type": "macro",
+      "label": "LoteSiguiente",
+      "desc": "Navega adelante"
+    },
+    {
+      "id": "AccionSobreLoteVisible",
+      "type": "macro",
+      "label": "AccionSobreLoteVisible",
+      "desc": "Corrige o duplica"
+    },
+    {
+      "id": "CorregirLoteConID",
+      "type": "macro",
+      "label": "CorregirLoteConID",
+      "desc": "Anula y recarga"
+    },
+    {
+      "id": "DuplicarLoteConID",
+      "type": "macro",
+      "label": "DuplicarLoteConID",
+      "desc": "Clona al formulario"
+    },
+    {
+      "id": "Helpers",
+      "type": "macro",
+      "label": "Helpers",
+      "desc": "colIdx + EscribirLinea"
+    },
+    {
+      "id": "tb_registro_rapido",
+      "type": "tabla",
+      "label": "tb_registro_rapido",
+      "desc": "9 cols - entrada"
+    },
+    {
+      "id": "tb_mayor",
+      "type": "tabla",
+      "label": "tb_mayor",
+      "desc": "19 cols - asientos"
+    },
+    {
+      "id": "tb_tasas_vigentes",
+      "type": "tabla",
+      "label": "tb_tasas_vigentes",
+      "desc": "Tasas actuales"
+    },
+    {
+      "id": "tb_tasas_historial",
+      "type": "tabla",
+      "label": "tb_tasas_historial",
+      "desc": "Bitácora tasas"
+    },
+    {
+      "id": "tb_cuentas",
+      "type": "tabla",
+      "label": "tb_cuentas",
+      "desc": "Catálogo cuentas"
+    },
+    {
+      "id": "tb_entidades",
+      "type": "tabla",
+      "label": "tb_entidades",
+      "desc": "Catálogo entidades"
+    },
+    {
+      "id": "tb_divisas",
+      "type": "tabla",
+      "label": "tb_divisas",
+      "desc": "Catálogo divisas"
+    },
+    {
+      "id": "tb_categorias",
+      "type": "tabla",
+      "label": "tb_categorias",
+      "desc": "Catálogo categorías"
+    },
+    {
+      "id": "tb_segmentos",
+      "type": "tabla",
+      "label": "tb_segmentos",
+      "desc": "Catálogo segmentos"
+    },
+    {
+      "id": "tb_clase_cuenta",
+      "type": "tabla",
+      "label": "tb_clase_cuenta",
+      "desc": "Catálogo clases"
+    },
+    {
+      "id": "IDs_Unicos",
+      "type": "rango",
+      "label": "IDs_Unicos",
+      "desc": "Lista ordenada de lotes (AUDITOR_LOTES)"
+    },
+    {
+      "id": "ListaCuentaActiva",
+      "type": "rango",
+      "label": "ListaCuentaActiva",
+      "desc": "Cuentas activas (derrame)"
+    },
+    {
+      "id": "ListaDivisaActiva",
+      "type": "rango",
+      "label": "ListaDivisaActiva",
+      "desc": "Divisas activas (derrame)"
+    },
+    {
+      "id": "ListaSocios",
+      "type": "rango",
+      "label": "ListaSocios",
+      "desc": "Socios del negocio"
+    },
+    {
+      "id": "ListaSegmentoActiva",
+      "type": "rango",
+      "label": "ListaSegmentoActiva",
+      "desc": "Segmentos activos (derrame)"
+    },
+    {
+      "id": "AlertaSpread",
+      "type": "regla",
+      "label": "AlertaSpread",
+      "desc": "Umbral 3% spread"
+    },
+    {
+      "id": "Socio01",
+      "type": "socio",
+      "label": "Socio01",
+      "desc": "Socio del negocio"
+    },
+    {
+      "id": "Socio02",
+      "type": "socio",
+      "label": "Socio02",
+      "desc": "Socia del negocio"
+    },
+    {
+      "id": "Socio03",
+      "type": "socio",
+      "label": "SOCIO1",
+      "desc": "Socia del negocio"
+    },
+    {
+      "id": "Utilidad_Distribuible",
+      "type": "cuenta",
+      "label": "Utilidad Distribuible",
+      "desc": "Débito único en asiento de pacto"
+    },
+    {
+      "id": "Cta_Corriente_Socio01",
+      "type": "cuenta",
+      "label": "Cta. Corriente Socio01",
+      "desc": "Crédito en pacto a Socio01"
+    },
+    {
+      "id": "Cta_Corriente_Socio02",
+      "type": "cuenta",
+      "label": "Cta. Corriente Socio02",
+      "desc": "Crédito en pacto a Socio02"
+    },
+    {
+      "id": "Cta_Corriente_Socio03",
+      "type": "cuenta",
+      "label": "Cta. Corriente Socio03",
+      "desc": "Crédito en pacto a Socio03"
+    },
+    {
+      "id": "Ganancia_por_Revalorizacion",
+      "type": "cuenta",
+      "label": "Ganancia por Revalorización",
+      "desc": "Crédito en revaluación (+)"
+    },
+    {
+      "id": "Perdida_por_Revalorizacion",
+      "type": "cuenta",
+      "label": "Pérdida por Revalorización",
+      "desc": "Débito en revaluación (−)"
+    }
   ],
   "relations": [
-    { "from": "REGISTRO_RAPIDO", "to": "GuardarLote", "label": "dispara" },
-    { "from": "REGISTRO_RAPIDO", "to": "LimpiarRegistro", "label": "dispara" },
-    { "from": "REGISTRO_RAPIDO", "to": "GenerarAsientoPacto", "label": "dispara" },
-    { "from": "REGISTRO_RAPIDO", "to": "RevalorizarCuenta", "label": "dispara" },
-    { "from": "REGISTRO_RAPIDO", "to": "tb_registro_rapido", "label": "lee/escribe" },
-
-    { "from": "GuardarLote", "to": "LIBRO_MAYOR", "label": "escribe" },
-    { "from": "GuardarLote", "to": "TASAS", "label": "registra" },
-    { "from": "GuardarLote", "to": "tb_mayor", "label": "inserta filas" },
-    { "from": "GuardarLote", "to": "Helpers", "label": "usa" },
-
-    { "from": "TASAS", "to": "AlertaSpread", "label": "evalúa" },
-    { "from": "AlertaSpread", "to": "ActualizarTasaVigente", "label": "sugiere" },
-    { "from": "ActualizarTasaVigente", "to": "ActualizarTasaVigenteDesde", "label": "delega en" },
-    { "from": "ActualizarTasaVigenteDesde", "to": "tb_tasas_vigentes", "label": "actualiza" },
-    { "from": "ActualizarTasaVigenteDesde", "to": "tb_tasas_historial", "label": "registra" },
-
-    { "from": "AUDITOR_LOTES", "to": "LoteAnterior", "label": "botón" },
-    { "from": "AUDITOR_LOTES", "to": "LoteSiguiente", "label": "botón" },
-    { "from": "AUDITOR_LOTES", "to": "AccionSobreLoteVisible", "label": "botón" },
-    { "from": "AccionSobreLoteVisible", "to": "CorregirLoteConID", "label": "si anulado" },
-    { "from": "AccionSobreLoteVisible", "to": "DuplicarLoteConID", "label": "si válido" },
-    { "from": "CorregirLoteConID", "to": "tb_mayor", "label": "anula líneas" },
-    { "from": "DuplicarLoteConID", "to": "REGISTRO_RAPIDO", "label": "precarga" },
-
-    { "from": "RevalorizarCuenta", "to": "SALDOS_Y_ENTIDADES", "label": "alimenta" },
-    { "from": "REPORTE_BARRIDO", "to": "LIBRO_MAYOR", "label": "lee de" },
-    { "from": "SALDOS_Y_ENTIDADES", "to": "tb_mayor", "label": "agrupa" },
-
-    { "from": "tb_cuentas", "to": "REGISTRO_RAPIDO", "label": "dropdown" },
-    { "from": "tb_divisas", "to": "REGISTRO_RAPIDO", "label": "dropdown" },
-    { "from": "tb_segmentos", "to": "REGISTRO_RAPIDO", "label": "dropdown" },
-    { "from": "tb_categorias", "to": "REGISTRO_RAPIDO", "label": "dropdown" },
-    { "from": "tb_clase_cuenta", "to": "tb_cuentas", "label": "clasifica" },
-    { "from": "tb_entidades", "to": "REGISTRO_RAPIDO", "label": "dropdown" },
-
-    { "from": "IDs_Unicos", "to": "AUDITOR_LOTES", "label": "alimenta" },
-    { "from": "ListaCuentaActiva", "to": "tb_cuentas", "label": "derrama" },
-    { "from": "ListaDivisaActiva", "to": "tb_divisas", "label": "derrama" },
-    { "from": "ListaSegmentoActiva", "to": "tb_segmentos", "label": "derrama" },
-    { "from": "ListaSocios", "to": "REGISTRO_RAPIDO", "label": "dropdown B3" },
-
-    { "from": "Socio01", "to": "Cta_Corriente_Socio01", "label": "titular" },
-    { "from": "Socio02", "to": "Cta_Corriente_Socio02", "label": "titular" },
-    { "from": "Socio03", "to": "Cta_Corriente_Socio03", "label": "titular" },
-
-    { "from": "REPORTE_BARRIDO", "to": "Socio01", "label": "B29 asignación" },
-    { "from": "REPORTE_BARRIDO", "to": "Socio02", "label": "B30 asignación" },
-    { "from": "REPORTE_BARRIDO", "to": "Socio03", "label": "B31 asignación" },
-
-    { "from": "GenerarAsientoPacto", "to": "Utilidad_Distribuible", "label": "débito" },
-    { "from": "GenerarAsientoPacto", "to": "Cta_Corriente_Socio01", "label": "crédito" },
-    { "from": "GenerarAsientoPacto", "to": "Cta_Corriente_Socio02", "label": "crédito" },
-    { "from": "GenerarAsientoPacto", "to": "Cta_Corriente_Socio03", "label": "crédito" },
-
-    { "from": "RevalorizarCuenta", "to": "Ganancia_por_Revalorizacion", "label": "si ganancia" },
-    { "from": "RevalorizarCuenta", "to": "Perdida_por_Revalorizacion", "label": "si pérdida" },
-
-    { "from": "tb_cuentas", "to": "Utilidad_Distribuible", "label": "contiene" },
-    { "from": "tb_cuentas", "to": "Cta_Corriente_Socio01", "label": "contiene" },
-    { "from": "tb_cuentas", "to": "Cta_Corriente_Socio02", "label": "contiene" },
-    { "from": "tb_cuentas", "to": "Cta_Corriente_Socio03", "label": "contiene" },
-    { "from": "tb_cuentas", "to": "Ganancia_por_Revalorizacion", "label": "contiene" },
-    { "from": "tb_cuentas", "to": "Perdida_por_Revalorizacion", "label": "contiene" }
+    {
+      "from": "REGISTRO_RAPIDO",
+      "to": "GuardarLote",
+      "label": "dispara"
+    },
+    {
+      "from": "REGISTRO_RAPIDO",
+      "to": "LimpiarRegistro",
+      "label": "dispara"
+    },
+    {
+      "from": "REGISTRO_RAPIDO",
+      "to": "GenerarAsientoPacto",
+      "label": "dispara"
+    },
+    {
+      "from": "REGISTRO_RAPIDO",
+      "to": "RevalorizarCuenta",
+      "label": "dispara"
+    },
+    {
+      "from": "REGISTRO_RAPIDO",
+      "to": "tb_registro_rapido",
+      "label": "lee/escribe"
+    },
+    {
+      "from": "GuardarLote",
+      "to": "LIBRO_MAYOR",
+      "label": "escribe"
+    },
+    {
+      "from": "GuardarLote",
+      "to": "TASAS",
+      "label": "registra"
+    },
+    {
+      "from": "GuardarLote",
+      "to": "tb_mayor",
+      "label": "inserta filas"
+    },
+    {
+      "from": "GuardarLote",
+      "to": "Helpers",
+      "label": "usa"
+    },
+    {
+      "from": "TASAS",
+      "to": "AlertaSpread",
+      "label": "evalúa"
+    },
+    {
+      "from": "AlertaSpread",
+      "to": "ActualizarTasaVigente",
+      "label": "sugiere"
+    },
+    {
+      "from": "ActualizarTasaVigente",
+      "to": "ActualizarTasaVigenteDesde",
+      "label": "delega en"
+    },
+    {
+      "from": "ActualizarTasaVigenteDesde",
+      "to": "tb_tasas_vigentes",
+      "label": "actualiza"
+    },
+    {
+      "from": "ActualizarTasaVigenteDesde",
+      "to": "tb_tasas_historial",
+      "label": "registra"
+    },
+    {
+      "from": "AUDITOR_LOTES",
+      "to": "LoteAnterior",
+      "label": "botón"
+    },
+    {
+      "from": "AUDITOR_LOTES",
+      "to": "LoteSiguiente",
+      "label": "botón"
+    },
+    {
+      "from": "AUDITOR_LOTES",
+      "to": "AccionSobreLoteVisible",
+      "label": "botón"
+    },
+    {
+      "from": "AccionSobreLoteVisible",
+      "to": "CorregirLoteConID",
+      "label": "si anulado"
+    },
+    {
+      "from": "AccionSobreLoteVisible",
+      "to": "DuplicarLoteConID",
+      "label": "si válido"
+    },
+    {
+      "from": "CorregirLoteConID",
+      "to": "tb_mayor",
+      "label": "anula líneas"
+    },
+    {
+      "from": "DuplicarLoteConID",
+      "to": "REGISTRO_RAPIDO",
+      "label": "precarga"
+    },
+    {
+      "from": "RevalorizarCuenta",
+      "to": "SALDOS_Y_ENTIDADES",
+      "label": "alimenta"
+    },
+    {
+      "from": "REPORTE_BARRIDO",
+      "to": "LIBRO_MAYOR",
+      "label": "lee de"
+    },
+    {
+      "from": "SALDOS_Y_ENTIDADES",
+      "to": "tb_mayor",
+      "label": "agrupa"
+    },
+    {
+      "from": "tb_cuentas",
+      "to": "REGISTRO_RAPIDO",
+      "label": "dropdown"
+    },
+    {
+      "from": "tb_divisas",
+      "to": "REGISTRO_RAPIDO",
+      "label": "dropdown"
+    },
+    {
+      "from": "tb_segmentos",
+      "to": "REGISTRO_RAPIDO",
+      "label": "dropdown"
+    },
+    {
+      "from": "tb_categorias",
+      "to": "REGISTRO_RAPIDO",
+      "label": "dropdown"
+    },
+    {
+      "from": "tb_clase_cuenta",
+      "to": "tb_cuentas",
+      "label": "clasifica"
+    },
+    {
+      "from": "tb_entidades",
+      "to": "REGISTRO_RAPIDO",
+      "label": "dropdown"
+    },
+    {
+      "from": "IDs_Unicos",
+      "to": "AUDITOR_LOTES",
+      "label": "alimenta"
+    },
+    {
+      "from": "ListaCuentaActiva",
+      "to": "tb_cuentas",
+      "label": "derrama"
+    },
+    {
+      "from": "ListaDivisaActiva",
+      "to": "tb_divisas",
+      "label": "derrama"
+    },
+    {
+      "from": "ListaSegmentoActiva",
+      "to": "tb_segmentos",
+      "label": "derrama"
+    },
+    {
+      "from": "ListaSocios",
+      "to": "REGISTRO_RAPIDO",
+      "label": "dropdown B3"
+    },
+    {
+      "from": "Socio01",
+      "to": "Cta_Corriente_Socio01",
+      "label": "titular"
+    },
+    {
+      "from": "Socio02",
+      "to": "Cta_Corriente_Socio02",
+      "label": "titular"
+    },
+    {
+      "from": "Socio03",
+      "to": "Cta_Corriente_Socio03",
+      "label": "titular"
+    },
+    {
+      "from": "REPORTE_BARRIDO",
+      "to": "Socio01",
+      "label": "B29 asignación"
+    },
+    {
+      "from": "REPORTE_BARRIDO",
+      "to": "Socio02",
+      "label": "B30 asignación"
+    },
+    {
+      "from": "REPORTE_BARRIDO",
+      "to": "Socio03",
+      "label": "B31 asignación"
+    },
+    {
+      "from": "GenerarAsientoPacto",
+      "to": "Utilidad_Distribuible",
+      "label": "débito"
+    },
+    {
+      "from": "GenerarAsientoPacto",
+      "to": "Cta_Corriente_Socio01",
+      "label": "crédito"
+    },
+    {
+      "from": "GenerarAsientoPacto",
+      "to": "Cta_Corriente_Socio02",
+      "label": "crédito"
+    },
+    {
+      "from": "GenerarAsientoPacto",
+      "to": "Cta_Corriente_Socio03",
+      "label": "crédito"
+    },
+    {
+      "from": "RevalorizarCuenta",
+      "to": "Ganancia_por_Revalorizacion",
+      "label": "si ganancia"
+    },
+    {
+      "from": "RevalorizarCuenta",
+      "to": "Perdida_por_Revalorizacion",
+      "label": "si pérdida"
+    },
+    {
+      "from": "tb_cuentas",
+      "to": "Utilidad_Distribuible",
+      "label": "contiene"
+    },
+    {
+      "from": "tb_cuentas",
+      "to": "Cta_Corriente_Socio01",
+      "label": "contiene"
+    },
+    {
+      "from": "tb_cuentas",
+      "to": "Cta_Corriente_Socio02",
+      "label": "contiene"
+    },
+    {
+      "from": "tb_cuentas",
+      "to": "Cta_Corriente_Socio03",
+      "label": "contiene"
+    },
+    {
+      "from": "tb_cuentas",
+      "to": "Ganancia_por_Revalorizacion",
+      "label": "contiene"
+    },
+    {
+      "from": "tb_cuentas",
+      "to": "Perdida_por_Revalorizacion",
+      "label": "contiene"
+    }
   ]
 }
