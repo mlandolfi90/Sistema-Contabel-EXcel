@@ -1,0 +1,12 @@
+{
+  "description": "Tipos de anclas disponibles. Si agregás un tipo nuevo acá, el panel lo reconoce y muestra filtros/columnas automáticamente.",
+  "types": [
+    { "id": "hoja",   "label": "Hoja",   "filterLabel": "Hoja" },
+    { "id": "macro",  "label": "Macro",  "filterLabel": "Macro" },
+    { "id": "tabla",  "label": "Tabla",  "filterLabel": "Tabla" },
+    { "id": "rango",  "label": "Rango con nombre", "filterLabel": "Rango" },
+    { "id": "regla",  "label": "Regla",  "filterLabel": "Regla" },
+    { "id": "socio",  "label": "Socio",  "filterLabel": "Socio" },
+    { "id": "cuenta", "label": "Cuenta contable", "filterLabel": "Cuenta" }
+  ]
+}

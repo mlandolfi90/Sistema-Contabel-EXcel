@@ -1,0 +1,13 @@
+{
+  "description": "Configuración UI del panel. Orden de secciones en vista Estructura y textos varios.",
+  "structureSections": [
+    { "type": "hoja",   "title": "Hojas operativas" },
+    { "type": "tabla",  "title": "Tablas estructuradas (ListObjects)" },
+    { "type": "rango",  "title": "Rangos con nombre" },
+    { "type": "macro",  "title": "Macros" },
+    { "type": "regla",  "title": "Reglas" },
+    { "type": "socio",  "title": "Socios" },
+    { "type": "cuenta", "title": "Cuentas contables" }
+  ],
+  "vbaPromptHeader": "Convertí estas ideas de mi Kanban en instrucciones VBA concretas. Por cada una dame: (a) macro afectada, (b) diff de código, (c) validaciones nuevas."
+}

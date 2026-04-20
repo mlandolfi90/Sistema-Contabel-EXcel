@@ -1,5 +1,6 @@
-// v2/js/github.js — Cliente mínimo de la API REST de GitHub
-// Lee/escribe archivos JSON del repo + crea/edita/cierra Issues.
+// v2/js/github.js — Cliente API GitHub + helpers de Issues con config dinámico
+
+import { loadConfig } from './config-loader.js';
 
 export const OWNER = 'mlandolfi90';
 export const REPO  = 'Sistema-Contabel-EXcel';
@@ -62,17 +63,14 @@ export async function saveJsonFile(path, data, sha, message) {
   return r.content.sha;
 }
 
-/* ----------------- Issues ----------------- */
-// 4 estados: idea → diseño → listo → implementada (+ cerrar para archivar)
-export const STATUS_LABELS = ['idea', 'diseño', 'listo', 'implementada'];
-export const ANCHOR_TYPES = ['macro','hoja','tabla','rango','regla','socio','cuenta'];
-
-export function issueToCard(issue) {
+/* ----------------- Issues (dinámico desde config) ----------------- */
+export async function issueToCard(issue, config) {
+  if (!config) config = await loadConfig();
   const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
-  let status = 'idea';
-  for (const s of STATUS_LABELS) if (labels.includes(s)) { status = s; break; }
+  let status = config.stateIds[0];
+  for (const s of config.stateIds) if (labels.includes(s)) { status = s; break; }
+  const anchorRe = new RegExp(`^(${config.anchorTypeIds.join('|')}):(.+)$`);
   const anchors = [];
-  const anchorRe = new RegExp(`^(${ANCHOR_TYPES.join('|')}):(.+)$`);
   labels.forEach(l => {
     const m = l.match(anchorRe);
     if (m) anchors.push({ type: m[1], id: m[2] });
@@ -80,19 +78,22 @@ export function issueToCard(issue) {
   return { number: issue.number, title: issue.title, note: issue.body || '', status, anchors, labels, url: issue.html_url };
 }
 
-export function cardToLabels(status, anchors, existingLabels) {
-  const anchorRe = new RegExp(`^(${ANCHOR_TYPES.join('|')}):`);
-  const out = (existingLabels || []).filter(l => !STATUS_LABELS.includes(l) && !anchorRe.test(l));
+export async function cardToLabels(status, anchors, existingLabels, config) {
+  if (!config) config = await loadConfig();
+  const anchorRe = new RegExp(`^(${config.anchorTypeIds.join('|')}):`);
+  const out = (existingLabels || []).filter(l => !config.stateIds.includes(l) && !anchorRe.test(l));
   out.push(status);
   anchors.forEach(a => out.push(a.type + ':' + a.id));
   return out;
 }
 
 export async function loadIssues() {
+  const config = await loadConfig();
   const issues = await apiGet('/issues?state=open&per_page=100');
-  return issues.filter(i => !i.pull_request).map(issueToCard);
+  return Promise.all(issues.filter(i => !i.pull_request).map(i => issueToCard(i, config)));
 }
 
 export async function createIssue(title, body, labels) { return apiPost('/issues', { title, body, labels }); }
 export async function updateIssue(number, patch) { return apiPatch('/issues/' + number, patch); }
 export async function closeIssue(number) { return apiPatch('/issues/' + number, { state: 'closed' }); }
+export async function addIssueComment(number, body) { return apiPost(`/issues/${number}/comments`, { body }); }

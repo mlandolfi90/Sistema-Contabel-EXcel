@@ -1,4 +1,4 @@
-/* v2/css/panel.css — específico de index.html (Kanban + estructura) */
+/* v2/css/panel.css — Kanban + estructura (columnas dinámicas desde workflow.json) */
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border-tertiary); margin-bottom: 16px; }
 .tab { padding: 8px 14px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; background: transparent; font-family: inherit; }
 .tab.active { color: var(--text-primary); border-bottom-color: var(--text-info); }
@@ -16,21 +16,27 @@
 .filter-chip { font-size: 11px; padding: 3px 10px; border-radius: 10px; background: var(--bg-secondary); border: 1px solid transparent; cursor: pointer; color: var(--text-secondary); font-family: inherit; }
 .filter-chip.on { background: var(--bg-primary); border-color: var(--border-secondary); color: var(--text-primary); }
 
-/* Kanban 4 columnas */
-.kanban { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
-@media (max-width: 1100px) { .kanban { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 640px) { .kanban { grid-template-columns: 1fr; } }
+/* Kanban: grid-template-columns se setea dinámicamente desde JS según cantidad de estados */
+.kanban { display: grid; gap: 10px; }
+@media (max-width: 1100px) { .kanban { grid-template-columns: repeat(2, 1fr) !important; } }
+@media (max-width: 640px) { .kanban { grid-template-columns: 1fr !important; } }
+
 .col { background: var(--bg-secondary); border-radius: var(--radius-lg); padding: 12px; min-height: 220px; }
 .col h3 { margin: 0 0 10px; font-size: 13px; font-weight: 500; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; }
 .col h3 .count { background: var(--bg-primary); border-radius: 10px; padding: 1px 8px; font-size: 11px; color: var(--text-secondary); }
 
-/* Columna implementada con fondo verdoso tenue para destacar visualmente */
+/* Columna implementada: fondo verdoso */
 .col-done { background: #E6F4E6; }
 .col-done h3 { color: #0a5a0a; }
 @media (prefers-color-scheme: dark) { .col-done { background: #1e3a1e; } .col-done h3 { color: #7bc47b; } }
 
+/* Columna rechazada: fondo rojizo */
+.col-rejected { background: #FBE7E7; }
+.col-rejected h3 { color: #9a2020; }
+@media (prefers-color-scheme: dark) { .col-rejected { background: #3a1e1e; } .col-rejected h3 { color: #e07070; } }
+
 .card { background: var(--bg-primary); border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 8px; position: relative; }
-.card p.title { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; padding-right: 60px; }
+.card p.title { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; padding-right: 80px; }
 .card p.title a { color: inherit; text-decoration: none; }
 .card p.title a:hover { text-decoration: underline; }
 .card p.note { margin: 0 0 6px; font-size: 12px; color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap; max-height: 80px; overflow: hidden; }
@@ -39,10 +45,16 @@
 .card .actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 2px; }
 .card .actions button { padding: 3px 6px; font-size: 11px; background: transparent; border: 1px solid var(--border-tertiary); border-radius: 4px; cursor: pointer; color: var(--text-secondary); min-width: 24px; font-family: inherit; }
 .card .actions button:hover { background: var(--bg-secondary); color: var(--text-primary); }
+.card .actions .btn-reject { color: #c33; border-color: rgba(204,51,51,0.3); }
+.card .actions .btn-reject:hover { background: #fee; color: #a11; }
 
-/* Tarjetas implementadas: opacidad leve, título tachado */
+/* Tarjetas implementadas: tachado leve */
 .card.status-implementada { opacity: 0.75; }
 .card.status-implementada p.title { text-decoration: line-through; text-decoration-thickness: 1px; text-decoration-color: rgba(0,0,0,0.3); }
+
+/* Tarjetas rechazadas: tachado rojo */
+.card.status-rechazada { opacity: 0.6; }
+.card.status-rechazada p.title { text-decoration: line-through; text-decoration-thickness: 1px; text-decoration-color: #c33; color: #7a3030; }
 
 .empty { font-size: 12px; color: var(--text-tertiary); font-style: italic; padding: 8px 4px; }
 

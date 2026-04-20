@@ -11,7 +11,7 @@
 <body>
 <div class="container">
 <h1>Panel de pre-diseño v2 <span class="sync-badge">sync GitHub</span></h1>
-<p class="subtitle">Las tarjetas viven como Issues. El catálogo se lee de <code>schema.json</code>. <a href="./mapa.html">→ Abrir mapa interactivo</a></p>
+<p class="subtitle">Las tarjetas viven como Issues. <a href="./mapa.html">→ Abrir mapa interactivo</a></p>
 
 <div class="auth-bar">
   <span class="status-dot" id="auth-dot"></span>
@@ -36,12 +36,7 @@
     <div class="composer-row"><textarea id="new-note" placeholder="Notas: qué cambia, por qué, qué impacto..."></textarea></div>
     <div class="composer-row">
       <label>Estado</label>
-      <select id="new-status">
-        <option value="idea">Idea / por pensar</option>
-        <option value="diseño">En diseño</option>
-        <option value="listo">Listo para implementar</option>
-        <option value="implementada">Implementada</option>
-      </select>
+      <select id="new-status"></select>
       <label style="margin-left:12px;">Anclas</label>
       <span class="anchor-preview" id="anchor-preview">ninguna</span>
       <button class="btn" onclick="toggleAnchorPicker()">Seleccionar</button>
@@ -55,26 +50,12 @@
       <button class="btn primary" id="save-btn" onclick="saveCard()">Crear Issue</button>
     </div>
   </div>
-  <div class="toolbar">
-    <span style="font-size:12px;">Filtrar:</span>
-    <button class="filter-chip on" data-filter="all" onclick="setFilter('all')">Todas</button>
-    <button class="filter-chip" data-filter="macro" onclick="setFilter('macro')">Macro</button>
-    <button class="filter-chip" data-filter="hoja" onclick="setFilter('hoja')">Hoja</button>
-    <button class="filter-chip" data-filter="tabla" onclick="setFilter('tabla')">Tabla</button>
-    <button class="filter-chip" data-filter="socio" onclick="setFilter('socio')">Socio</button>
-    <button class="filter-chip" data-filter="cuenta" onclick="setFilter('cuenta')">Cuenta</button>
-    <div style="margin-left:auto;"><button class="btn" onclick="copyVBAPrompt()">Copiar prompt VBA</button></div>
-  </div>
-  <div class="kanban">
-    <div class="col"><h3>Idea / por pensar <span class="count" id="c-idea">0</span></h3><div id="col-idea"></div></div>
-    <div class="col"><h3>En diseño <span class="count" id="c-diseño">0</span></h3><div id="col-diseño"></div></div>
-    <div class="col"><h3>Listo para implementar <span class="count" id="c-listo">0</span></h3><div id="col-listo"></div></div>
-    <div class="col col-done"><h3>✓ Implementada <span class="count" id="c-implementada">0</span></h3><div id="col-implementada"></div></div>
-  </div>
+  <div class="toolbar" id="filters-bar"></div>
+  <div class="kanban" id="kanban"></div>
 </div>
 
 <div id="view-estructura" class="view">
-  <p style="font-size:12px; color: var(--text-tertiary);">Cada nodo viene de <code>schema.json</code>. Los que tienen notas muestran banda morada. Click para crear una idea anclada.</p>
+  <p style="font-size:12px; color: var(--text-tertiary);">Cada nodo viene de <code>schema.json</code>. Click para crear una idea anclada.</p>
   <div id="structure-content"></div>
 </div>
 

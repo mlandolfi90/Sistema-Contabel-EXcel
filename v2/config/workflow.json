@@ -1,0 +1,62 @@
+{
+  "description": "Estados del Kanban y transiciones. Para agregar un estado nuevo, agregar entrada acá — el panel lo lee dinámicamente.",
+  "states": [
+    {
+      "id": "idea",
+      "label": "Idea / por pensar",
+      "short": "Idea",
+      "next": "diseño",
+      "arrow": "→",
+      "colClass": "",
+      "cardClass": ""
+    },
+    {
+      "id": "diseño",
+      "label": "En diseño",
+      "short": "Diseño",
+      "next": "listo",
+      "arrow": "→",
+      "colClass": "",
+      "cardClass": ""
+    },
+    {
+      "id": "listo",
+      "label": "Listo para implementar",
+      "short": "Listo",
+      "next": "implementada",
+      "arrow": "✓",
+      "colClass": "",
+      "cardClass": ""
+    },
+    {
+      "id": "implementada",
+      "label": "✓ Implementada",
+      "short": "Hecha",
+      "next": "idea",
+      "arrow": "↻",
+      "colClass": "col-done",
+      "cardClass": "status-implementada"
+    },
+    {
+      "id": "rechazada",
+      "label": "✕ Rechazada",
+      "short": "Rechazada",
+      "next": "idea",
+      "arrow": "↻",
+      "colClass": "col-rejected",
+      "cardClass": "status-rechazada",
+      "requiresReason": true,
+      "reasonPrompt": "¿Por qué se rechaza esta idea? El motivo se guarda como comentario del Issue."
+    }
+  ],
+  "actions": [
+    {
+      "id": "reject",
+      "label": "Rechazar",
+      "icon": "✕",
+      "fromStates": ["idea", "diseño", "listo"],
+      "toState": "rechazada",
+      "btnClass": "btn-reject"
+    }
+  ]
+}
