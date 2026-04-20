@@ -1,184 +1,292 @@
 {
   "positions": {
     "REGISTRO_RAPIDO": {
-      "x": 487,
-      "y": 1368
+      "x": 517,
+      "y": 1133
     },
     "LIBRO_MAYOR": {
-      "x": 577,
-      "y": 768
+      "x": 485,
+      "y": 1385
     },
     "TASAS": {
-      "x": 394,
-      "y": 772
+      "x": 169,
+      "y": 845
     },
     "AUDITOR_LOTES": {
-      "x": 228,
-      "y": 1990
-    },
-    "REPORTE_BARRIDO": {
-      "x": 792,
-      "y": 904
-    },
-    "SALDOS_Y_ENTIDADES": {
-      "x": 380,
-      "y": 1416
-    },
-    "GuardarLote": {
-      "x": 394,
-      "y": 1026
-    },
-    "LimpiarRegistro": {
-      "x": 594,
-      "y": 1468
-    },
-    "ActualizarTasaVigente": {
-      "x": 160,
-      "y": 508
-    },
-    "ActualizarTasaVigenteDesde": {
-      "x": 31,
-      "y": 327
-    },
-    "GenerarAsientoPacto": {
-      "x": 701,
-      "y": 1325
-    },
-    "RevalorizarCuenta": {
-      "x": 486,
+      "x": 170,
       "y": 1630
     },
+    "REPORTE_BARRIDO": {
+      "x": 751,
+      "y": 1159
+    },
+    "SALDOS_Y_ENTIDADES": {
+      "x": 270,
+      "y": 1386
+    },
+    "GuardarLote": {
+      "x": 275,
+      "y": 1095
+    },
+    "LimpiarRegistro": {
+      "x": 848,
+      "y": 1291
+    },
+    "ActualizarTasaVigente": {
+      "x": -27,
+      "y": 452
+    },
+    "ActualizarTasaVigenteDesde": {
+      "x": -20,
+      "y": 365
+    },
+    "GenerarAsientoPacto": {
+      "x": 742,
+      "y": 1417
+    },
+    "RevalorizarCuenta": {
+      "x": 462,
+      "y": 1599
+    },
     "LoteAnterior": {
-      "x": 119,
-      "y": 2040
+      "x": 62,
+      "y": 1597
     },
     "LoteSiguiente": {
-      "x": 370,
-      "y": 2143
+      "x": 351,
+      "y": 1726
     },
     "AccionSobreLoteVisible": {
-      "x": 214,
-      "y": 1720
+      "x": 86,
+      "y": 1378
     },
     "CorregirLoteConID": {
-      "x": 163,
-      "y": 1459
+      "x": 167,
+      "y": 1148
     },
     "DuplicarLoteConID": {
-      "x": 272,
-      "y": 1456
+      "x": 275,
+      "y": 1277
     },
     "Helpers": {
-      "x": 287,
-      "y": 819
+      "x": 169,
+      "y": 962
     },
     "tb_registro_rapido": {
-      "x": 594,
-      "y": 1257
+      "x": 377,
+      "y": 1436
     },
     "tb_mayor": {
-      "x": 271,
-      "y": 1251
+      "x": 444,
+      "y": 1311
     },
     "tb_tasas_vigentes": {
-      "x": 1459,
-      "y": 98
+      "x": 81,
+      "y": 115
     },
     "tb_tasas_historial": {
-      "x": 27,
-      "y": 54
+      "x": -150,
+      "y": 109
     },
     "tb_cuentas": {
-      "x": 701,
-      "y": 1616
+      "x": 740,
+      "y": 1332
     },
     "tb_entidades": {
-      "x": 486,
-      "y": 1262
+      "x": 709,
+      "y": 797
     },
     "tb_divisas": {
-      "x": 580,
-      "y": 1079
+      "x": 507,
+      "y": 930
     },
     "tb_categorias": {
-      "x": 377,
-      "y": 1655
+      "x": 409,
+      "y": 1237
     },
     "tb_segmentos": {
-      "x": 592,
-      "y": 1658
+      "x": 727,
+      "y": 1100
     },
     "tb_clase_cuenta": {
-      "x": 744,
-      "y": 1915
+      "x": 845,
+      "y": 960
     },
     "IDs_Unicos": {
-      "x": 216,
-      "y": 2218
+      "x": 243,
+      "y": 1822
     },
     "ListaCuentaActiva": {
-      "x": 851,
-      "y": 1838
+      "x": 684,
+      "y": 1608
     },
     "ListaDivisaActiva": {
-      "x": 683,
-      "y": 929
+      "x": 381,
+      "y": 1143
     },
     "ListaSocios": {
-      "x": 379,
-      "y": 1188
+      "x": 312,
+      "y": 831
     },
     "ListaSegmentoActiva": {
-      "x": 475,
-      "y": 1869
+      "x": 632,
+      "y": 1376
     },
     "AlertaSpread": {
-      "x": 268,
-      "y": 595
+      "x": 223,
+      "y": 700
     },
     "Socio01": {
-      "x": 944,
-      "y": 1194
+      "x": 980,
+      "y": 880
     },
     "Socio02": {
-      "x": 729,
-      "y": 1117
+      "x": 847,
+      "y": 1615
     },
     "Socio03": {
-      "x": 926,
-      "y": 1030
+      "x": 703,
+      "y": 1509
     },
     "Utilidad_Distribuible": {
-      "x": 809,
-      "y": 1611
+      "x": 982,
+      "y": 1502
     },
     "Cta_Corriente_Socio01": {
-      "x": 915,
-      "y": 1464
+      "x": 957,
+      "y": 1252
     },
     "Cta_Corriente_Socio02": {
-      "x": 700,
-      "y": 1458
+      "x": 576,
+      "y": 1727
     },
     "Cta_Corriente_Socio03": {
-      "x": 809,
-      "y": 1323
+      "x": 790,
+      "y": 1732
     },
     "Ganancia_por_Revalorizacion": {
-      "x": 700,
-      "y": 1716
+      "x": 567,
+      "y": 1583
     },
     "Perdida_por_Revalorizacion": {
-      "x": 591,
-      "y": 1906
+      "x": 683,
+      "y": 1846
     },
     "issue:2": {
       "x": 194,
       "y": 1009
     },
     "issue:1": {
-      "x": 489,
-      "y": 985
+      "x": 330,
+      "y": 678
+    },
+    "CONFIG": {
+      "x": 708,
+      "y": 981
+    },
+    "CONFIG_AUX": {
+      "x": 632,
+      "y": 1266
+    },
+    "BALANCE": {
+      "x": 371,
+      "y": 964
+    },
+    "PyL": {
+      "x": 645,
+      "y": 1211
+    },
+    "FLUJO_CAJA": {
+      "x": 622,
+      "y": 1020
+    },
+    "PyL_POR_SEGMENTO": {
+      "x": 849,
+      "y": 1442
+    },
+    "DASHBOARD": {
+      "x": 406,
+      "y": 1057
+    },
+    "CACHE": {
+      "x": 352,
+      "y": 1569
+    },
+    "tb_tipo_divisa": {
+      "x": 608,
+      "y": 696
+    },
+    "tb_tipo_entidad": {
+      "x": 845,
+      "y": 758
+    },
+    "tb_naturaleza": {
+      "x": 951,
+      "y": 1048
+    },
+    "CuentasPyL": {
+      "x": 569,
+      "y": 1470
+    },
+    "CuadreBalance": {
+      "x": 432,
+      "y": 535
+    },
+    "LoteBalanceado": {
+      "x": 513,
+      "y": 1018
+    },
+    "issue:16": {
+      "x": 786,
+      "y": 515
+    },
+    "issue:15": {
+      "x": 607,
+      "y": 843
+    },
+    "issue:14": {
+      "x": 625,
+      "y": 1112
+    },
+    "issue:13": {
+      "x": 558,
+      "y": 318
+    },
+    "issue:12": {
+      "x": 413,
+      "y": 834
+    },
+    "issue:11": {
+      "x": 269,
+      "y": 982
+    },
+    "issue:10": {
+      "x": 507,
+      "y": 695
+    },
+    "issue:9": {
+      "x": 852,
+      "y": 1127
+    },
+    "issue:8": {
+      "x": 66,
+      "y": 973
+    },
+    "issue:7": {
+      "x": 691,
+      "y": 555
+    },
+    "issue:6": {
+      "x": 530,
+      "y": 1252
+    },
+    "issue:5": {
+      "x": 743,
+      "y": 894
+    },
+    "issue:4": {
+      "x": 284,
+      "y": 351
     }
   }
 }
