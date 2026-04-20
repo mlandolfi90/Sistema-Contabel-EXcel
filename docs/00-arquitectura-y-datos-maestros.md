@@ -48,6 +48,8 @@ El sistema usa **tablas con nombre** de Excel (`ListObject`) para robustecer las
 
 Tabla de captura. Contiene las líneas del lote que se está preparando antes de guardar.
 
+**Capacidad física**: 20 filas (tope duro por regla de negocio — ver §9.9). La tabla debe tener al menos 20 `ListRows` disponibles para que Corrección/Duplicación desde `AUDITOR_LOTES` puedan repoblar cualquier lote legítimo sin truncar.
+
 **Columnas de entrada del usuario** (limpiadas por `LimpiarRegistro`):
 
 - `Cuenta`
@@ -202,6 +204,7 @@ Las macros públicas (a conectar con botones de hoja) son:
 6. **Revalorización**: ganancia latente → débito a la cuenta revaluada y crédito a `Ganancia por Revalorización`; pérdida → débito a `Pérdida por Revalorización` y crédito a la cuenta.
 7. **Alerta de spread**: si al registrar una línea en divisa no-USD la tasa ingresada difiere de la vigente en más del 3%, el sistema ofrece actualizar la tasa vigente.
 8. **USD no tiene conversión**: las líneas en USD no se registran en `tb_tasas_historial`.
+9. **Tope de 20 líneas por lote**: un asiento contable no puede superar 20 líneas. Este tope es **regla de negocio**, no limitación técnica, y debe respetarse tanto en captura (`tb_registro_rapido` tiene 20 filas físicas) como en operaciones derivadas (Corrección/Duplicación desde `AUDITOR_LOTES` abortan con mensaje si el lote original excede el tope). Cambiar el tope requiere sincronizar: capacidad física de la tabla, constante `MAX_LINEAS_LOTE` en Módulo2, y revisión del balanceo visible en la hoja.
 
 ## 10. Componentes VBA del proyecto
 
@@ -233,7 +236,7 @@ El proyecto VBA, inventariado por `ExportarTodoVBA_Completo` (Módulo3), tiene *
 
 ## 13. Glosario rápido
 
-- **Lote**: conjunto balanceado de líneas contables guardado bajo un mismo `ID_Lote`.
+- **Lote**: conjunto balanceado de líneas contables guardado bajo un mismo `ID_Lote` (máximo 20 líneas).
 - **Spread**: desviación porcentual entre la tasa usada en un asiento y la tasa vigente.
 - **Revalorización**: asiento que refleja ganancia/pérdida latente por variación de tasa.
 - **Pacto**: asiento de distribución de utilidades entre los socios.

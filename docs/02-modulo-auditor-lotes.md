@@ -25,7 +25,7 @@
 2. **Duplicación** = clonación pura. Limpia sufijos `[ANULADO: …]`. Nueva descripción: `"DUPLICADO de <ID>: <desc>"`.
 3. Ambas exigen `REGISTRO_RAPIDO!B6 = "Vacío"`.
 4. `IDs_Unicos` ordenado descendente (más reciente primero).
-5. Límite: array `filasLote(1 To 100)`. Un lote con más de 100 líneas se truncaría.
+5. **Tope duro de 20 líneas por lote** (regla de negocio). El array local `filasLote(1 To 20)` coincide con la capacidad física de `tb_registro_rapido`. Si un lote en `tb_mayor` supera 20 líneas, la macro **aborta con `MsgBox` ruidoso** en lugar de truncar silenciosamente.
 
 ## Código fuente
 
@@ -36,6 +36,7 @@ El código fuente completo del Módulo2 está en el proyecto de Excel (Alt+F11 �
 - **Navegación en array descendente**: `LoteAnterior` avanza en el array; `LoteSiguiente` retrocede.
 - **Corrección con trazabilidad**: el asiento original se anula (no se borra).
 - **Duplicación limpia**: si el lote a duplicar ya estaba anulado, el código limpia el sufijo `[ANULADO: ...]`.
+- **Validación previa antes de procesar**: el conteo de filas del lote se hace en una primera pasada; si excede el tope se aborta antes de tocar nada (Corrección no anula nada si no puede completar el nuevo lote).
 
 ## Interacción con otros módulos
 
@@ -44,6 +45,6 @@ El código fuente completo del Módulo2 está en el proyecto de Excel (Alt+F11 �
 
 ## Riesgos conocidos
 
-1. **Límite de 100 líneas por lote**.
-2. **Sin `Undo` para `CorregirLoteConID`**.
-3. **Solo reconoce `"Activo"` y `"Anulado"`**.
+1. **Tope de 20 líneas por lote**: decisión de negocio, no limitación técnica. Si en el futuro se requieren lotes mayores, hay que (a) expandir `tb_registro_rapido` en `REGISTRO_RAPIDO`, (b) subir la constante `MAX_LINEAS_LOTE` en Módulo2, y (c) revisar que el balanceo del lote siga cabiendo en el formulario.
+2. **Sin `Undo` para `CorregirLoteConID`**: una vez anulado el lote original no hay reversión automática; el usuario debe duplicar el anulado para recuperar.
+3. **Solo reconoce `"Activo"` y `"Anulado"`** como estados válidos; cualquier otro valor en `B11` muestra error genérico.
