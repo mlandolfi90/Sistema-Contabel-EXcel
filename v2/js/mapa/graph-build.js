@@ -61,10 +61,10 @@ export function initGraph(nodes, edges) {
       }},
       { selector: 'node[type = "socio"]', style: { 'width': 60, 'height': 60 }},
       { selector: 'node[kind = "issue"]', style: {
-        'shape': 'round-rectangle', 'background-color': '#FFF4D6', 'border-color': '#B08500',
+        'shape': 'cut-rectangle', 'background-color': '#FFF4D6', 'border-color': '#B08500',
         'border-width': 1.5, 'border-style': 'dashed', 'label': 'data(label)', 'color': '#5a3e00',
         'font-size': 10, 'text-valign': 'center', 'text-halign': 'center',
-        'width': 'label', 'height': 26, 'padding': '6px', 'text-wrap': 'wrap', 'text-max-width': 180,
+        'width': 'label', 'height': 30, 'padding': '8px', 'text-wrap': 'wrap', 'text-max-width': 180,
       }},
       { selector: 'edge[kind = "system"]', style: {
         'width': 1.2, 'line-color': '#888', 'target-arrow-color': '#888', 'target-arrow-shape': 'triangle',

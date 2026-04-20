@@ -20,7 +20,6 @@ export function toggleLinkMode() {
 export function onLinkModeTap(evt) {
   if (!state.linkMode) return;
   const node = evt.target;
-  if (node.data('kind') === 'issue') return;
   if (!state.linkSource) {
     state.linkSource = node;
     node.style({ 'border-color': '#0a0', 'border-width': 4 });
@@ -33,7 +32,8 @@ export function onLinkModeTap(evt) {
 }
 
 export function createDraftEdge(sourceId, targetId) {
-  const label = prompt('Etiqueta de la conexión (opcional):', '') || '';
+  const label = prompt('Etiqueta de la conexión (opcional):', '');
+  if (label === null) { setStatus('Conexión cancelada'); return; }
   state.draft.addEdges.push({ from: sourceId, to: targetId, label });
   rerender();
   setStatus('Conexión agregada al BORRADOR');
