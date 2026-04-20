@@ -4,78 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mapa contable — Panel v2</title>
+<link rel="stylesheet" href="./js/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
-<style>
-:root {
-  --bg-primary: #ffffff; --bg-secondary: #f5f4ee; --bg-tertiary: #faf9f5;
-  --text-primary: #1a1a17; --text-secondary: #5f5e5a; --text-tertiary: #888780;
-  --text-info: #185FA5; --border-tertiary: rgba(0,0,0,0.08); --border-secondary: rgba(0,0,0,0.15);
-  --radius-md: 8px; --radius-lg: 12px;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #1f1e1b; --bg-secondary: #2a2927; --bg-tertiary: #181716;
-    --text-primary: #f0efea; --text-secondary: #b4b2a9; --text-tertiary: #888780;
-    --text-info: #85B7EB; --border-tertiary: rgba(255,255,255,0.08); --border-secondary: rgba(255,255,255,0.15);
-  }
-}
-* { box-sizing: border-box; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: var(--bg-tertiary); color: var(--text-primary);
-  margin: 0; padding: 16px; line-height: 1.5; font-size: 14px;
-}
-.header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
-h1 { font-size: 18px; font-weight: 500; margin: 0; }
-.subtitle { color: var(--text-secondary); font-size: 12px; margin: 0; }
-.nav a { font-size: 12px; color: var(--text-info); text-decoration: none; padding: 6px 12px; border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); background: var(--bg-primary); }
-.nav a:hover { background: var(--bg-secondary); }
-.toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; align-items: center; background: var(--bg-secondary); padding: 10px 14px; border-radius: var(--radius-md); font-size: 12px; }
-.toolbar .sep { width: 1px; height: 20px; background: var(--border-tertiary); }
-.btn { font-size: 11px; padding: 5px 12px; background: var(--bg-primary); border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); color: var(--text-secondary); cursor: pointer; font-family: inherit; }
-.btn:hover { color: var(--text-primary); border-color: var(--border-secondary); }
-.btn.primary { background: var(--text-info); color: #fff; border-color: var(--text-info); }
-.btn.primary:hover { color: #fff; opacity: 0.9; }
-.btn.success { background: #0a8a2a; color: #fff; border-color: #0a8a2a; }
-.btn.success:hover { color: #fff; opacity: 0.9; }
-.btn.warn { background: #d88c00; color: #fff; border-color: #d88c00; }
-.btn.warn:hover { color: #fff; opacity: 0.9; }
-.btn.danger { color: #c33; }
-.btn.danger:hover { background: #fee; border-color: #c33; }
-.btn.active { background: var(--text-info); color: #fff; border-color: var(--text-info); }
-.legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--text-secondary); }
-.legend span { display: inline-flex; align-items: center; gap: 5px; }
-.dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
-#graph { width: 100%; height: calc(100vh - 280px); min-height: 480px; background: var(--bg-primary); border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); }
-.status { font-size: 11px; color: var(--text-tertiary); margin-top: 6px; min-height: 16px; }
-.hint { font-size: 11px; color: var(--text-tertiary); margin-left: auto; }
-.draft-badge { background: #B08500; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500; margin-left: 6px; }
-.modal-bg { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
-.modal-bg.show { display: flex; }
-.modal { background: var(--bg-primary); border-radius: var(--radius-lg); padding: 20px; max-width: 520px; width: 100%; max-height: 85vh; overflow-y: auto; }
-.modal h3 { margin: 0 0 14px; font-size: 16px; font-weight: 500; }
-.modal label { display: block; font-size: 12px; color: var(--text-secondary); margin: 8px 0 4px; }
-.modal input, .modal select, .modal textarea { width: 100%; padding: 7px 10px; font-size: 13px; font-family: inherit; border: 1px solid var(--border-tertiary); border-radius: var(--radius-md); background: var(--bg-secondary); color: var(--text-primary); box-sizing: border-box; }
-.modal textarea { min-height: 80px; resize: vertical; }
-.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
-.banner { background: #FFF4D6; color: #5a3e00; padding: 8px 12px; border-radius: var(--radius-md); font-size: 11px; margin-bottom: 8px; }
-@media (prefers-color-scheme: dark) { .banner { background: #4a3a10; color: #fae9b8; } }
-.draft-summary { background: #FFF4D6; border: 1px solid #B08500; border-radius: var(--radius-md); padding: 10px 12px; font-size: 11px; color: #5a3e00; margin-bottom: 8px; }
-@media (prefers-color-scheme: dark) { .draft-summary { background: #4a3a10; color: #fae9b8; border-color: #B08500; } }
-</style>
 </head>
 <body>
 
 <div class="header">
   <div>
     <h1>Mapa contable <span id="draft-badge" class="draft-badge" style="display:none;">Borrador activo</span></h1>
-    <p class="subtitle">Lee <code>schema.json</code> (oficial) + <code>draft.json</code> (tus cambios pendientes). Las ediciones van al borrador hasta que las apliques.</p>
+    <p class="subtitle">Lee <code>schema.json</code> (oficial) + <code>draft.json</code> (tus cambios pendientes).</p>
   </div>
   <div class="nav"><a href="./">← Volver al panel v2</a></div>
 </div>
 
 <div id="no-token-banner" class="banner" style="display:none;">
-  ⚠ Sin token solo podés ver y arrastrar. Para guardar borrador, aplicar cambios o crear ideas, pegá tu token en el <a href="./">panel v2</a> primero.
+  ⚠ Sin token solo podés ver y arrastrar. Para guardar borrador, aplicar cambios o crear ideas, pegá tu token en el <a href="./">panel v2</a>.
 </div>
 
 <div id="draft-summary" class="draft-summary" style="display:none;"></div>
@@ -89,17 +32,17 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
   <div class="sep"></div>
   <button class="btn" onclick="runLayout('cose')">Auto-organizar</button>
   <button class="btn" onclick="runLayout('grid')">Grilla</button>
-  <button class="btn" onclick="graph.fit(null, 40)">Encajar</button>
+  <button class="btn" onclick="graphFit()">Encajar</button>
   <button class="btn" onclick="loadAll()">⟳ Recargar</button>
 </div>
 
 <div class="toolbar">
-  <button class="btn primary" onclick="saveDraft()">💾 Guardar borrador</button>
+  <button class="btn primary" onclick="saveDraftBtn()">💾 Guardar borrador</button>
   <button class="btn success" onclick="applyDraftToSchema()">✅ Aplicar al esquema</button>
   <button class="btn danger" onclick="discardDraft()">🗑 Descartar borrador</button>
   <div class="sep"></div>
-  <button class="btn" onclick="saveLayout()">📍 Guardar posiciones (layout)</button>
-  <span class="hint">Los cambios que hagas van al <b>borrador</b>. Solo al <b>aplicar</b> se vuelven oficiales.</span>
+  <button class="btn" onclick="saveLayoutBtn()">📍 Guardar posiciones</button>
+  <span class="hint">Cambios → <b>borrador</b>. Solo al <b>aplicar</b> se vuelven oficiales.</span>
 </div>
 
 <div class="toolbar">
@@ -118,777 +61,74 @@ h1 { font-size: 18px; font-weight: 500; margin: 0; }
 <div id="graph"></div>
 <p class="status" id="status">Inicializando...</p>
 
-<!-- Modal: Agregar Nodo -->
-<div class="modal-bg" id="modal-node">
-  <div class="modal">
-    <h3>Agregar nodo (al borrador)</h3>
-    <label>Tipo</label>
-    <select id="node-type">
-      <option value="hoja">Hoja</option>
-      <option value="macro">Macro</option>
-      <option value="tabla">Tabla</option>
-      <option value="rango">Rango con nombre</option>
-      <option value="regla">Regla</option>
-      <option value="socio">Socio</option>
-      <option value="cuenta">Cuenta contable</option>
-    </select>
-    <label>ID interno (sin espacios, ej: tb_nuevatabla)</label>
-    <input id="node-name" type="text" placeholder="MiNuevoNodo">
-    <label>Etiqueta visible (opcional, puede tener espacios)</label>
-    <input id="node-label" type="text" placeholder="Si lo dejás vacío usa el ID">
-    <label>Descripción corta (opcional)</label>
-    <input id="node-desc" type="text" placeholder="Qué hace o representa">
-    <p style="font-size:11px;color:var(--text-tertiary);margin-top:8px;">Va al borrador. Se vuelve oficial cuando apliques al esquema.</p>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('modal-node')">Cancelar</button>
-      <button class="btn primary" onclick="confirmAddNode()">Agregar al borrador</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Editar Nodo -->
-<div class="modal-bg" id="modal-edit-node">
-  <div class="modal">
-    <h3>✏️ Editar nodo</h3>
-    <p style="font-size:11px;color:var(--text-tertiary);margin:0 0 8px;">ID interno: <code id="edit-node-id">-</code> (no editable)</p>
-    <label>Tipo</label>
-    <select id="edit-node-type">
-      <option value="hoja">Hoja</option>
-      <option value="macro">Macro</option>
-      <option value="tabla">Tabla</option>
-      <option value="rango">Rango con nombre</option>
-      <option value="regla">Regla</option>
-      <option value="socio">Socio</option>
-      <option value="cuenta">Cuenta contable</option>
-    </select>
-    <label>Etiqueta visible</label>
-    <input id="edit-node-label" type="text">
-    <label>Descripción</label>
-    <input id="edit-node-desc" type="text">
-    <p style="font-size:11px;color:var(--text-tertiary);margin-top:8px;">El cambio va al borrador. El ID no se edita (si querés renombrar, eliminá y agregá).</p>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('modal-edit-node')">Cancelar</button>
-      <button class="btn warn" onclick="confirmEditNode()">Guardar edición</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Editar Conexión -->
-<div class="modal-bg" id="modal-edit-edge">
-  <div class="modal">
-    <h3>✏️ Editar conexión</h3>
-    <p style="font-size:11px;color:var(--text-tertiary);margin:0 0 8px;">De <code id="edit-edge-from">-</code> a <code id="edit-edge-to">-</code></p>
-    <label>Etiqueta</label>
-    <input id="edit-edge-label" type="text">
-    <p style="font-size:11px;color:var(--text-tertiary);margin-top:8px;">El cambio va al borrador.</p>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('modal-edit-edge')">Cancelar</button>
-      <button class="btn warn" onclick="confirmEditEdge()">Guardar edición</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Agregar Idea -->
-<div class="modal-bg" id="modal-idea">
-  <div class="modal">
-    <h3>Crear idea (Issue en GitHub)</h3>
-    <p id="idea-anchor-info" style="font-size:11px;color:var(--text-tertiary);margin:0 0 8px;"></p>
-    <label>Título</label>
-    <input id="idea-title" type="text" placeholder="Ej: Validar moneda antes de guardar">
-    <label>Notas (markdown)</label>
-    <textarea id="idea-note" placeholder="Qué cambia, por qué, qué probar..."></textarea>
-    <label>Estado</label>
-    <select id="idea-status">
-      <option value="idea">Idea / por pensar</option>
-      <option value="diseño">En diseño</option>
-      <option value="listo">Listo para implementar</option>
-    </select>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('modal-idea')">Cancelar</button>
-      <button class="btn primary" onclick="confirmAddIdea()">Crear Issue</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Aplicar borrador -->
-<div class="modal-bg" id="modal-apply">
-  <div class="modal">
-    <h3>✅ Aplicar borrador al esquema oficial</h3>
-    <div id="apply-preview" style="font-size:12px;"></div>
-    <p style="font-size:11px;color:var(--text-tertiary);margin-top:12px;">Esta acción modifica <code>schema.json</code> de forma permanente (commit al repo). El borrador queda vacío después.</p>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal('modal-apply')">Cancelar</button>
-      <button class="btn success" onclick="confirmApplyDraft()">Confirmar y aplicar</button>
-    </div>
-  </div>
-</div>
-
-<script>
-/* ============================================================
-   CONFIGURACIÓN
-   ============================================================ */
-const OWNER = 'mlandolfi90';
-const REPO = 'Sistema-Contabel-EXcel';
-const API = 'https://api.github.com/repos/' + OWNER + '/' + REPO;
-const TOKEN_KEY = 'gh-token-panel-v2';
-let token = localStorage.getItem(TOKEN_KEY) || '';
-
-const SCHEMA_PATH = 'v2/schema.json';
-const DRAFT_PATH  = 'v2/draft.json';
-const LAYOUT_PATH = 'v2/layout.json';
-
-/* ============================================================
-   ESTADO GLOBAL
-   ============================================================ */
-let schema = { nodeTypes: {}, nodes: [], relations: [] };
-let schemaSha = null;
-let draft  = { addNodes: [], addEdges: [], removeNodes: [], removeEdges: [], editNodes: [], editEdges: [] };
-let draftSha = null;
-let layoutData = { positions: {} };
-let layoutSha = null;
-
-let graph;
-let linkMode = false;
-let linkSource = null;
-let pendingIdeaAnchor = null;
-let pendingEditNodeId = null;
-let pendingEditEdge = null; // { from, to, label }
-
-/* ============================================================
-   API HELPERS
-   ============================================================ */
-function authHeaders() {
-  const h = { 'Accept': 'application/vnd.github+json' };
-  if (token) h['Authorization'] = 'Bearer ' + token;
-  return h;
-}
-async function apiGet(path) {
-  const r = await fetch(API + path, { headers: authHeaders() });
-  if (!r.ok) throw new Error('GET ' + path + ' → ' + r.status);
-  return r.json();
-}
-async function apiPost(path, body) {
-  const h = authHeaders(); h['Content-Type'] = 'application/json';
-  const r = await fetch(API + path, { method: 'POST', headers: h, body: JSON.stringify(body) });
-  if (!r.ok) throw new Error('POST ' + path + ' → ' + r.status + ' ' + await r.text());
-  return r.json();
-}
-async function apiPut(path, body) {
-  const h = authHeaders(); h['Content-Type'] = 'application/json';
-  const r = await fetch(API + path, { method: 'PUT', headers: h, body: JSON.stringify(body) });
-  if (!r.ok) throw new Error('PUT ' + path + ' → ' + r.status + ' ' + await r.text());
-  return r.json();
-}
-
-async function loadJsonFile(path, defaultVal) {
-  try {
-    const r = await fetch(API + '/contents/' + path + '?t=' + Date.now(), { headers: authHeaders() });
-    if (r.status === 404) return { data: defaultVal, sha: null };
-    if (!r.ok) throw new Error('fetch ' + path + ': ' + r.status);
-    const json = await r.json();
-    const decoded = atob(json.content.replace(/\s/g, ''));
-    const data = JSON.parse(decodeURIComponent(escape(decoded)));
-    return { data, sha: json.sha };
-  } catch (e) {
-    console.warn(path + ' no disponible:', e);
-    return { data: defaultVal, sha: null };
-  }
-}
-
-async function saveJsonFile(path, data, sha, message) {
-  const content = JSON.stringify(data, null, 2);
-  const encoded = btoa(unescape(encodeURIComponent(content)));
-  const body = { message, content: encoded, branch: 'main' };
-  if (sha) body.sha = sha;
-  const r = await apiPut('/contents/' + path, body);
-  return r.content.sha;
-}
-
-/* ============================================================
-   ISSUES
-   ============================================================ */
-async function loadIssues() {
-  const issues = await apiGet('/issues?state=open&per_page=100');
-  return issues.filter(i => !i.pull_request).map(issue => {
-    const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
-    let status = 'idea';
-    for (const s of ['idea','diseño','listo']) if (labels.includes(s)) { status = s; break; }
-    const anchors = [];
-    labels.forEach(l => {
-      const m = l.match(/^(macro|hoja|tabla|rango|regla|socio|cuenta):(.+)$/);
-      if (m) anchors.push({ type: m[1], id: m[2] });
-    });
-    return { number: issue.number, title: issue.title, status, anchors, url: issue.html_url };
-  });
-}
-
-/* ============================================================
-   RESOLUCIÓN: combinar schema + draft
-   ============================================================ */
-function keyOfEdge(e) {
-  return (e.from || e.source) + '|' + (e.to || e.target) + '|' + (e.label || '');
-}
-
-function getEffectiveNodes() {
-  const removed = new Set(draft.removeNodes || []);
-  const edits = Object.fromEntries((draft.editNodes || []).map(e => [e.id, e]));
-  const base = schema.nodes
-    .filter(n => !removed.has(n.id))
-    .map(n => {
-      const e = edits[n.id];
-      if (e) return { ...n, label: e.label ?? n.label, desc: e.desc ?? n.desc, type: e.type ?? n.type, kind: 'draft-edit' };
-      return { ...n, kind: 'system' };
-    });
-  const added = (draft.addNodes || []).map(n => ({ ...n, kind: 'draft-add' }));
-  return [...base, ...added];
-}
-
-function getEffectiveRelations() {
-  const removedKeys = new Set((draft.removeEdges || []).map(keyOfEdge));
-  // edit: mapear original key -> nuevo label
-  const editMap = {};
-  (draft.editEdges || []).forEach(e => {
-    const origKey = e.from + '|' + e.to + '|' + (e.origLabel || '');
-    editMap[origKey] = e;
-  });
-  const base = schema.relations
-    .filter(r => !removedKeys.has(keyOfEdge(r)))
-    .map(r => {
-      const k = keyOfEdge(r);
-      const e = editMap[k];
-      if (e) return { ...r, label: e.label ?? r.label, kind: 'draft-edit' };
-      return { ...r, kind: 'system' };
-    });
-  const added = (draft.addEdges || []).map(e => ({ ...e, kind: 'draft-add' }));
-  return [...base, ...added];
-}
-
-/* ============================================================
-   BUILD GRAPH DATA
-   ============================================================ */
-function buildGraphData(issues) {
-  const nodes = [];
-  const edges = [];
-
-  getEffectiveNodes().forEach(n => {
-    nodes.push({ data: { id: n.id, label: n.label || n.id, desc: n.desc || '', type: n.type, kind: n.kind } });
-  });
-
-  getEffectiveRelations().forEach((r, idx) => {
-    const kind = (r.kind === 'draft-add' || r.kind === 'draft-edit') ? 'draft' : 'system';
-    edges.push({ data: {
-      id: 'rel-' + idx + '-' + r.from + '-' + r.to,
-      source: r.from, target: r.to,
-      label: r.label || '',
-      kind,
-    }});
-  });
-
-  issues.forEach(iss => {
-    nodes.push({
-      data: {
-        id: 'issue:' + iss.number,
-        label: '#' + iss.number + ' ' + truncate(iss.title, 40),
-        desc: iss.title, type: 'issue', kind: 'issue', status: iss.status, url: iss.url,
-      }
-    });
-    iss.anchors.forEach((a, i) => {
-      if (nodes.some(n => n.data.id === a.id)) {
-        edges.push({ data: { id: 'issue-edge-' + iss.number + '-' + i, source: 'issue:' + iss.number, target: a.id, kind: 'issue' } });
-      }
-    });
-  });
-
-  nodes.forEach(n => {
-    if (layoutData.positions[n.data.id]) n.position = layoutData.positions[n.data.id];
-  });
-
-  return { nodes, edges };
-}
-
-function truncate(s, n) { return s.length > n ? s.slice(0, n - 1) + '…' : s; }
-
-/* ============================================================
-   INIT CYTOSCAPE
-   ============================================================ */
-function initGraph(nodes, edges) {
-  const hasPositions = Object.keys(layoutData.positions).length > 0;
-  const nodeTypes = schema.nodeTypes || {};
-
-  graph = cytoscape({
-    container: document.getElementById('graph'),
-    elements: [...nodes, ...edges],
-    style: [
-      { selector: 'node[kind = "system"], node[kind = "draft-add"], node[kind = "draft-edit"]', style: {
-        'shape': ele => nodeTypes[ele.data('type')]?.shape || 'round-rectangle',
-        'background-color': ele => nodeTypes[ele.data('type')]?.bg || '#eee',
-        'border-color': ele => nodeTypes[ele.data('type')]?.border || '#888',
-        'border-width': 1.5,
-        'border-style': ele => (ele.data('kind') === 'draft-add' || ele.data('kind') === 'draft-edit') ? 'dotted' : 'solid',
-        'label': 'data(label)',
-        'color': ele => nodeTypes[ele.data('type')]?.text || '#333',
-        'font-size': 11, 'font-weight': 500,
-        'text-valign': 'center', 'text-halign': 'center',
-        'width': 'label', 'height': 32, 'padding': '10px',
-        'text-wrap': 'wrap', 'text-max-width': 140,
-      }},
-      { selector: 'node[type = "socio"]', style: { 'width': 60, 'height': 60 } },
-      { selector: 'node[kind = "issue"]', style: {
-        'shape': 'round-rectangle',
-        'background-color': '#FFF4D6', 'border-color': '#B08500',
-        'border-width': 1.5, 'border-style': 'dashed',
-        'label': 'data(label)', 'color': '#5a3e00',
-        'font-size': 10, 'text-valign': 'center', 'text-halign': 'center',
-        'width': 'label', 'height': 26, 'padding': '6px',
-        'text-wrap': 'wrap', 'text-max-width': 180,
-      }},
-      { selector: 'edge[kind = "system"]', style: {
-        'width': 1.2, 'line-color': '#888',
-        'target-arrow-color': '#888', 'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier', 'label': 'data(label)',
-        'font-size': 9, 'color': '#888',
-        'text-background-color': '#fff', 'text-background-opacity': 0.85, 'text-background-padding': 2,
-      }},
-      { selector: 'edge[kind = "draft"]', style: {
-        'width': 1.8, 'line-color': '#B08500', 'line-style': 'dashed',
-        'target-arrow-color': '#B08500', 'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier', 'label': 'data(label)',
-        'font-size': 9, 'color': '#B08500',
-        'text-background-color': '#fff', 'text-background-opacity': 0.85, 'text-background-padding': 2,
-      }},
-      { selector: 'edge[kind = "issue"]', style: {
-        'width': 1, 'line-color': '#B08500', 'line-style': 'dashed',
-        'target-arrow-color': '#B08500', 'target-arrow-shape': 'triangle',
-        'curve-style': 'bezier', 'opacity': 0.5,
-      }},
-      { selector: ':selected', style: { 'border-width': 3, 'border-color': '#185FA5', 'line-color': '#185FA5' } },
-    ],
-    layout: hasPositions ? { name: 'preset' } : { name: 'cose', animate: false, nodeRepulsion: 8000, idealEdgeLength: 120, padding: 30 },
-    wheelSensitivity: 0.2, minZoom: 0.2, maxZoom: 2.5,
-  });
-
-  graph.on('tap', 'node[kind = "issue"]', evt => {
-    if (linkMode) return;
-    const url = evt.target.data('url');
-    if (url) window.open(url, '_blank');
-  });
-
-  graph.on('tap', 'node', evt => {
-    if (!linkMode) return;
-    const node = evt.target;
-    if (node.data('kind') === 'issue') return;
-    if (!linkSource) {
-      linkSource = node;
-      node.style({ 'border-color': '#0a0', 'border-width': 4 });
-      setStatus('Origen: ' + node.data('label') + ' — click ahora en el destino');
-    } else if (linkSource.id() !== node.id()) {
-      createDraftEdge(linkSource.id(), node.id());
-      linkSource.removeStyle();
-      linkSource = null;
-      toggleLinkMode();
-    }
-  });
-
-  graph.on('mouseover', 'node', evt => setStatus(evt.target.data('desc') || evt.target.data('label')));
-  graph.on('mouseout', 'node', () => { if (!linkMode) setStatus(''); });
-
-  // Doble-click sobre nodo/edge abre el editor
-  graph.on('dblclick', 'node[kind != "issue"]', evt => editSelectedFromEvent(evt));
-  graph.on('dblclick', 'edge[kind != "issue"]', evt => editSelectedFromEvent(evt));
-}
-
-/* ============================================================
-   AGREGAR NODO
-   ============================================================ */
-function openAddNodeModal() { openModal('modal-node'); }
-
-function confirmAddNode() {
-  const type = document.getElementById('node-type').value;
-  const id = document.getElementById('node-name').value.trim();
-  const label = document.getElementById('node-label').value.trim() || id;
-  const desc = document.getElementById('node-desc').value.trim();
-  if (!id) { alert('Falta el ID'); return; }
-  if (/[\s'"\\\/]/.test(id)) { alert('El ID no puede tener espacios ni caracteres especiales'); return; }
-  const allIds = getEffectiveNodes().map(n => n.id);
-  if (allIds.includes(id)) { alert('Ya existe un nodo con ese ID'); return; }
-  draft.addNodes = draft.addNodes || [];
-  draft.addNodes.push({ id, type, label, desc });
-  document.getElementById('node-name').value = '';
-  document.getElementById('node-label').value = '';
-  document.getElementById('node-desc').value = '';
-  closeModal('modal-node');
-  rerender();
-  setStatus('Nodo agregado al BORRADOR: ' + id);
-}
-
-/* ============================================================
-   EDITAR SELECCIÓN
-   ============================================================ */
-function editSelected() {
-  const sel = graph.$(':selected');
-  if (sel.length === 0) { alert('Seleccioná primero un nodo o una flecha (click sobre él)'); return; }
-  if (sel.length > 1) { alert('Seleccioná UNO solo para editar'); return; }
-  editSelectedFromEvent({ target: sel[0] });
-}
-
-function editSelectedFromEvent(evt) {
-  const el = evt.target;
-  if (el.data('kind') === 'issue') { alert('Los Issues se editan desde GitHub.'); return; }
-
-  if (el.isNode()) {
-    pendingEditNodeId = el.id();
-    const node = getEffectiveNodes().find(n => n.id === el.id());
-    document.getElementById('edit-node-id').textContent = node.id;
-    document.getElementById('edit-node-type').value = node.type;
-    document.getElementById('edit-node-label').value = node.label || '';
-    document.getElementById('edit-node-desc').value = node.desc || '';
-    openModal('modal-edit-node');
-  } else {
-    pendingEditEdge = { from: el.data('source'), to: el.data('target'), origLabel: el.data('label') || '' };
-    document.getElementById('edit-edge-from').textContent = pendingEditEdge.from;
-    document.getElementById('edit-edge-to').textContent = pendingEditEdge.to;
-    document.getElementById('edit-edge-label').value = pendingEditEdge.origLabel;
-    openModal('modal-edit-edge');
-  }
-}
-
-function confirmEditNode() {
-  const id = pendingEditNodeId;
-  if (!id) return;
-  const type = document.getElementById('edit-node-type').value;
-  const label = document.getElementById('edit-node-label').value.trim();
-  const desc = document.getElementById('edit-node-desc').value.trim();
-
-  // ¿es un nodo del borrador? (draft-add) → lo modifico ahí directamente
-  const addIdx = (draft.addNodes || []).findIndex(n => n.id === id);
-  if (addIdx >= 0) {
-    draft.addNodes[addIdx] = { ...draft.addNodes[addIdx], type, label, desc };
-  } else {
-    // Es un nodo del schema → agrego/actualizo en editNodes
-    draft.editNodes = draft.editNodes || [];
-    const existing = draft.editNodes.findIndex(e => e.id === id);
-    const editEntry = { id, type, label, desc };
-    if (existing >= 0) draft.editNodes[existing] = editEntry;
-    else draft.editNodes.push(editEntry);
-  }
-
-  pendingEditNodeId = null;
-  closeModal('modal-edit-node');
-  rerender();
-  setStatus('Edición en BORRADOR: ' + id);
-}
-
-function confirmEditEdge() {
-  const ed = pendingEditEdge;
-  if (!ed) return;
-  const newLabel = document.getElementById('edit-edge-label').value.trim();
-
-  // ¿es edge del borrador (addEdges)? → lo modifico directamente
-  const addIdx = (draft.addEdges || []).findIndex(e => e.from === ed.from && e.to === ed.to && (e.label || '') === ed.origLabel);
-  if (addIdx >= 0) {
-    draft.addEdges[addIdx].label = newLabel;
-  } else {
-    draft.editEdges = draft.editEdges || [];
-    const key = ed.from + '|' + ed.to + '|' + ed.origLabel;
-    const existing = draft.editEdges.findIndex(e => (e.from + '|' + e.to + '|' + (e.origLabel || '')) === key);
-    const entry = { from: ed.from, to: ed.to, origLabel: ed.origLabel, label: newLabel };
-    if (existing >= 0) draft.editEdges[existing] = entry;
-    else draft.editEdges.push(entry);
-  }
-
-  pendingEditEdge = null;
-  closeModal('modal-edit-edge');
-  rerender();
-  setStatus('Conexión editada en BORRADOR');
-}
-
-/* ============================================================
-   CONEXIONES / ELIMINAR
-   ============================================================ */
-function toggleLinkMode() {
-  linkMode = !linkMode;
-  const btn = document.getElementById('btn-link');
-  if (linkMode) {
-    btn.classList.add('active'); btn.textContent = '✕ Cancelar conexión';
-    setStatus('Modo conexión: click en el nodo ORIGEN (no issues)');
-  } else {
-    btn.classList.remove('active'); btn.textContent = '+ Conexión';
-    if (linkSource) { linkSource.removeStyle(); linkSource = null; }
-    setStatus('');
-  }
-}
-
-function createDraftEdge(sourceId, targetId) {
-  const label = prompt('Etiqueta de la conexión (opcional):', '') || '';
-  draft.addEdges = draft.addEdges || [];
-  draft.addEdges.push({ from: sourceId, to: targetId, label });
-  rerender();
-  setStatus('Conexión agregada al BORRADOR');
-}
-
-function deleteSelected() {
-  const sel = graph.$(':selected');
-  if (sel.length === 0) { alert('Seleccioná primero un nodo o flecha'); return; }
-  if (!confirm(sel.length + ' elemento(s) se marcarán para eliminación en el borrador. ¿Continuar?')) return;
-
-  sel.forEach(el => {
-    if (el.isNode()) {
-      if (el.data('kind') === 'issue') { alert('Los Issues se cierran desde el panel v2.'); return; }
-      const id = el.id();
-      if (el.data('kind') === 'draft-add') {
-        draft.addNodes = (draft.addNodes || []).filter(n => n.id !== id);
-      } else {
-        // Si estaba editado, sacamos la edición también
-        draft.editNodes = (draft.editNodes || []).filter(e => e.id !== id);
-        draft.removeNodes = draft.removeNodes || [];
-        if (!draft.removeNodes.includes(id)) draft.removeNodes.push(id);
-      }
-    } else if (el.isEdge()) {
-      if (el.data('kind') === 'issue') { alert('Las conexiones de Issues vienen de labels.'); return; }
-      const s = el.data('source'), t = el.data('target'), l = el.data('label') || '';
-      const addMatch = (draft.addEdges || []).some(e => e.from === s && e.to === t && (e.label || '') === l);
-      if (addMatch) {
-        draft.addEdges = draft.addEdges.filter(e => !(e.from === s && e.to === t && (e.label || '') === l));
-      } else {
-        // si el edge actual viene de un editEdge, su label "visible" no es el original
-        const edited = (draft.editEdges || []).find(e => e.from === s && e.to === t && (e.label || '') === l);
-        const origLabel = edited ? edited.origLabel : l;
-        draft.editEdges = (draft.editEdges || []).filter(e => !(e.from === s && e.to === t && (e.origLabel || '') === origLabel));
-        draft.removeEdges = draft.removeEdges || [];
-        if (!draft.removeEdges.some(e => e.from === s && e.to === t && (e.label || '') === origLabel)) {
-          draft.removeEdges.push({ from: s, to: t, label: origLabel });
-        }
-      }
-    }
-  });
-  rerender();
-  setStatus('Eliminación pendiente en BORRADOR');
-}
-
-/* ============================================================
-   GUARDAR / APLICAR / DESCARTAR
-   ============================================================ */
-async function saveDraft() {
-  if (!token) { alert('Necesitás token guardado en panel v2'); return; }
-  try {
-    setStatus('Guardando borrador...');
-    draftSha = await saveJsonFile(DRAFT_PATH, draft, draftSha, 'mapa: guardar borrador');
-    setStatus('Borrador guardado ✓');
-    updateDraftUI();
-  } catch (e) { setStatus('Error: ' + e.message); }
-}
-
-function openApplyModal() {
-  const preview = [];
-  if (draft.addNodes?.length) preview.push('<b>' + draft.addNodes.length + ' nodos nuevos:</b><br>' + draft.addNodes.map(n => '&nbsp;&nbsp;+ ' + n.type + ':' + n.id + ' (' + (n.label || n.id) + ')').join('<br>'));
-  if (draft.editNodes?.length) preview.push('<b>' + draft.editNodes.length + ' nodos editados:</b><br>' + draft.editNodes.map(e => '&nbsp;&nbsp;✏️ ' + e.id + ' → ' + (e.label || e.id) + ' (' + e.type + ')').join('<br>'));
-  if (draft.addEdges?.length) preview.push('<b>' + draft.addEdges.length + ' conexiones nuevas:</b><br>' + draft.addEdges.map(e => '&nbsp;&nbsp;+ ' + e.from + ' → ' + e.to + (e.label ? ' (' + e.label + ')' : '')).join('<br>'));
-  if (draft.editEdges?.length) preview.push('<b>' + draft.editEdges.length + ' conexiones editadas:</b><br>' + draft.editEdges.map(e => '&nbsp;&nbsp;✏️ ' + e.from + ' → ' + e.to + ': "' + (e.origLabel || '') + '" → "' + (e.label || '') + '"').join('<br>'));
-  if (draft.removeNodes?.length) preview.push('<b>' + draft.removeNodes.length + ' nodos a eliminar:</b><br>' + draft.removeNodes.map(id => '&nbsp;&nbsp;− ' + id).join('<br>'));
-  if (draft.removeEdges?.length) preview.push('<b>' + draft.removeEdges.length + ' conexiones a eliminar:</b><br>' + draft.removeEdges.map(e => '&nbsp;&nbsp;− ' + e.from + ' → ' + e.to).join('<br>'));
-  if (preview.length === 0) { alert('El borrador está vacío'); return; }
-  document.getElementById('apply-preview').innerHTML = preview.join('<br><br>');
-  openModal('modal-apply');
-}
-
-function applyDraftToSchema() { openApplyModal(); }
-
-async function confirmApplyDraft() {
-  if (!token) { alert('Necesitás token'); return; }
-  try {
-    setStatus('Aplicando borrador al esquema...');
-    const newSchema = JSON.parse(JSON.stringify(schema));
-
-    // 1. Remove nodes
-    const removeNodeIds = new Set(draft.removeNodes || []);
-    newSchema.nodes = newSchema.nodes.filter(n => !removeNodeIds.has(n.id));
-    newSchema.relations = newSchema.relations.filter(r => !removeNodeIds.has(r.from) && !removeNodeIds.has(r.to));
-
-    // 2. Remove edges
-    const removeEdgeKeys = new Set((draft.removeEdges || []).map(keyOfEdge));
-    newSchema.relations = newSchema.relations.filter(r => !removeEdgeKeys.has(keyOfEdge(r)));
-
-    // 3. Edit nodes
-    (draft.editNodes || []).forEach(e => {
-      const n = newSchema.nodes.find(x => x.id === e.id);
-      if (n) { if (e.type) n.type = e.type; if (e.label !== undefined) n.label = e.label; if (e.desc !== undefined) n.desc = e.desc; }
-    });
-
-    // 4. Edit edges
-    (draft.editEdges || []).forEach(e => {
-      const idx = newSchema.relations.findIndex(r => r.from === e.from && r.to === e.to && (r.label || '') === (e.origLabel || ''));
-      if (idx >= 0) newSchema.relations[idx].label = e.label || '';
-    });
-
-    // 5. Add nodes
-    (draft.addNodes || []).forEach(n => {
-      if (!newSchema.nodes.some(x => x.id === n.id)) newSchema.nodes.push(n);
-    });
-
-    // 6. Add edges
-    (draft.addEdges || []).forEach(e => {
-      if (!newSchema.relations.some(r => r.from === e.from && r.to === e.to && (r.label || '') === (e.label || ''))) {
-        newSchema.relations.push({ from: e.from, to: e.to, label: e.label || '' });
-      }
-    });
-
-    schemaSha = await saveJsonFile(SCHEMA_PATH, newSchema, schemaSha, 'mapa: aplicar borrador al esquema');
-    schema = newSchema;
-
-    draft = { addNodes: [], addEdges: [], removeNodes: [], removeEdges: [], editNodes: [], editEdges: [] };
-    draftSha = await saveJsonFile(DRAFT_PATH, draft, draftSha, 'mapa: limpiar borrador tras aplicar');
-
-    closeModal('modal-apply');
-    rerender();
-    setStatus('Borrador aplicado al esquema ✓');
-  } catch (e) { setStatus('Error: ' + e.message); }
-}
-
-async function discardDraft() {
-  if (!isDraftEmpty() && !confirm('¿Descartar todos los cambios del borrador?')) return;
-  draft = { addNodes: [], addEdges: [], removeNodes: [], removeEdges: [], editNodes: [], editEdges: [] };
-  if (token) {
-    try { draftSha = await saveJsonFile(DRAFT_PATH, draft, draftSha, 'mapa: descartar borrador'); }
-    catch (e) { console.warn(e); }
-  }
-  rerender();
-  setStatus('Borrador descartado');
-}
-
-function isDraftEmpty() {
-  return !(draft.addNodes?.length || draft.addEdges?.length || draft.removeNodes?.length || draft.removeEdges?.length || draft.editNodes?.length || draft.editEdges?.length);
-}
-
-/* ============================================================
-   LAYOUT
-   ============================================================ */
-async function saveLayout() {
-  if (!token) { alert('Necesitás token'); return; }
-  graph.nodes().forEach(n => {
-    const p = n.position();
-    layoutData.positions[n.id()] = { x: Math.round(p.x), y: Math.round(p.y) };
-  });
-  try {
-    setStatus('Guardando posiciones...');
-    layoutSha = await saveJsonFile(LAYOUT_PATH, layoutData, layoutSha, 'mapa: actualizar posiciones');
-    setStatus('Posiciones guardadas ✓');
-  } catch (e) { setStatus('Error: ' + e.message); }
-}
-
-/* ============================================================
-   IDEAS (Issues)
-   ============================================================ */
-function openAddIdeaModal() {
-  if (!token) { alert('Necesitás token para crear issues'); return; }
-  const sel = graph.$('node[kind != "issue"]:selected');
-  if (sel.length === 0) {
-    if (!confirm('No hay nodo seleccionado. ¿Crear idea sin ancla?')) return;
-    pendingIdeaAnchor = null;
-    document.getElementById('idea-anchor-info').textContent = 'Sin ancla (Issue suelto)';
-  } else {
-    const n = sel[0];
-    pendingIdeaAnchor = { type: n.data('type'), id: n.id() };
-    document.getElementById('idea-anchor-info').textContent = 'Ancla: ' + pendingIdeaAnchor.type + ':' + pendingIdeaAnchor.id;
-  }
-  openModal('modal-idea');
-}
-
-async function confirmAddIdea() {
-  const title = document.getElementById('idea-title').value.trim();
-  if (!title) { alert('Falta el título'); return; }
-  const note = document.getElementById('idea-note').value.trim();
-  const status = document.getElementById('idea-status').value;
-  const labels = [status];
-  if (pendingIdeaAnchor) labels.push(pendingIdeaAnchor.type + ':' + pendingIdeaAnchor.id);
-  try {
-    setStatus('Creando issue...');
-    await apiPost('/issues', { title, body: note, labels });
-    document.getElementById('idea-title').value = '';
-    document.getElementById('idea-note').value = '';
-    closeModal('modal-idea');
-    await loadAll();
-    setStatus('Issue creado ✓');
-  } catch (e) { setStatus('Error: ' + e.message); }
-}
-
-/* ============================================================
-   UI HELPERS
-   ============================================================ */
-function openModal(id) { document.getElementById(id).classList.add('show'); }
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-function setStatus(msg) { document.getElementById('status').textContent = msg || ''; }
-
-function runLayout(name) {
-  if (!graph) return;
-  const opts = name === 'grid'
-    ? { name: 'grid', padding: 30, animate: true }
-    : { name: 'cose', animate: true, nodeRepulsion: 8000, idealEdgeLength: 120, padding: 30 };
-  graph.layout(opts).run();
-}
-
-function updateDraftUI() {
-  const has = !isDraftEmpty();
-  document.getElementById('draft-badge').style.display = has ? 'inline-block' : 'none';
-  const sum = document.getElementById('draft-summary');
-  if (!has) { sum.style.display = 'none'; return; }
-  const parts = [];
-  if (draft.addNodes?.length) parts.push('+' + draft.addNodes.length + ' nodos');
-  if (draft.editNodes?.length) parts.push('✏️' + draft.editNodes.length + ' nodos editados');
-  if (draft.addEdges?.length) parts.push('+' + draft.addEdges.length + ' conexiones');
-  if (draft.editEdges?.length) parts.push('✏️' + draft.editEdges.length + ' conexiones editadas');
-  if (draft.removeNodes?.length) parts.push('−' + draft.removeNodes.length + ' nodos');
-  if (draft.removeEdges?.length) parts.push('−' + draft.removeEdges.length + ' conexiones');
-  sum.innerHTML = '<b>Borrador:</b> ' + parts.join(' · ') + ' pendientes de aplicar';
-  sum.style.display = 'block';
-}
-
-async function rerender() {
-  updateDraftUI();
-  try {
-    const issues = await loadIssues();
-    const { nodes, edges } = buildGraphData(issues);
-    const positions = {};
-    if (graph) graph.nodes().forEach(n => positions[n.id()] = n.position());
-    if (graph) graph.destroy();
-    nodes.forEach(n => { if (positions[n.data.id]) n.position = positions[n.data.id]; });
-    initGraph(nodes, edges);
-  } catch (e) { setStatus('Error rerender: ' + e.message); }
-}
-
-/* ============================================================
-   ARRANQUE
-   ============================================================ */
-async function loadAll() {
-  try {
-    setStatus('Cargando schema, borrador, layout, issues...');
-    if (!token) document.getElementById('no-token-banner').style.display = 'block';
-
-    const [s, d, l] = await Promise.all([
-      loadJsonFile(SCHEMA_PATH, { nodeTypes: {}, nodes: [], relations: [] }),
-      loadJsonFile(DRAFT_PATH,  { addNodes: [], addEdges: [], removeNodes: [], removeEdges: [], editNodes: [], editEdges: [] }),
-      loadJsonFile(LAYOUT_PATH, { positions: {} }),
-    ]);
-    schema = s.data; schemaSha = s.sha;
-    draft  = d.data; draftSha  = d.sha;
-    layoutData = l.data; layoutSha = l.sha;
-
-    ['addNodes','addEdges','removeNodes','removeEdges','editNodes','editEdges'].forEach(k => { draft[k] = draft[k] || []; });
-    layoutData.positions = layoutData.positions || {};
-
-    const issues = await loadIssues();
-    const { nodes, edges } = buildGraphData(issues);
-    if (graph) graph.destroy();
-    initGraph(nodes, edges);
-    updateDraftUI();
-    setStatus('Listo: ' + nodes.length + ' nodos · ' + edges.length + ' conexiones · ' + issues.length + ' issues');
-  } catch (e) { setStatus('Error: ' + e.message); }
-}
-
-document.querySelectorAll('.modal-bg').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
-});
-
-loadAll();
+<!-- Modales -->
+<div class="modal-bg" id="modal-node"><div class="modal">
+  <h3>Agregar nodo (al borrador)</h3>
+  <label>Tipo</label>
+  <select id="node-type">
+    <option value="hoja">Hoja</option>
+    <option value="macro">Macro</option>
+    <option value="tabla">Tabla</option>
+    <option value="rango">Rango con nombre</option>
+    <option value="regla">Regla</option>
+    <option value="socio">Socio</option>
+    <option value="cuenta">Cuenta contable</option>
+  </select>
+  <label>ID interno (sin espacios)</label>
+  <input id="node-name" type="text" placeholder="MiNuevoNodo">
+  <label>Etiqueta visible (opcional)</label>
+  <input id="node-label" type="text" placeholder="Si lo dejás vacío usa el ID">
+  <label>Descripción</label>
+  <input id="node-desc" type="text" placeholder="Qué hace o representa">
+  <div class="modal-actions"><button class="btn" onclick="closeModal('modal-node')">Cancelar</button><button class="btn primary" onclick="confirmAddNode()">Agregar al borrador</button></div>
+</div></div>
+
+<div class="modal-bg" id="modal-edit-node"><div class="modal">
+  <h3>✏️ Editar nodo</h3>
+  <p style="font-size:11px;color:var(--text-tertiary);">ID: <code id="edit-node-id">-</code> (no editable)</p>
+  <label>Tipo</label>
+  <select id="edit-node-type">
+    <option value="hoja">Hoja</option><option value="macro">Macro</option>
+    <option value="tabla">Tabla</option><option value="rango">Rango</option>
+    <option value="regla">Regla</option><option value="socio">Socio</option>
+    <option value="cuenta">Cuenta</option>
+  </select>
+  <label>Etiqueta visible</label><input id="edit-node-label" type="text">
+  <label>Descripción</label><input id="edit-node-desc" type="text">
+  <div class="modal-actions"><button class="btn" onclick="closeModal('modal-edit-node')">Cancelar</button><button class="btn warn" onclick="confirmEditNode()">Guardar edición</button></div>
+</div></div>
+
+<div class="modal-bg" id="modal-edit-edge"><div class="modal">
+  <h3>✏️ Editar conexión</h3>
+  <p style="font-size:11px;color:var(--text-tertiary);">De <code id="edit-edge-from">-</code> a <code id="edit-edge-to">-</code></p>
+  <label>Etiqueta</label><input id="edit-edge-label" type="text">
+  <div class="modal-actions"><button class="btn" onclick="closeModal('modal-edit-edge')">Cancelar</button><button class="btn warn" onclick="confirmEditEdge()">Guardar edición</button></div>
+</div></div>
+
+<div class="modal-bg" id="modal-idea"><div class="modal">
+  <h3>Crear idea (Issue en GitHub)</h3>
+  <p id="idea-anchor-info" style="font-size:11px;color:var(--text-tertiary);"></p>
+  <label>Título</label><input id="idea-title" type="text" placeholder="Ej: Validar moneda antes de guardar">
+  <label>Notas (markdown)</label><textarea id="idea-note" placeholder="Qué cambia, por qué, qué probar..."></textarea>
+  <label>Estado</label>
+  <select id="idea-status">
+    <option value="idea">Idea / por pensar</option>
+    <option value="diseño">En diseño</option>
+    <option value="listo">Listo para implementar</option>
+  </select>
+  <div class="modal-actions"><button class="btn" onclick="closeModal('modal-idea')">Cancelar</button><button class="btn primary" onclick="confirmAddIdea()">Crear Issue</button></div>
+</div></div>
+
+<div class="modal-bg" id="modal-apply"><div class="modal">
+  <h3>✅ Aplicar borrador al esquema oficial</h3>
+  <div id="apply-preview" style="font-size:12px;"></div>
+  <p style="font-size:11px;color:var(--text-tertiary);margin-top:12px;">Esta acción modifica <code>schema.json</code> permanente. El borrador queda vacío.</p>
+  <div class="modal-actions"><button class="btn" onclick="closeModal('modal-apply')">Cancelar</button><button class="btn success" onclick="confirmApplyDraft()">Confirmar y aplicar</button></div>
+</div></div>
+
+<script type="module">
+  import { init } from './js/mapa.js';
+  init();
 </script>
 
 </body>
