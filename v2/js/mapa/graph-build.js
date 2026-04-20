@@ -25,7 +25,7 @@ export function buildGraphData(issues) {
     nodes.push({ data: {
       id: 'issue:' + iss.number,
       label: '#' + iss.number + ' ' + truncate(iss.title, 40),
-      desc: iss.title, type: 'issue', kind: 'issue', status: iss.status, url: iss.url,
+      desc: iss.title, type: 'issue', kind: 'issue', status: iss.status, url: iss.url, number: iss.number,
     }});
     iss.anchors.forEach((a, i) => {
       if (nodes.some(n => n.data.id === a.id)) {
@@ -91,8 +91,8 @@ export function initGraph(nodes, edges) {
   const g = state.graph;
   g.on('tap', 'node[kind = "issue"]', evt => {
     if (state.linkMode) return;
-    const url = evt.target.data('url');
-    if (url) window.open(url, '_blank');
+    const num = evt.target.data('number');
+    if (num) window.location.href = `index.html?issue=${num}`;
   });
   g.on('tap', 'node', evt => onLinkModeTap(evt));
   g.on('mouseover', 'node', evt => setStatus(evt.target.data('desc') || evt.target.data('label')));
