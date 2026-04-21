@@ -122,7 +122,7 @@ Excel LTSC 2021 evalúa el campo Origen de validación en un contexto "legacy" q
 - Mínimo 2 líneas con `Monto > 0`.
 - Toda línea con `Monto > 0` requiere `Segmento`.
 - Máximo 20 líneas por lote (tope duro — regla de negocio).
-- Spread > 3% entre tasa pactada y tasa vigente dispara alerta.
+- **Alerta de Spread** cuando la tasa pactada difiere de la vigente más allá del **umbral configurable** `UmbralAlertaSpread` — ver sección 12.
 
 ---
 
@@ -162,6 +162,50 @@ Para lograr efectos visuales de énfasis (KPIs, títulos, tarjetas destacadas):
 ### Alcance
 
 Aplica a **todas las hojas del libro**: reportes, dashboards, configuraciones, hojas de captura y cualquier presentación visual.
+
+---
+
+## 12. Umbral de Alerta de Spread — Configurable, No Hardcoded
+
+> Referencias en el repo: Issue #4, Issue #15 (regla R-04).
+
+### Regla
+
+El umbral que dispara la alerta de spread entre tasa pactada y tasa vigente **NO debe estar hardcoded en el código VBA**. Debe vivir como valor configurable en una celda de la hoja `TASAS`, accesible vía `named range`.
+
+### Ubicación oficial
+
+- **Hoja:** `TASAS`
+- **Celda:** separada del bloque de tasas operativas (sugerencia: `TASAS!B9` con etiqueta en `A9 = "Umbral Alerta Spread"`)
+- **Named Range:** `UmbralAlertaSpread` → apunta a esa celda
+- **Formato de celda:** Porcentaje (el valor interno debe ser decimal: `0.03`, `0.05`, `0.10`)
+- **Valor por defecto:** `0.03` (3%)
+- **Rango recomendado:** entre `0.01` (1%) y `0.20` (20%)
+
+### Consumo desde VBA
+
+`GuardarLote` debe leer el umbral desde el named range, no desde una constante literal:
+
+```vb
+' ❌ NO hacer:
+Const UMBRAL_SPREAD As Double = 0.03
+
+' ✅ Correcto:
+Dim umbralSpread As Double
+umbralSpread = ThisWorkbook.Names("UmbralAlertaSpread").RefersToRange.Value
+```
+
+Con manejo de error si el named range no existe o tiene valor fuera de rango (`≤ 0` o `> 1`), con fallback al `0.03`.
+
+### Por qué
+
+- Cambio de política operativa (ajustar tolerancia) **no requiere tocar VBA**.
+- El valor queda visible y auditable en la hoja, no oculto en código.
+- Alineado con `Regla 1 — Fórmulas referencian nombres, no celdas` (ver `docs/reglas-generales.md`).
+
+### Estado actual
+
+El valor sigue hardcoded en `Modulo1.bas` (`GuardarLote`). La migración al named range está pendiente — ver Issue #4 para el plan de implementación.
 
 ---
 
