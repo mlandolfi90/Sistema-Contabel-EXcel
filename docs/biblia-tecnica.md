@@ -134,6 +134,37 @@ Excel LTSC 2021 evalúa el campo Origen de validación en un contexto "legacy" q
 
 ---
 
+## 11. Layout de Celdas — Prohibido Combinar o Agrandar
+
+### ❌ NO permitido
+
+- **No combinar celdas** (`Merge Cells`) en ninguna hoja del libro.
+- **No agrandar celdas** para simular KPIs, títulos destacados o agrupaciones visuales.
+
+### ✅ Patrón correcto (obligatorio)
+
+Para lograr efectos visuales de énfasis (KPIs, títulos, tarjetas destacadas):
+
+- **Tamaño de fuente grande** en la propia celda (ej: 24-36 pt).
+- **Formato de celda** (bordes, color de fondo, color de fuente, negrita).
+- **Formato condicional** para cambiar colores según valor.
+- **Alto/ancho de fila/columna** ajustado manualmente si es necesario, **pero sin combinar**.
+- **Iconos emoji** o símbolos unicode como marcadores visuales dentro de la celda.
+
+### Por qué
+
+- Las celdas combinadas **rompen fórmulas** con referencias estructuradas y rangos.
+- Impiden `SORT`, `FILTER`, y autofiltros nativos de Excel.
+- Dificultan el mantenimiento, especialmente cuando se insertan/eliminan filas.
+- Incompatibles con tablas estructuradas (`ListObject`).
+- Rompen navegación por teclado y selección de rangos.
+
+### Alcance
+
+Aplica a **todas las hojas del libro**: reportes, dashboards, configuraciones, hojas de captura y cualquier presentación visual.
+
+---
+
 ## Cómo contribuir a este documento
 
 Cuando durante una implementación se detecte:
