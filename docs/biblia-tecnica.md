@@ -1,12 +1,13 @@
-# Biblia Técnica — Convenciones y Limitaciones del Entorno
+# Biblia Técnica — Entorno Excel y VBA
 
-> Documento vivo de reglas técnicas, limitaciones del entorno y convenciones obligatorias para evitar errores repetidos en futuras implementaciones.
+> Reglas **técnicas** propias del entorno Excel LTSC 2021 + VBA.
+> Limitaciones de la plataforma, patrones obligatorios de implementación, layout de celdas.
 >
-> **Toda regla aquí debe citarse en los prompts/Issues que la toquen.**
+> Para reglas **conceptuales** del sistema contable (plan de cuentas, clases, flujos, etc.), ver [`biblia-teorica.md`](biblia-teorica.md).
 
 ---
 
-## 1. Excel LTSC 2021 — Limitaciones de Validación de Datos
+## 1. Validación de Datos con Funciones de Array Dinámico
 
 ### ❌ NO permitido
 
@@ -42,7 +43,7 @@ Origen:  =ListaOperadoresActivos
 
 ### Por qué
 
-Excel LTSC 2021 evalúa el campo Origen de validación en un contexto "legacy" que no soporta spill ranges directamente. El nombre definido con `#` actúa como puente, devolviendo el rango expandido.
+Excel LTSC 2021 evalúa el campo Origen de validación en un contexto "legacy" que no soporta spill ranges directamente. El nombre definido con `#` actúa como puente.
 
 ### Referencia en el repo
 
@@ -52,89 +53,7 @@ Excel LTSC 2021 evalúa el campo Origen de validación en un contexto "legacy" q
 
 ---
 
-## 2. Convenciones del Plan de Cuentas por Código
-
-| Rango | Clase | Uso |
-|-------|-------|-----|
-| 1100-1200 | Activo | Billeteras, dinero a la mano y cuentas virtuales/temporales |
-| 1300+ | Activo | Cuentas operativas (CxC/CxP, etc.) |
-| 2000+ | Pasivo | Obligaciones |
-| 3000+ | Patrimonio | Capital y cuentas corrientes de socios |
-| 4000+ | Ingreso | Ingresos puros |
-| 5000+ | Gasto | Gastos puros |
-| 6000+ | Resultado | Cuentas mixtas (naturaleza Mixta) — G/P unificadas |
-
----
-
-## 3. Clase de Cuenta `Resultado` (pendiente de implementación)
-
-- Naturaleza: **Mixta**
-- Uso: cuentas que acumulan tanto ganancias (Haber) como pérdidas (Debe) en una sola cuenta, siguiendo la regla **"G - P x suma"**.
-- Reemplaza el patrón de cuentas separadas (ej: `4200 Ganancia` + `5400 Pérdida` → `6100 Ganancia-Pérdida x Revalorización`).
-- **Pérdidas por ajustes de valoración (revalorización, diferencias de cambio) NO son Gastos** — deben ir en clase `Resultado`, no `Gasto`.
-
----
-
-## 4. Estructura de Balance USD vs Moneda Nativa
-
-- El sistema balancea los lotes **en USD** (vía columnas `Debe_USD` / `Haber_USD`).
-- Las cuentas operan en su **moneda nativa**.
-- Un saldo ≠ 0 en moneda nativa de una cuenta es **válido y esperado** — representa la posición real en esa moneda.
-- La ganancia/pérdida latente por diferencial de tasas se refleja automáticamente en cuentas con `permite_revalorizacion = SÍ` (ver `SALDOS_Y_ENTIDADES` columna O).
-
----
-
-## 5. Conversión a USD a Demanda
-
-- La conversión a USD **NO se almacena precalculada** — se calcula on-demand vía fórmulas (`XLOOKUP` a `tb_tasas_vigentes`) en las columnas `Debe_USD` / `Haber_USD`.
-- La tasa pactada del lote queda registrada en `tb_tasas_historial` para trazabilidad y cálculo de spread.
-- Permite `USD_Manual_Debe/Haber` para sobrescribir la tasa cuando la operación lo requiera (ej: fijar "tasa de salida" en una operación de cambio).
-
----
-
-## 6. Cuentas Temporales (Virtuales)
-
-- Son cuentas **virtuales** (no representan dinero físico).
-- Acumulan **diferencial de tasas** entre entrada y salida como **ganancia/pérdida latente**.
-- `permite_revalorizacion = SÍ` (obligatorio — es su función).
-- Por defecto son **globales por moneda** (no por entidad). Se permite una Temporal por Entidad si el Operador lo decide — no es regla ni restricción.
-
----
-
-## 7. Entidad `Operador` — Metadato sin Asiento
-
-- Toda operación debe registrar un Operador en cabecera del lote.
-- El Operador **NO genera asiento contable** — es solo metadato de trazabilidad.
-- Vive en `tb_entidades` con `tipo_entidad = "Operador"`.
-
----
-
-## 8. Inmutabilidad de Tipo de Entidad
-
-- Una entidad **no puede cambiar de `tipo_entidad`** una vez registrada — para preservar integridad histórica de asientos.
-- Si se requiere cambio de rol, se crea una nueva entidad.
-
----
-
-## 9. Reglas de Guardado de Lote (recordatorio del sistema actual)
-
-- `B6` debe contener `"Balanceado"`.
-- Mínimo 2 líneas con `Monto > 0`.
-- Toda línea con `Monto > 0` requiere `Segmento`.
-- Máximo 20 líneas por lote (tope duro — regla de negocio).
-- **Alerta de Spread** cuando la tasa pactada difiere de la vigente más allá del **umbral configurable** `UmbralAlertaSpread` — ver sección 12.
-
----
-
-## 10. Flexibilidad de División de Lotes
-
-- Una operación puede registrarse en **1 lote** (si ocurre simultáneamente) o en **múltiples lotes** (si los pasos ocurren en momentos distintos).
-- Cada lote balancea en USD de forma independiente.
-- La trazabilidad entre lotes relacionados se mantiene vía `Ref_Chat` o `ID_Deuda`.
-
----
-
-## 11. Layout de Celdas — Prohibido Combinar o Agrandar
+## 2. Layout de Celdas — Prohibido Combinar o Agrandar
 
 ### ❌ NO permitido
 
@@ -153,9 +72,9 @@ Para lograr efectos visuales de énfasis (KPIs, títulos, tarjetas destacadas):
 
 ### Por qué
 
-- Las celdas combinadas **rompen fórmulas** con referencias estructuradas y rangos.
-- Impiden `SORT`, `FILTER`, y autofiltros nativos de Excel.
-- Dificultan el mantenimiento, especialmente cuando se insertan/eliminan filas.
+- Las celdas combinadas rompen fórmulas con referencias estructuradas y rangos.
+- Impiden `SORT`, `FILTER`, y autofiltros nativos.
+- Dificultan mantenimiento al insertar/eliminar filas.
 - Incompatibles con tablas estructuradas (`ListObject`).
 - Rompen navegación por teclado y selección de rangos.
 
@@ -165,47 +84,110 @@ Aplica a **todas las hojas del libro**: reportes, dashboards, configuraciones, h
 
 ---
 
-## 12. Umbral de Alerta de Spread — Configurable, No Hardcoded
+## 3. Referencias: Nombres en vez de Coordenadas
 
-> Referencias en el repo: Issue #4, Issue #15 (regla R-04).
+Toda fórmula debe apoyarse en **rangos con nombre** o **referencias estructuradas de tabla**. Prohibidas las referencias directas a coordenadas de celda.
 
-### Regla
-
-El umbral que dispara la alerta de spread entre tasa pactada y tasa vigente **NO debe estar hardcoded en el código VBA**. Debe vivir como valor configurable en una celda de la hoja `TASAS`, accesible vía `named range`.
-
-### Ubicación oficial
-
-- **Hoja:** `TASAS`
-- **Celda:** separada del bloque de tasas operativas (sugerencia: `TASAS!B9` con etiqueta en `A9 = "Umbral Alerta Spread"`)
-- **Named Range:** `UmbralAlertaSpread` → apunta a esa celda
-- **Formato de celda:** Porcentaje (el valor interno debe ser decimal: `0.03`, `0.05`, `0.10`)
-- **Valor por defecto:** `0.03` (3%)
-- **Rango recomendado:** entre `0.01` (1%) y `0.20` (20%)
-
-### Consumo desde VBA
-
-`GuardarLote` debe leer el umbral desde el named range, no desde una constante literal:
-
-```vb
-' ❌ NO hacer:
-Const UMBRAL_SPREAD As Double = 0.03
-
-' ✅ Correcto:
-Dim umbralSpread As Double
-umbralSpread = ThisWorkbook.Names("UmbralAlertaSpread").RefersToRange.Value
+**Correcto:**
+```
+=SUMIFS(tb_mayor[Debe_USD], tb_mayor[Cuenta], "Cta. Corriente Manuel")
+=XLOOKUP(idCuenta, tb_cuentas[codigo], tb_cuentas[nombre_cuenta])
+=SUMA(ListaCuentaActiva)
 ```
 
-Con manejo de error si el named range no existe o tiene valor fuera de rango (`≤ 0` o `> 1`), con fallback al `0.03`.
+**Incorrecto:**
+```
+=SUMIFS(LIBRO_MAYOR!N:N, LIBRO_MAYOR!C:C, "...")
+=XLOOKUP(A2, CONFIG!Q2:Q21, CONFIG!R2:R21)
+=SUMA(A2:A50)
+```
 
-### Por qué
+Consulta completa: [`docs/reglas-generales.md` — Regla 1](reglas-generales.md).
 
-- Cambio de política operativa (ajustar tolerancia) **no requiere tocar VBA**.
+---
+
+## 4. Lectura de Valores Configurables desde VBA
+
+Cuando un parámetro deba ser configurable por el usuario final sin tocar código, debe implementarse como **celda + named range**, no como constante hardcoded.
+
+**❌ NO hacer:**
+```vb
+Const UMBRAL_SPREAD As Double = 0.03
+```
+
+**✅ Correcto:**
+```vb
+Dim umbralSpread As Double
+On Error Resume Next
+umbralSpread = ThisWorkbook.Names("UmbralAlertaSpread").RefersToRange.Value
+If Err.Number <> 0 Or umbralSpread <= 0 Or umbralSpread > 1 Then
+    umbralSpread = 0.03    ' fallback
+End If
+On Error GoTo 0
+```
+
+**Beneficios:**
 - El valor queda visible y auditable en la hoja, no oculto en código.
-- Alineado con `Regla 1 — Fórmulas referencian nombres, no celdas` (ver `docs/reglas-generales.md`).
+- Cambio de política operativa no requiere tocar VBA.
+- Alineado con la regla 3 de este documento y con `docs/reglas-generales.md` (Regla 1).
 
-### Estado actual
+Casos concretos: `UmbralAlertaSpread` (Issue #4), `Cuenta_Utilidad_Default` (pendiente).
 
-El valor sigue hardcoded en `Modulo1.bas` (`GuardarLote`). La migración al named range está pendiente — ver Issue #4 para el plan de implementación.
+---
+
+## 5. Columnas por Nombre en ListObjects (colIdx)
+
+Todas las macros que lean o escriban tablas estructuradas deben usar el helper `colIdx(tb, "NombreColumna")` en vez de índices numéricos.
+
+**❌ NO hacer:**
+```vb
+tbMayor.ListRows(i).Range.Cells(1, 3).Value = cuenta  ' asume col 3
+```
+
+**✅ Correcto:**
+```vb
+Dim colCuenta As Long
+colCuenta = colIdx(tbMayor, "Cuenta")
+tbMayor.ListRows(i).Range.Cells(1, colCuenta).Value = cuenta
+```
+
+**Beneficios:**
+- Resistente al reordenamiento de columnas.
+- Mensajes de error claros si una columna se elimina o renombra.
+- Ya implementado en `Modulo1.bas` y `Modulo2.bas`.
+
+---
+
+## 6. Escritura Atómica en Tablas Derivadas
+
+Cuando una macro escribe en **múltiples tablas relacionadas** (ej: `tb_mayor` + `tb_tasas_historial`), las escrituras **deben ser atómicas**: o todas tienen éxito, o ninguna se ejecuta.
+
+### ❌ Patrón incorrecto (problema actual)
+
+En `GuardarLote`, las entradas de `tb_tasas_historial` se escriben **dentro del loop de líneas**, antes de confirmar que todas las líneas del lote se guardaron. Si el proceso falla a mitad, quedan huérfanos en el historial.
+
+### ✅ Patrón correcto
+
+1. Acumular las entradas en un buffer (array, `Collection`, `Scripting.Dictionary`) durante el loop.
+2. Escribir en la tabla derivada **solo después** de que el commit principal (lote completo en `tb_mayor`) fue exitoso.
+
+Pendiente en Issue (ver Caso 1 — Issue E por crear).
+
+---
+
+## 7. Paneles Congelados y Cabeceras
+
+- Hojas con cabeceras fijas (`REGISTRO_RAPIDO`, `AUDITOR_LOTES`): las filas de cabecera deben caber dentro del panel congelado.
+- Al agregar nuevos campos en cabecera, verificar que el panel sigue cubriendo **todas** las filas hasta el inicio de la tabla operativa.
+- `REGISTRO_RAPIDO`: panel congelado a fila 10. Disponible para nuevos campos: filas 1-9.
+
+---
+
+## 8. `ultima_actualizacion` — Timestamp Estático, No `=TODAY()`
+
+- La columna `ultima_actualizacion` de `tb_tasas_vigentes` debe ser **valor estático** (escrito por VBA con `Now` al actualizar).
+- **NO** usar `=TODAY()` como fórmula — siempre mostraría la fecha actual, no la real de actualización.
+- Ver Issue #8, corregido en R5 del historial del proyecto.
 
 ---
 
@@ -213,10 +195,12 @@ El valor sigue hardcoded en `Modulo1.bas` (`GuardarLote`). La migración al name
 
 Cuando durante una implementación se detecte:
 - Una limitación del entorno (Excel, VBA, LTSC).
-- Una convención que deba aplicarse transversalmente.
-- Un patrón que, de no seguirse, cause errores repetidos.
+- Un patrón obligatorio de implementación.
+- Una convención que, de no seguirse, cause errores repetidos a nivel técnico.
 
-→ Agregar sección numerada aquí + mencionar en los prompts/Issues afectados con enlace a esta biblia.
+→ Agregar sección numerada aquí.
+→ Para reglas **conceptuales** del sistema contable, agregar en [`biblia-teorica.md`](biblia-teorica.md).
+→ Mencionar la regla en los prompts/Issues afectados con enlace a esta biblia.
 
 ---
 
