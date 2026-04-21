@@ -1,6 +1,6 @@
 # Sistema Contable Multidivisa V2 — Excel + VBA
 
-> Libro de Excel con macros VBA para registro contable multidivisa, trazabilidad de lotes y distribución de utilidades entre socios.
+> Este proyecto es la conversión de un sistema contable en Excel a un pequeño sistema de optimización mediante instrucciones humanas, diseñado para la implementación de un agente IA (Complemento Claude dentro de Excel) que ejecuta optimizaciones y modificaciones mediante prompts específicos.
 
 ## Inicio rápido
 
@@ -35,7 +35,6 @@
 │   └── vba/                     ← Código VBA exportado (texto plano)
 │       ├── Modulo1.bas
 │       ├── Modulo2.bas
-│       ├── Modulo3.bas
 │       └── Hoja3.cls
 └── README.md                    ← Este archivo
 ```
@@ -52,6 +51,14 @@
 - Excel para Windows (escritorio) con VBA habilitado
 - Funciones modernas: `XLOOKUP`, `FILTER`, `SORT`, `IFERROR`
 - Excel 365 o Excel 2021+
+
+## Componentes VBA activos
+
+| Archivo | Contenido |
+|---------|-----------|
+| `Modulo1.bas` | Núcleo contable: `GuardarLote`, `LimpiarRegistro`, `ActualizarTasaVigente`, `GenerarAsientoPacto`, `RevalorizarCuenta` |
+| `Modulo2.bas` | Auditor de lotes: `LoteAnterior`, `LoteSiguiente`, `AccionSobreLoteVisible`, `CorregirLoteConID`, `DuplicarLoteConID` |
+| `Hoja3.cls` | Eventos de `REGISTRO_RAPIDO`: selección múltiple de socios en `B3` |
 
 ## Socios configurados
 
