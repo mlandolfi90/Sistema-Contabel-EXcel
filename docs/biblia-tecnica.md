@@ -131,7 +131,7 @@ On Error GoTo 0
 - Cambio de política operativa no requiere tocar VBA.
 - Alineado con la regla 3 de este documento y con `docs/reglas-generales.md` (Regla 1).
 
-Casos concretos: `UmbralAlertaSpread` (Issue #4), `Cuenta_Utilidad_Default` (pendiente).
+Casos concretos: `UmbralAlertaSpread` (Issue #4), defaults de macros asistidas (ver sección 9).
 
 ---
 
@@ -188,6 +188,86 @@ Pendiente en Issue (ver Caso 1 — Issue E por crear).
 - La columna `ultima_actualizacion` de `tb_tasas_vigentes` debe ser **valor estático** (escrito por VBA con `Now` al actualizar).
 - **NO** usar `=TODAY()` como fórmula — siempre mostraría la fecha actual, no la real de actualización.
 - Ver Issue #8, corregido en R5 del historial del proyecto.
+
+---
+
+## 9. Defaults Configurables para Macros Asistidas
+
+Cuando una macro asistida necesite valores por defecto para pre-rellenar líneas en `REGISTRO_RAPIDO` (ej: cuenta, segmento, categoría usadas por "Cuadrar con Utilidad"), los valores deben vivir como **parámetros configurables en `CONFIG`**, nunca hardcoded en VBA.
+
+### Patrón obligatorio de 3 capas
+
+**Capa 1 — Lista derramada en `CONFIG_AUX`:**
+
+Filtra el catálogo maestro para mostrar solo las opciones válidas.
+
+```excel
+Celda: CONFIG_AUX!Y2
+Fórmula: =SORT(FILTER(tb_cuentas[nombre_cuenta], 
+                       (tb_cuentas[activa]="SI") * 
+                       ((tb_cuentas[clase]="Ingreso") + (tb_cuentas[clase]="Resultado"))))
+```
+
+**Capa 2 — Dos named ranges:**
+
+| Nombre | Apunta a | Propósito |
+|--------|----------|-----------|
+| `ListaCuentasUtilidad` | `=CONFIG_AUX!$Y$2#` | Opciones del dropdown (spill con `#`) |
+| `CuentaUtilidadDefault` | `=CONFIG!$Z$22` | Valor actualmente seleccionado |
+
+**Capa 3 — Celda con dropdown en `CONFIG`:**
+
+```
+Celda: CONFIG!Z22
+Validación → Origen: =ListaCuentasUtilidad
+```
+
+### Consumo desde VBA
+
+```vb
+Dim cuentaDefault As String
+On Error Resume Next
+cuentaDefault = ThisWorkbook.Names("CuentaUtilidadDefault").RefersToRange.Value
+If Err.Number <> 0 Or cuentaDefault = "" Then
+    MsgBox "Parámetro no configurado. Revisa CONFIG.", vbCritical
+    Exit Sub
+End If
+On Error GoTo 0
+```
+
+### Por qué dos named ranges
+
+- **Nombre de lista** (`Lista...`) → apunta al **spill dinámico** en `CONFIG_AUX`. Se autoactualiza cuando cambia el catálogo.
+- **Nombre de valor** (`...Default`) → apunta a la **celda única** en `CONFIG`. Es el que el Operador modifica y el VBA lee.
+
+### Cuándo aplicar este patrón
+
+Cualquier parámetro que una macro asistida use para pre-rellenar líneas y que pueda cambiar con el tiempo o según el contexto operativo. Ejemplos:
+
+- Cuenta de utilidad para "Cuadrar con Utilidad"
+- Segmento por defecto para líneas automáticas
+- Categoría por defecto para líneas automáticas
+- Umbrales, porcentajes, cuentas preferidas para flujos recurrentes
+
+### Fallback seguro
+
+El VBA debe tener siempre un camino de manejo cuando:
+- El named range no existe (no se ha creado aún).
+- El valor está vacío.
+- El valor ya no existe en el catálogo (ej: cuenta fue desactivada).
+
+Opciones de fallback:
+- Valor por defecto hardcoded (último recurso).
+- Mensaje al Operador pidiendo configurar el parámetro.
+- Aborto de la macro con `Exit Sub`.
+
+La elección depende del contexto. Lo importante es **no fallar silenciosamente**.
+
+### Referencia cruzada
+
+- Ver regla 1 (listas dinámicas vía named range con `#`).
+- Ver regla 4 (lectura de valores configurables desde VBA).
+- Esta sección 9 es la composición práctica de ambas para macros asistidas.
 
 ---
 
